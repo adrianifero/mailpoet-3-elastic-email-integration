@@ -8,28 +8,32 @@ use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\Url as NewsletterUrl;
 use MailPoet\Newsletter\ViewInBrowser as NewsletterViewInBrowser;
+use MailPoet\Settings\SettingsController;
 
 if(!defined('ABSPATH')) exit;
-
-require_once(ABSPATH . 'wp-includes/pluggable.php');
 
 class ViewInBrowser {
   const ENDPOINT = 'view_in_browser';
   const ACTION_VIEW = 'view';
   public $allowed_actions = array(self::ACTION_VIEW);
-  public $data;
   public $permissions = array(
     'global' => AccessControl::NO_ACCESS_RESTRICTION
   );
+  /** @var AccessControl */
+  private $access_control;
 
-  function __construct($data, AccessControl $access_control) {
+  /** @var SettingsController */
+  private $settings;
+
+  function __construct(AccessControl $access_control, SettingsController $settings) {
     $this->access_control = $access_control;
-    $this->data = $this->_processBrowserPreviewData($data);
+    $this->settings = $settings;
   }
 
-  function view() {
-    $view_in_browser = new NewsletterViewInBrowser();
-    return $this->_displayNewsletter($view_in_browser->view($this->data));
+  function view($data) {
+    $data = $this->_processBrowserPreviewData($data);
+    $view_in_browser = new NewsletterViewInBrowser((bool)$this->settings->get('tracking.enabled'));
+    return $this->_displayNewsletter($view_in_browser->view($data));
   }
 
   function _processBrowserPreviewData($data) {

@@ -5,6 +5,11 @@ if(!defined('ABSPATH')) exit;
 
 class PostNotificationsBlank1Column {
 
+  private $assets_url;
+  private $external_template_image_url;
+  private $template_image_url;
+  private $social_icon_url;
+
   function __construct($assets_url) {
     $this->assets_url = $assets_url;
     $this->external_template_image_url = 'https://ps.w.org/mailpoet/assets/newsletter-templates/post-notifications-blank-1-column';
@@ -15,7 +20,7 @@ class PostNotificationsBlank1Column {
   function get() {
     return array(
       'name' => __("Post Notifications: Blank 1 Column", 'mailpoet'),
-      'categories' => json_encode(array('notification', 'blank')),
+      'categories' => json_encode(array('notification')),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),
       'body' => json_encode($this->getBody()),

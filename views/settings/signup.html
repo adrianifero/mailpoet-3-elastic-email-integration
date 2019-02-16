@@ -26,6 +26,7 @@
             <input
               type="radio"
               class="mailpoet_signup_confirmation"
+              data-automation-id="enable_signup_confirmation"
               name="signup_confirmation[enabled]"
               value="1"
               <% if(settings.signup_confirmation.enabled) %>
@@ -38,6 +39,7 @@
             <input
               type="radio"
               class="mailpoet_signup_confirmation"
+              data-automation-id="disable_signup_confirmation"
               name="signup_confirmation[enabled]"
               value=""
               <% if not(settings.signup_confirmation.enabled) %>
@@ -53,31 +55,7 @@
 <table id="mailpoet_signup_options" class="form-table">
   <tbody>
     <!-- sign-up confirmation: from name & email -->
-    <tr>
-      <th scope="row">
-        <label for="settings[signup_confirmation_from_name]">
-          <%= __('From') %>
-        </label>
-      </th>
-      <td>
-        <p>
-          <input
-            type="text"
-            id="settings[signup_confirmation_from_name]"
-            name="signup_confirmation[from][name]"
-            value="<%= settings.signup_confirmation.from.name %>"
-            placeholder="<%= __('Your name') %>"
-          />
-          <input type="email"
-            id="settings[signup_confirmation_from_email]"
-            name="signup_confirmation[from][address]"
-            value="<%= settings.signup_confirmation.from.address %>"
-            placeholder="confirmation@mydomain.com"
-            size="28"
-          />
-        </p>
-      </td>
-    </tr>
+    <tr id="settings_signup_confirmation_sender_container"></tr>
     <!-- sign-up confirmation: reply_to name & email -->
     <tr>
       <th scope="row">
@@ -116,6 +94,7 @@
           size="52"
           type="text"
           id="settings[signup_confirmation_email_subject]"
+          data-automation-id="signup_confirmation_email_subject"
           name="signup_confirmation[subject]"
           <% if(settings.signup_confirmation.subject) %>
             value="<%= settings.signup_confirmation.subject %>"
@@ -138,6 +117,7 @@
           cols="50"
           rows="15"
           id="settings[signup_confirmation_email_body]"
+          data-automation-id="signup_confirmation_email_body"
           name="signup_confirmation[body]"
         ><% if(settings.signup_confirmation.body) %>
             <%=- settings.signup_confirmation.body -%>

@@ -6,7 +6,7 @@ use Carbon\Carbon;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\ScheduledTaskSubscriber;
 use MailPoet\Models\SendingQueue;
-use MailPoet\Util\Helpers;
+use function MailPoet\Util\array_column;
 use MailPoet\WP\Functions as WPFunctions;
 
 if(!defined('ABSPATH')) exit;
@@ -143,7 +143,7 @@ class Sending {
       $subscribers->where('processed', $status);
     }
     $subscribers = $subscribers->findArray();
-    return Helpers::arrayColumn($subscribers, 'subscriber_id');
+    return array_column($subscribers, 'subscriber_id');
   }
 
   public function setSubscribers(array $subscriber_ids) {
@@ -163,6 +163,11 @@ class Sending {
 
   public function updateProcessedSubscribers(array $processed_subscribers) {
     $this->task_subscribers->updateProcessedSubscribers($processed_subscribers);
+    return $this->updateCount()->getErrors() === false;
+  }
+
+  public function saveSubscriberError($subcriber_id, $error_message) {
+    $this->task_subscribers->saveSubscriberError($subcriber_id, $error_message);
     return $this->updateCount()->getErrors() === false;
   }
 
@@ -224,11 +229,16 @@ class Sending {
   }
 
   static function getScheduledQueues($amount = self::RESULT_BATCH_SIZE) {
-    $tasks = ScheduledTask::where('status', ScheduledTask::STATUS_SCHEDULED)
-      ->whereLte('scheduled_at', Carbon::createFromTimestamp(WPFunctions::currentTime('timestamp')))
-      ->where('type', 'sending')
-      ->whereNotEqual('status', ScheduledTask::STATUS_PAUSED)
-      ->orderByAsc('updated_at')
+    $wp = new WPFunctions();
+    $tasks = ScheduledTask::tableAlias('tasks')
+      ->select('tasks.*')
+      ->join(SendingQueue::$_table, 'tasks.id = queues.task_id', 'queues')
+      ->whereNull('tasks.deleted_at')
+      ->where('tasks.status', ScheduledTask::STATUS_SCHEDULED)
+      ->whereLte('tasks.scheduled_at', Carbon::createFromTimestamp($wp->currentTime('timestamp')))
+      ->where('tasks.type', 'sending')
+      ->whereNotEqual('tasks.status', ScheduledTask::STATUS_PAUSED)
+      ->orderByAsc('tasks.updated_at')
       ->limit($amount)
       ->findMany();
     $result = array();

@@ -4,6 +4,7 @@ namespace MailPoet\Cron\Workers;
 
 use Carbon\Carbon;
 use MailPoet\Cron\CronHelper;
+use MailPoet\Logging\Logger;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\Segment;
@@ -15,10 +16,10 @@ use MailPoet\Newsletter\Scheduler\Scheduler as NewsletterScheduler;
 use MailPoet\WP\Functions as WPFunctions;
 
 if(!defined('ABSPATH')) exit;
-require_once(ABSPATH . 'wp-includes/pluggable.php');
 
 class Scheduler {
   public $timer;
+  private $wp;
   const UNCONFIRMED_SUBSCRIBER_RESCHEDULE_TIMEOUT = 5;
   const TASK_BATCH_SIZE = 5;
 
@@ -26,6 +27,7 @@ class Scheduler {
     $this->timer = ($timer) ? $timer : microtime(true);
     // abort if execution limit is reached
     CronHelper::enforceExecutionLimit($this->timer);
+    $this->wp = new WPFunctions();
   }
 
   function process() {
@@ -75,9 +77,17 @@ class Scheduler {
   }
 
   function processPostNotificationNewsletter($newsletter, $queue) {
+    Logger::getLogger('post-notifications')->addInfo(
+      'process post notification in scheduler',
+      ['newsletter_id' => $newsletter->id, 'task_id' => $queue->task_id]
+    );
     // ensure that segments exist
-    $segments = $newsletter->segments()->findArray();
+    $segments = $newsletter->segments()->findMany();
     if(empty($segments)) {
+      Logger::getLogger('post-notifications')->addInfo(
+        'post notification no segments',
+        ['newsletter_id' => $newsletter->id, 'task_id' => $queue->task_id]
+      );
       return $this->deleteQueueOrUpdateNextRunDate($queue, $newsletter);
     }
 
@@ -87,6 +97,10 @@ class Scheduler {
     $subscribers_count = $finder->addSubscribersToTaskFromSegments($queue->task(), $segments);
 
     if(empty($subscribers_count)) {
+      Logger::getLogger('post-notifications')->addInfo(
+        'post notification no subscribers',
+        ['newsletter_id' => $newsletter->id, 'task_id' => $queue->task_id]
+      );
       return $this->deleteQueueOrUpdateNextRunDate($queue, $newsletter);
     }
 
@@ -100,14 +114,18 @@ class Scheduler {
     $queue->save();
     // update notification status
     $notification_history->setStatus(Newsletter::STATUS_SENDING);
+    Logger::getLogger('post-notifications')->addInfo(
+      'post notification set status to sending',
+      ['newsletter_id' => $newsletter->id, 'task_id' => $queue->task_id]
+    );
     return true;
   }
 
   function processScheduledAutomaticEmail($newsletter, $queue) {
     if($newsletter->sendTo === 'segment') {
-      $segment = Segment::findOne($newsletter->segment)->asArray();
+      $segment = Segment::findOne($newsletter->segment);
       $finder = new SubscribersFinder();
-      $result = $finder->addSubscribersToTaskFromSegments($queue->task(), array($segment));
+      $result = $finder->addSubscribersToTaskFromSegments($queue->task(), [$segment]);
       if(empty($result)) {
         $queue->delete();
         return false;
@@ -128,14 +146,14 @@ class Scheduler {
     return true;
   }
 
-  function processScheduledStandardNewsletter($newsletter, $queue) {
-    $segments = $newsletter->segments()->findArray();
+  function processScheduledStandardNewsletter($newsletter, SendingTask $task) {
+    $segments = $newsletter->segments()->findMany();
     $finder = new SubscribersFinder();
-    $subscribers_count = $finder->addSubscribersToTaskFromSegments($queue->task(), $segments);
+    $finder->addSubscribersToTaskFromSegments($task->task(), $segments);
     // update current queue
-    $queue->updateCount();
-    $queue->status = null;
-    $queue->save();
+    $task->updateCount();
+    $task->status = null;
+    $task->save();
     // update newsletter status
     $newsletter->setStatus(Newsletter::STATUS_SENDING);
     return true;
@@ -156,7 +174,7 @@ class Scheduler {
     // check if subscriber is confirmed (subscribed)
     if($subscriber->status !== Subscriber::STATUS_SUBSCRIBED) {
       // reschedule delivery in 5 minutes
-      $scheduled_at = Carbon::createFromTimestamp(WPFunctions::currentTime('timestamp'));
+      $scheduled_at = Carbon::createFromTimestamp($this->wp->currentTime('timestamp'));
       $queue->scheduled_at = $scheduled_at->addMinutes(
         self::UNCONFIRMED_SUBSCRIBER_RESCHEDULE_TIMEOUT
       );

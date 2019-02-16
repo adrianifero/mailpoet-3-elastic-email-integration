@@ -25,8 +25,8 @@ if(!is_plugin_active('mailpoet/mailpoet.php')) {
 }
 
 // Check for minimum supported PHP version
-if(version_compare(phpversion(), '5.5.0', '<')) {
-  echo 'MailPoet requires PHP version 5.6 or newer (version 7 recommended).';
+if(version_compare(phpversion(), '5.6.0', '<')) {
+  echo 'MailPoet requires PHP version 5.6 or newer (version 7.2 recommended).';
   exit(1);
 }
 
@@ -35,5 +35,6 @@ if(strpos(@ini_get('disable_functions'), 'set_time_limit') === false) {
 }
 
 $data = \MailPoet\Cron\CronHelper::createDaemon(null);
-$trigger = new \MailPoet\Cron\Daemon();
+$container = \MailPoet\DI\ContainerWrapper::getInstance(WP_DEBUG);
+$trigger = $container->get(\MailPoet\Cron\Daemon::class);
 $trigger->run($data);

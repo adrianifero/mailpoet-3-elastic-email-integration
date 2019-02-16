@@ -2,10 +2,31 @@
 
 namespace MailPoet\Config;
 
-use MailPoet\Models\Setting;
-use MailPoet\WP\Posts as WPPosts;
+use MailPoet\Settings\SettingsController;
+use MailPoet\Subscription\Form;
+use MailPoet\WP\Functions as WPFunctions;
 
 class Hooks {
+
+  /** @var Form */
+  private $subscription_form;
+
+  /** @var SettingsController */
+  private $settings;
+
+  /** @var WPFunctions */
+  private $wp;
+
+  function __construct(
+    Form $subscription_form,
+    SettingsController $settings,
+    WPFunctions $wp
+  ) {
+    $this->subscription_form = $subscription_form;
+    $this->settings = $settings;
+    $this->wp = $wp;
+  }
+
   function init() {
     $this->setupWPUsers();
     $this->setupImageSize();
@@ -15,14 +36,15 @@ class Hooks {
   }
 
   function setupSubscriptionEvents() {
-    $subscribe = Setting::getValue('subscribe', array());
+
+    $subscribe = $this->settings->get('subscribe', []);
     // Subscribe in comments
     if(
       isset($subscribe['on_comment']['enabled'])
       &&
       (bool)$subscribe['on_comment']['enabled']
     ) {
-      if(is_user_logged_in()) {
+      if($this->wp->isUserLoggedIn()) {
         add_action(
           'comment_form_field_comment',
           '\MailPoet\Subscription\Comment::extendLoggedInForm'
@@ -93,11 +115,11 @@ class Hooks {
     // Subscription form
     add_action(
       'admin_post_mailpoet_subscription_form',
-      '\MailPoet\Subscription\Form::onSubmit'
+      [$this->subscription_form, 'onSubmit']
     );
     add_action(
       'admin_post_nopriv_mailpoet_subscription_form',
-      '\MailPoet\Subscription\Form::onSubmit'
+      [$this->subscription_form, 'onSubmit']
     );
   }
 
@@ -167,12 +189,10 @@ class Hooks {
   }
 
   function setupPostNotifications() {
-    foreach(WPPosts::getTypes() as $post_type) {
-      add_filter(
-        'publish_' . $post_type,
-        '\MailPoet\Newsletter\Scheduler\Scheduler::schedulePostNotification',
-        10, 1
-      );
-    }
+    add_action(
+      'transition_post_status',
+      '\MailPoet\Newsletter\Scheduler\Scheduler::transitionHook',
+      10, 3
+    );
   }
 }

@@ -25,8 +25,8 @@ class StatisticsClicks extends Model {
     return $statistics->save();
   }
 
-  static function getAllForSubsciber(Subscriber $subscriber) {
-    return static::table_alias('clicks')
+  static function getAllForSubscriber(Subscriber $subscriber) {
+    return static::tableAlias('clicks')
       ->select('clicks.id', 'id')
       ->select('newsletter_rendered_subject')
       ->select('clicks.created_at', 'created_at')

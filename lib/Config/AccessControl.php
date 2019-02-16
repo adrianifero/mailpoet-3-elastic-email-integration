@@ -2,10 +2,9 @@
 
 namespace MailPoet\Config;
 
-use MailPoet\WP\Hooks as WPHooks;
+use MailPoet\WP\Functions as WPFunctions;
 
 if(!defined('ABSPATH')) exit;
-require_once(ABSPATH . 'wp-includes/pluggable.php');
 
 class AccessControl {
   const PERMISSION_ACCESS_PLUGIN_ADMIN = 'mailpoet_access_plugin_admin';
@@ -25,40 +24,41 @@ class AccessControl {
   }
 
   static function getDefaultPermissions() {
+    $wp = new WPFunctions;
     return array(
-      self::PERMISSION_ACCESS_PLUGIN_ADMIN => WPHooks::applyFilters(
+      self::PERMISSION_ACCESS_PLUGIN_ADMIN => $wp->applyFilters(
         'mailpoet_permission_access_plugin_admin',
         array(
           'administrator',
           'editor'
         )
       ),
-      self::PERMISSION_MANAGE_SETTINGS => WPHooks::applyFilters(
+      self::PERMISSION_MANAGE_SETTINGS => $wp->applyFilters(
         'mailpoet_permission_manage_settings',
         array(
           'administrator'
         )
       ),
-      self::PERMISSION_MANAGE_EMAILS => WPHooks::applyFilters(
+      self::PERMISSION_MANAGE_EMAILS => $wp->applyFilters(
         'mailpoet_permission_manage_emails',
         array(
           'administrator',
           'editor'
         )
       ),
-      self::PERMISSION_MANAGE_SUBSCRIBERS => WPHooks::applyFilters(
+      self::PERMISSION_MANAGE_SUBSCRIBERS => $wp->applyFilters(
         'mailpoet_permission_manage_subscribers',
         array(
           'administrator'
         )
       ),
-      self::PERMISSION_MANAGE_FORMS => WPHooks::applyFilters(
+      self::PERMISSION_MANAGE_FORMS => $wp->applyFilters(
         'mailpoet_permission_manage_forms',
         array(
           'administrator'
         )
       ),
-      self::PERMISSION_MANAGE_SEGMENTS => WPHooks::applyFilters(
+      self::PERMISSION_MANAGE_SEGMENTS => $wp->applyFilters(
         'mailpoet_permission_manage_segments',
         array(
           'administrator'

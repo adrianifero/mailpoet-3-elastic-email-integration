@@ -1,42 +1,45 @@
 <?php
-// https://elasticemail.com/resources/api/send/
 
 namespace MailPoet\Mailer\Methods;
 
 use MailPoet\Mailer\Mailer;
+use MailPoet\Mailer\Methods\ErrorMappers\SendGridMapper;
 use MailPoet\WP\Functions as WPFunctions;
 
 if(!defined('ABSPATH')) exit;
 
 class SendGrid {
-  public $url = 'https://api.elasticemail.com/v2/email/send';
+  public $url = 'https://api.sendgrid.com/api/mail.send.json';
   public $api_key;
   public $sender;
   public $reply_to;
 
-  function __construct($api_key, $sender, $reply_to) {
+  /** @var SendGridMapper */
+  private $error_mapper;
+
+  private $wp;
+
+  function __construct($api_key, $sender, $reply_to, SendGridMapper $error_mapper) {
     $this->api_key = $api_key;
     $this->sender = $sender;
     $this->reply_to = $reply_to;
+    $this->error_mapper = $error_mapper;
+    $this->wp = new WPFunctions();
   }
 
   function send($newsletter, $subscriber, $extra_params = array()) {
-    $result = WPFunctions::wpRemotePost(
+    $result = $this->wp->wpRemotePost(
       $this->url,
       $this->request($newsletter, $subscriber, $extra_params)
     );
     if(is_wp_error($result)) {
-      return Mailer::formatMailerConnectionErrorResult($result->get_error_message());
+      $error = $this->error_mapper->getConnectionError($result->get_error_message());
+      return Mailer::formatMailerErrorResult($error);
     }
-    if(WPFunctions::wpRemoteRetrieveResponseCode($result) !== 200) {
+    if($this->wp->wpRemoteRetrieveResponseCode($result) !== 200) {
       $response = json_decode($result['body'], true);
-      $response = (!empty($response['errors'][0])) ?
-        $response['errors'][0] :
-        sprintf(__('%s has returned an unknown error.', 'mailpoet'), Mailer::METHOD_SENDGRID);
-      if(empty($extra_params['test_email'])) {
-        $response .= sprintf(' %s: %s', __('Unprocessed subscriber', 'mailpoet'), $subscriber);
-      }
-      return Mailer::formatMailerSendErrorResult($response);
+      $error = $this->error_mapper->getErrorFromResponse($response, $subscriber);
+      return Mailer::formatMailerErrorResult($error);
     }
     return Mailer::formatMailerSendSuccessResult();
   }
@@ -47,9 +50,7 @@ class SendGrid {
       'from' => $this->sender['from_email'],
       'fromname' => $this->sender['from_name'],
       'replyto' => $this->reply_to['reply_to_email'],
-      'subject' => $newsletter['subject'],
-      'apikey' => $this->api_key,
-      'isTransactional' => false
+      'subject' => $newsletter['subject']
     );
     $headers = array();
     if(!empty($extra_params['unsubscribe_url'])) {
@@ -59,10 +60,10 @@ class SendGrid {
       $body['headers'] = json_encode($headers);
     }
     if(!empty($newsletter['body']['html'])) {
-      $body['bodyHtml'] = $newsletter['body']['html'];
+      $body['html'] = $newsletter['body']['html'];
     }
     if(!empty($newsletter['body']['text'])) {
-      $body['bodyText'] = $newsletter['body']['text'];
+      $body['text'] = $newsletter['body']['text'];
     }
     return $body;
   }

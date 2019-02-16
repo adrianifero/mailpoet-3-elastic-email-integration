@@ -2,7 +2,7 @@
 namespace MailPoet\Tasks\Subscribers;
 
 use MailPoet\Models\ScheduledTaskSubscriber;
-use MailPoet\Util\Helpers;
+use function MailPoet\Util\array_column;
 
 if(!defined('ABSPATH')) exit;
 
@@ -31,7 +31,7 @@ class BatchIterator implements \Iterator, \Countable {
       ->orderByAsc('subscriber_id')
       ->limit($this->batch_size)
       ->findArray();
-    $subscribers = Helpers::arrayColumn($subscribers, 'subscriber_id');
+    $subscribers = array_column($subscribers, 'subscriber_id');
     $this->batch_last_id = end($subscribers);
     return $subscribers;
   }

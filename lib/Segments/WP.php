@@ -10,8 +10,6 @@ use MailPoet\Subscribers\Source;
 
 if(!defined('ABSPATH')) exit;
 
-require_once(ABSPATH . 'wp-includes/pluggable.php');
-
 class WP {
   static function synchronizeUser($wp_user_id, $old_wp_user_data = false) {
     $wp_user = \get_userdata($wp_user_id);
@@ -113,11 +111,11 @@ class WP {
 
   private static function updateSubscribersEmails() {
     global $wpdb;
-    Subscriber::raw_execute('SELECT NOW();');
-    $start_time = Subscriber::get_last_statement()->fetch(\PDO::FETCH_COLUMN);
+    Subscriber::rawExecute('SELECT NOW();');
+    $start_time = Subscriber::getLastStatement()->fetch(\PDO::FETCH_COLUMN);
 
     $subscribers_table = Subscriber::$_table;
-    Subscriber::raw_execute(sprintf('
+    Subscriber::rawExecute(sprintf('
       UPDATE IGNORE %1$s
         INNER JOIN %2$s as wu ON %1$s.wp_user_id = wu.id
       SET %1$s.email = wu.user_email;
@@ -139,7 +137,7 @@ class WP {
         WHERE mps.wp_user_id IS NULL AND %2$s.user_email != ""
       ', $subscribers_table, $wpdb->users))->findArray();
 
-    Subscriber::raw_execute(sprintf('
+    Subscriber::rawExecute(sprintf('
       INSERT IGNORE INTO %1$s(wp_user_id, email, status, created_at, source)
         SELECT wu.id, wu.user_email, "subscribed", CURRENT_TIMESTAMP(), "%3$s" FROM %2$s wu
           LEFT JOIN %1$s mps ON wu.id = mps.wp_user_id
@@ -153,7 +151,7 @@ class WP {
   private static function updateFirstNames() {
     global $wpdb;
     $subscribers_table = Subscriber::$_table;
-    Subscriber::raw_execute(sprintf('
+    Subscriber::rawExecute(sprintf('
       UPDATE %1$s
         JOIN %2$s as wpum ON %1$s.wp_user_id = wpum.user_id AND wpum.meta_key = "first_name"
       SET %1$s.first_name = wpum.meta_value
@@ -166,20 +164,20 @@ class WP {
   private static function updateLastNames() {
     global $wpdb;
     $subscribers_table = Subscriber::$_table;
-    Subscriber::raw_execute(sprintf('
+    Subscriber::rawExecute(sprintf('
       UPDATE %1$s
         JOIN %2$s as wpum ON %1$s.wp_user_id = wpum.user_id AND wpum.meta_key = "last_name"
       SET %1$s.last_name = wpum.meta_value
         WHERE %1$s.last_name = ""
         AND %1$s.wp_user_id IS NOT NULL
-        AND wpum.meta_value IS NOT NULL        
+        AND wpum.meta_value IS NOT NULL
     ', $subscribers_table, $wpdb->usermeta));
   }
 
   private static function updateFirstNameIfMissing() {
     global $wpdb;
     $subscribers_table = Subscriber::$_table;
-    Subscriber::raw_execute(sprintf('
+    Subscriber::rawExecute(sprintf('
       UPDATE %1$s
         JOIN %2$s wu ON %1$s.wp_user_id = wu.id
       SET %1$s.first_name = wu.display_name
@@ -192,7 +190,7 @@ class WP {
     $wp_segment = Segment::getWPSegment();
     $subscribers_table = Subscriber::$_table;
     $wp_mailpoet_subscriber_segment_table = SubscriberSegment::$_table;
-    Subscriber::raw_execute(sprintf('
+    Subscriber::rawExecute(sprintf('
      INSERT IGNORE INTO %s(subscriber_id, segment_id, created_at)
       SELECT mps.id, "%s", CURRENT_TIMESTAMP() FROM %s mps
         WHERE mps.wp_user_id > 0
@@ -201,7 +199,7 @@ class WP {
 
   private static function removeFromTrash() {
     $subscribers_table = Subscriber::$_table;
-    Subscriber::raw_execute(sprintf('
+    Subscriber::rawExecute(sprintf('
       UPDATE %1$s
       SET %1$s.deleted_at = NULL
         WHERE %1$s.wp_user_id IS NOT NULL

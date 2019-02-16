@@ -11,7 +11,7 @@ use MailPoet\Tasks\Subscribers\BatchIterator;
 use MailPoet\Models\Subscriber;
 use MailPoet\Services\Bridge;
 use MailPoet\Services\Bridge\API;
-use MailPoet\Util\Helpers;
+use function MailPoet\Util\array_column;
 
 if(!defined('ABSPATH')) exit;
 
@@ -65,7 +65,7 @@ class Bounce extends SimpleWorker {
         ->whereIn('id', $subscribers_to_process_ids)
         ->whereNull('deleted_at')
         ->findArray();
-      $subscriber_emails = Helpers::arrayColumn($subscriber_emails, 'email');
+      $subscriber_emails = array_column($subscriber_emails, 'email');
 
       $this->processEmails($subscriber_emails);
 

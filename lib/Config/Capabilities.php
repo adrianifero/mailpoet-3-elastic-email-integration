@@ -2,17 +2,22 @@
 
 namespace MailPoet\Config;
 
-use MailPoet\WP\Hooks;
+use MailPoet\WP\Functions as WPFunctions;
 
 class Capabilities {
   const MEMBERS_CAP_GROUP_NAME = 'mailpoet';
 
   private $renderer = null;
+  private $wp;
 
-  function __construct($renderer = null) {
+  function __construct($renderer = null, WPFunctions $wp = null) {
     if($renderer !== null) {
       $this->renderer = $renderer;
     }
+    if($wp == null) {
+      $wp = new WPFunctions;
+    }
+    $this->wp = $wp;
   }
 
   function init() {
@@ -48,15 +53,15 @@ class Capabilities {
   }
 
   function setupMembersCapabilities() {
-    Hooks::addAction('admin_enqueue_scripts', array($this, 'enqueueMembersStyles'));
-    Hooks::addAction('members_register_cap_groups', array($this, 'registerMembersCapGroup'));
-    Hooks::addAction('members_register_caps', array($this, 'registerMembersCapabilities'));
+    $this->wp->addAction('admin_enqueue_scripts', array($this, 'enqueueMembersStyles'));
+    $this->wp->addAction('members_register_cap_groups', array($this, 'registerMembersCapGroup'));
+    $this->wp->addAction('members_register_caps', array($this, 'registerMembersCapabilities'));
   }
 
   function enqueueMembersStyles() {
     wp_enqueue_style(
       'mailpoet-admin-global',
-      Env::$assets_url . '/css/' . $this->renderer->getCssAsset('admin-global.css')
+      Env::$assets_url . '/dist/css/' . $this->renderer->getCssAsset('admin-global.css')
     );
   }
 
@@ -75,13 +80,17 @@ class Capabilities {
   function registerMembersCapabilities() {
     $permissions = AccessControl::getPermissionLabels();
     foreach($permissions as $name => $label) {
-      members_register_cap(
-        $name,
-        array(
-          'label' => $label,
-          'group' => self::MEMBERS_CAP_GROUP_NAME
-        )
-      );
+      $this->registerMembersCapability($name, $label);
     }
+  }
+
+  function registerMembersCapability($name, $label) {
+    members_register_cap(
+      $name,
+      array(
+        'label' => $label,
+        'group' => self::MEMBERS_CAP_GROUP_NAME
+      )
+    );
   }
 }

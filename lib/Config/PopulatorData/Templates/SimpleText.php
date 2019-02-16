@@ -5,6 +5,11 @@ if(!defined('ABSPATH')) exit;
 
 class SimpleText {
 
+  private $assets_url;
+  private $external_template_image_url;
+  private $template_image_url;
+  private $social_icon_url;
+
   function __construct($assets_url) {
     $this->assets_url = $assets_url;
     $this->external_template_image_url = 'https://ps.w.org/mailpoet/assets/newsletter-templates/simple-text';
@@ -15,7 +20,7 @@ class SimpleText {
   function get() {
     return array(
       'name' => __("Simple Text", 'mailpoet'),
-      'categories' => json_encode(array('standard', 'sample')),
+      'categories' => json_encode(array('standard', 'all')),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),
       'body' => json_encode($this->getBody()),

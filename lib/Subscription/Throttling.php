@@ -3,18 +3,20 @@ namespace MailPoet\Subscription;
 
 use MailPoet\Models\SubscriberIP;
 use MailPoet\Util\Helpers;
-use MailPoet\WP\Hooks;
+use MailPoet\WP\Functions as WPFunctions;
 
 class Throttling {
   static function throttle() {
-    $subscription_limit_enabled = Hooks::applyFilters('mailpoet_subscription_limit_enabled', true);
+    $wp = new WPFunctions;
+    $subscription_limit_enabled = $wp->applyFilters('mailpoet_subscription_limit_enabled', true);
 
-    $subscription_limit_window = Hooks::applyFilters('mailpoet_subscription_limit_window', DAY_IN_SECONDS);
-    $subscription_limit_base = Hooks::applyFilters('mailpoet_subscription_limit_base', MINUTE_IN_SECONDS);
+    $subscription_limit_window = $wp->applyFilters('mailpoet_subscription_limit_window', DAY_IN_SECONDS);
+    $subscription_limit_base = $wp->applyFilters('mailpoet_subscription_limit_base', MINUTE_IN_SECONDS);
 
     $subscriber_ip = Helpers::getIP();
+    $wp = new WPFunctions;
 
-    if($subscription_limit_enabled && !is_user_logged_in()) {
+    if($subscription_limit_enabled && !$wp->isUserLoggedIn()) {
       if(!empty($subscriber_ip)) {
         $subscription_count = SubscriberIP::where('ip', $subscriber_ip)
           ->whereRaw(

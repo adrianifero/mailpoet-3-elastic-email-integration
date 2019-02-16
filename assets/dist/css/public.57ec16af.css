@@ -1,0 +1,174 @@
+input.parsley-success,
+select.parsley-success,
+textarea.parsley-success {
+  color: #468847;
+  background-color: #dff0d8;
+  border: 1px solid #d6e9c6;
+}
+input.parsley-error,
+select.parsley-error,
+textarea.parsley-error {
+  color: #b94a48;
+  background-color: #f2dede;
+  border: 1px solid #eed3d7;
+}
+.parsley-errors-list {
+  margin: 2px 0 3px;
+  padding: 0;
+  list-style-type: none;
+  font-size: 0.9em;
+  line-height: 0.9em;
+  color: #b94a48;
+  opacity: 0;
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+  filter: alpha(opacity=0);
+  -webkit-transition: all 0.3s ease-in;
+  -moz-transition: all 0.3s ease-in;
+  -o-transition: all 0.3s ease-in;
+  -ms-transition: all 0.3s ease-in;
+  transition: all 0.3s ease-in;
+}
+.parsley-errors-list.filled {
+  opacity: 1;
+  -ms-filter: none;
+  filter: none;
+}
+.parsley-errors-list {
+  margin-top: 8px;
+}
+.parsley-required,
+.parsley-custom-error-message {
+  color: #b94a48;
+}
+/* labels */
+.mailpoet_text_label,
+.mailpoet_textarea_label,
+.mailpoet_select_label,
+.mailpoet_radio_label,
+.mailpoet_checkbox_label,
+.mailpoet_list_label,
+.mailpoet_date_label {
+  display: block;
+}
+/* form loading */
+.mailpoet_form_sending .mailpoet_form_loading {
+  display: block;
+}
+.mailpoet_form_sending .mailpoet_submit {
+  display: none;
+}
+.mailpoet_form_loading {
+  display: none;
+  width: 30px;
+  text-align: center;
+}
+.mailpoet_form_loading > span {
+  width: 5px;
+  height: 5px;
+  background-color: #5b5b5b;
+  border-radius: 100%;
+  display: inline-block;
+  -webkit-animation: mailpoet-bouncedelay 1.4s infinite ease-in-out both;
+  -webkit-animation: mailpoet-bouncedelay 1.4s infinite ease-in-out both;
+  -moz-animation: mailpoet-bouncedelay 1.4s infinite ease-in-out both;
+  -o-animation: mailpoet-bouncedelay 1.4s infinite ease-in-out both;
+  -ms-animation: mailpoet-bouncedelay 1.4s infinite ease-in-out both;
+  animation: mailpoet-bouncedelay 1.4s infinite ease-in-out both;
+}
+.mailpoet_form_loading .mailpoet_bounce1 {
+  -webkit-animation-delay: -0.32s;
+  -webkit-animation-delay: -0.32s;
+  -moz-animation-delay: -0.32s;
+  -o-animation-delay: -0.32s;
+  -ms-animation-delay: -0.32s;
+  animation-delay: -0.32s;
+}
+.mailpoet_form_loading .mailpoet_bounce2 {
+  -webkit-animation-delay: -0.16s;
+  -webkit-animation-delay: -0.16s;
+  -moz-animation-delay: -0.16s;
+  -o-animation-delay: -0.16s;
+  -ms-animation-delay: -0.16s;
+  animation-delay: -0.16s;
+  margin: 0 7px;
+}
+@-webkit-keyframes mailpoet-bouncedelay {
+  0%, 80%, 100% {
+    -webkit-transform: scale(0);
+  }
+  40% {
+    -webkit-transform: scale(1);
+  }
+}
+@-moz-keyframes mailpoet-bouncedelay {
+  0%, 80%, 100% {
+    -webkit-transform: scale(0);
+    -webkit-transform: scale(0);
+    -moz-transform: scale(0);
+    -o-transform: scale(0);
+    -ms-transform: scale(0);
+    transform: scale(0);
+  }
+  40% {
+    -webkit-transform: scale(1);
+    -webkit-transform: scale(1);
+    -moz-transform: scale(1);
+    -o-transform: scale(1);
+    -ms-transform: scale(1);
+    transform: scale(1);
+  }
+}
+@-webkit-keyframes mailpoet-bouncedelay {
+  0%, 80%, 100% {
+    -webkit-transform: scale(0);
+    -webkit-transform: scale(0);
+    -moz-transform: scale(0);
+    -o-transform: scale(0);
+    -ms-transform: scale(0);
+    transform: scale(0);
+  }
+  40% {
+    -webkit-transform: scale(1);
+    -webkit-transform: scale(1);
+    -moz-transform: scale(1);
+    -o-transform: scale(1);
+    -ms-transform: scale(1);
+    transform: scale(1);
+  }
+}
+@-o-keyframes mailpoet-bouncedelay {
+  0%, 80%, 100% {
+    -webkit-transform: scale(0);
+    -webkit-transform: scale(0);
+    -moz-transform: scale(0);
+    -o-transform: scale(0);
+    -ms-transform: scale(0);
+    transform: scale(0);
+  }
+  40% {
+    -webkit-transform: scale(1);
+    -webkit-transform: scale(1);
+    -moz-transform: scale(1);
+    -o-transform: scale(1);
+    -ms-transform: scale(1);
+    transform: scale(1);
+  }
+}
+@keyframes mailpoet-bouncedelay {
+  0%, 80%, 100% {
+    -webkit-transform: scale(0);
+    -webkit-transform: scale(0);
+    -moz-transform: scale(0);
+    -o-transform: scale(0);
+    -ms-transform: scale(0);
+    transform: scale(0);
+  }
+  40% {
+    -webkit-transform: scale(1);
+    -webkit-transform: scale(1);
+    -moz-transform: scale(1);
+    -o-transform: scale(1);
+    -ms-transform: scale(1);
+    transform: scale(1);
+  }
+}

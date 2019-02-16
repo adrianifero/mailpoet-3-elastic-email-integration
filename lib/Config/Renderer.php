@@ -32,8 +32,8 @@ class Renderer {
       )
     );
 
-    $this->assets_manifest_js = $this->getAssetManifest(Env::$assets_path . '/js/manifest.json');
-    $this->assets_manifest_css = $this->getAssetManifest(Env::$assets_path . '/css/manifest.json');
+    $this->assets_manifest_js = $this->getAssetManifest(Env::$assets_path . '/dist/js/manifest.json');
+    $this->assets_manifest_css = $this->getAssetManifest(Env::$assets_path . '/dist/css/manifest.json');
     $this->setupDebug();
     $this->setupTranslations();
     $this->setupFunctions();
@@ -41,6 +41,7 @@ class Renderer {
     $this->setupHandlebars();
     $this->setupHelpscout();
     $this->setupAnalytics();
+    $this->setupPolls();
     $this->setupGlobalVariables();
     $this->setupSyntax();
   }
@@ -69,9 +70,14 @@ class Renderer {
     $this->renderer->addExtension(new Twig\Analytics());
   }
 
+  function setupPolls() {
+    $this->renderer->addExtension(new Twig\Polls());
+  }
+
   function setupGlobalVariables() {
     $this->renderer->addExtension(new Twig\Assets(array(
       'version' => Env::$version,
+      'base_url' => Env::$base_url,
       'assets_url' => Env::$assets_url,
       'assets_manifest_js' => $this->assets_manifest_js,
       'assets_manifest_css' => $this->assets_manifest_css

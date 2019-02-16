@@ -1,10 +1,15 @@
 <?php
 namespace MailPoet\Mailer;
 
+use MailPoet\Mailer\Methods\ErrorMappers\AmazonSESMapper;
+use MailPoet\Mailer\Methods\ErrorMappers\MailPoetMapper;
+use MailPoet\Mailer\Methods\ErrorMappers\PHPMailMapper;
+use MailPoet\Mailer\Methods\ErrorMappers\SendGridMapper;
+use MailPoet\Mailer\Methods\ErrorMappers\SMTPMapper;
 use MailPoet\Models\Setting;
+use MailPoet\Settings\SettingsController;
 
 if(!defined('ABSPATH')) exit;
-require_once(ABSPATH . 'wp-includes/pluggable.php');
 
 class Mailer {
   public $mailer_config;
@@ -12,6 +17,8 @@ class Mailer {
   public $reply_to;
   public $return_path;
   public $mailer_instance;
+  /** @var SettingsController */
+  private $settings;
   const MAILER_CONFIG_SETTING_NAME = 'mta';
   const SENDING_LIMIT_INTERVAL_MULTIPLIER = 60;
   const METHOD_MAILPOET = 'MailPoet';
@@ -21,6 +28,7 @@ class Mailer {
   const METHOD_SMTP = 'SMTP';
 
   function __construct($mailer = false, $sender = false, $reply_to = false, $return_path = false) {
+    $this->settings = new SettingsController();
     $this->mailer_config = self::getMailerConfig($mailer);
     $this->sender = $this->getSenderNameAndAddress($sender);
     $this->reply_to = $this->getReplyToNameAndAddress($reply_to);
@@ -42,28 +50,32 @@ class Mailer {
           $this->mailer_config['secret_key'],
           $this->sender,
           $this->reply_to,
-          $this->return_path
+          $this->return_path,
+          new AmazonSESMapper()
         );
         break;
       case self::METHOD_MAILPOET:
         $mailer_instance = new $this->mailer_config['class'](
           $this->mailer_config['mailpoet_api_key'],
           $this->sender,
-          $this->reply_to
+          $this->reply_to,
+          new MailPoetMapper()
         );
         break;
       case self::METHOD_SENDGRID:
         $mailer_instance = new $this->mailer_config['class'](
           $this->mailer_config['api_key'],
           $this->sender,
-          $this->reply_to
+          $this->reply_to,
+          new SendGridMapper()
         );
         break;
       case self::METHOD_PHPMAIL:
         $mailer_instance = new $this->mailer_config['class'](
           $this->sender,
           $this->reply_to,
-          $this->return_path
+          $this->return_path,
+          new PHPMailMapper()
         );
         break;
       case self::METHOD_SMTP:
@@ -76,7 +88,8 @@ class Mailer {
           $this->mailer_config['encryption'],
           $this->sender,
           $this->reply_to,
-          $this->return_path
+          $this->return_path,
+          new SMTPMapper()
         );
         break;
       default:
@@ -86,12 +99,13 @@ class Mailer {
   }
 
   static function getMailerConfig($mailer = false) {
+    $settings = new SettingsController();
     if(!$mailer) {
-      $mailer = Setting::getValue(self::MAILER_CONFIG_SETTING_NAME);
+      $mailer = $settings->get(self::MAILER_CONFIG_SETTING_NAME);
       if(!$mailer || !isset($mailer['method'])) throw new \Exception(__('Mailer is not configured.', 'mailpoet'));
     }
     if(empty($mailer['frequency'])) {
-      $default_settings = Setting::getDefaults();
+      $default_settings = $settings->getAllDefaults();
       $mailer['frequency'] = $default_settings['mta']['frequency'];
     }
     // add additional variables to the mailer object
@@ -104,7 +118,7 @@ class Mailer {
 
   function getSenderNameAndAddress($sender = false) {
     if(empty($sender)) {
-      $sender = Setting::getValue('sender', array());
+      $sender = $this->settings->get('sender', []);
       if(empty($sender['address'])) throw new \Exception(__('Sender name and email are not configured.', 'mailpoet'));
     }
     $from_name = $this->encodeAddressNamePart($sender['name']);
@@ -117,7 +131,7 @@ class Mailer {
 
   function getReplyToNameAndAddress($reply_to = array()) {
     if(!$reply_to) {
-      $reply_to = Setting::getValue('reply_to');
+      $reply_to = $this->settings->get('reply_to');
       $reply_to['name'] = (!empty($reply_to['name'])) ?
         $reply_to['name'] :
         $this->sender['from_name'];
@@ -139,7 +153,7 @@ class Mailer {
   function getReturnPathAddress($return_path) {
     return ($return_path) ?
       $return_path :
-      Setting::getValue('bounce.address');
+      $this->settings->get('bounce.address');
   }
 
   function formatSubscriberNameAndEmailAddress($subscriber) {
@@ -166,25 +180,16 @@ class Mailer {
     return sprintf('=?utf-8?B?%s?=', base64_encode($name));
   }
 
-  static function formatMailerConnectionErrorResult($error_message) {
-    return array(
+  static function formatMailerErrorResult(MailerError $error) {
+    return [
       'response' => false,
-      'operation' => 'connect',
-      'error_message' => $error_message
-    );
-  }
-
-  static function formatMailerSendErrorResult($error_message) {
-    return array(
-      'response' => false,
-      'operation' => 'send',
-      'error_message' => $error_message
-    );
+      'error' => $error,
+    ];
   }
 
   static function formatMailerSendSuccessResult() {
-    return array(
+    return [
       'response' => true
-    );
+    ];
   }
 }

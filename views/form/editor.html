@@ -195,6 +195,13 @@
       </div>
         </div>
 
+      <p class="help">
+        <%= __('<strong>Tip:</strong> read our [link]GDPR guide[/link] to make sure your form follows the privacy directive of the European Union.')
+        |replaceLinkTags('https://beta.docs.mailpoet.com/article/246-guide-to-conform-to-gdpr?utm_source=plugin&utm_medium=formeditor&utm_campaign=helpdocs', {'target' : '_blank', id: 'mailpoet_helper_link'})
+        |raw
+        %>
+      </p>
+
     <!-- End | Form Editor: Toolbar -->
     </div>
 
@@ -591,6 +598,7 @@
           // open popup
           MailPoet.Modal.popup({
             title: "<%= __('Add new field') %>",
+            minWidth: "500px",
             template: $('#form_template_field_form').html()
           });
 
@@ -612,6 +620,7 @@
             MailPoet.Modal.popup({
               title: "<%= __('Edit field') %>",
               template: $('#form_template_field_form').html(),
+              minWidth: "500px",
               data: response.data
             });
           }).fail(function(response) {

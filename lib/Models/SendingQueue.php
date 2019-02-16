@@ -7,6 +7,14 @@ use MailPoet\Tasks\Subscribers as TaskSubscribers;
 
 if(!defined('ABSPATH')) exit;
 
+/**
+ * @property int $count_processed
+ * @property int $count_total
+ * @property string $newsletter_rendered_body
+ * @property int $task_id
+ * @property string|object $meta
+ * @property string|array $subscribers
+ */
 class SendingQueue extends Model {
   public static $_table = MP_SENDING_QUEUES_TABLE;
   const STATUS_COMPLETED = 'completed';
@@ -16,12 +24,15 @@ class SendingQueue extends Model {
   const PRIORITY_MEDIUM = 5;
   const PRIORITY_LOW = 10;
 
+  private $emoji;
+  
   function __construct() {
     parent::__construct();
 
     $this->addValidations('newsletter_rendered_body', array(
       'validRenderedNewsletterBody' => __('Rendered newsletter body is invalid!', 'mailpoet')
     ));
+    $this->emoji = new Emoji();
   }
 
   function task() {
@@ -99,7 +110,7 @@ class SendingQueue extends Model {
   function encodeEmojisInBody($newsletter_rendered_body) {
     if(is_array($newsletter_rendered_body)) {
       foreach($newsletter_rendered_body as $key => $value) {
-        $newsletter_rendered_body[$key] = Emoji::encodeForUTF8Column(
+        $newsletter_rendered_body[$key] = $this->emoji->encodeForUTF8Column(
           self::$_table,
           'newsletter_rendered_body',
           $value
@@ -112,7 +123,7 @@ class SendingQueue extends Model {
   function decodeEmojisInBody($newsletter_rendered_body) {
     if(is_array($newsletter_rendered_body)) {
       foreach($newsletter_rendered_body as $key => $value) {
-        $newsletter_rendered_body[$key] = Emoji::decodeEntities($value);
+        $newsletter_rendered_body[$key] = $this->emoji->decodeEntities($value);
       }
     }
     return $newsletter_rendered_body;
@@ -151,7 +162,7 @@ class SendingQueue extends Model {
   }
 
   static function getTasks() {
-    return ScheduledTask::table_alias('tasks')
+    return ScheduledTask::tableAlias('tasks')
     ->selectExpr('tasks.*')
     ->join(
       MP_SENDING_QUEUES_TABLE,
@@ -161,7 +172,7 @@ class SendingQueue extends Model {
   }
 
   static function joinWithTasks() {
-    return static::table_alias('queues')
+    return static::tableAlias('queues')
     ->join(
       MP_SCHEDULED_TASKS_TABLE,
       'tasks.id = queues.task_id',

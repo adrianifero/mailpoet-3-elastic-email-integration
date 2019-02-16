@@ -14,11 +14,13 @@ class PostTransformer {
   private $args;
   private $with_layout;
   private $image_position;
+  private $wp;
 
   function __construct($args) {
     $this->args = $args;
     $this->with_layout = isset($args['withLayout']) ? (bool)filter_var($args['withLayout'], FILTER_VALIDATE_BOOLEAN) : false;
     $this->image_position = 'left';
+    $this->wp = new WPFunctions();
   }
 
   function getDivider() {
@@ -150,7 +152,7 @@ class PostTransformer {
     }
 
     $thumbnail_id = get_post_thumbnail_id($post_id);
-    $image_info = WPFunctions::getImageInfo($thumbnail_id);
+    $image_info = $this->wp->getImageInfo($thumbnail_id);
 
     // get alt text
     $alt_text = trim(strip_tags(get_post_meta(
@@ -200,6 +202,7 @@ class PostTransformer {
 
   private function getTitle($post) {
     $title = $post->post_title;
+    $top_padding = '20px';
 
     if(filter_var($this->args['titleIsLink'], FILTER_VALIDATE_BOOLEAN)) {
       $title = '<a href="' . get_permalink($post->ID) . '">' . $title . '</a>';
@@ -209,6 +212,7 @@ class PostTransformer {
       $tag = $this->args['titleFormat'];
     } elseif($this->args['titleFormat'] === 'ul') {
       $tag = 'li';
+      $top_padding = '0';
     } else {
       $tag = 'h1';
     }
@@ -218,7 +222,12 @@ class PostTransformer {
     $title = '<' . $tag . ' data-post-id="' . $post->ID . '" style="text-align: ' . $alignment . ';">' . $title . '</' . $tag . '>';
     return array(
       'type' => 'text',
-      'text' => $title
+      'text' => $title,
+      'styles' => [
+        'block' => [
+          'paddingTop' => $top_padding,
+        ],
+      ]
     );
   }
 

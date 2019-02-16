@@ -8,13 +8,18 @@ use MailPoet\Config\Renderer as ConfigRenderer;
 use MailPoet\Form\Renderer as FormRenderer;
 use MailPoet\Models\Form;
 use MailPoet\Models\Setting;
+use MailPoet\Settings\SettingsController;
 use MailPoet\Util\Security;
-use MailPoet\WP\Hooks;
+use MailPoet\WP\Functions as WPFunctions;
 
 if(!defined('ABSPATH')) exit;
 
 class Widget extends \WP_Widget {
   private $renderer;
+  private $wp;
+
+  /** @var SettingsController  */
+  private $settings;
 
   const RECAPTCHA_API_URL = 'https://www.google.com/recaptcha/api.js?onload=reCaptchaCallback&render=explicit';
 
@@ -24,8 +29,9 @@ class Widget extends \WP_Widget {
       __('MailPoet 3 Form', 'mailpoet'),
       array('description' => __('Add a newsletter subscription form', 'mailpoet'))
     );
-
+    $this->wp = new WPFunctions;
     $this->renderer = new \MailPoet\Config\Renderer(!WP_DEBUG, !WP_DEBUG);
+    $this->settings = new SettingsController();
     if(!is_admin()) {
       $this->setupIframe();
     } else {
@@ -93,12 +99,12 @@ class Widget extends \WP_Widget {
   function setupDependencies() {
     wp_enqueue_style(
       'mailpoet_public',
-      Env::$assets_url . '/css/' . $this->renderer->getCssAsset('public.css')
+      Env::$assets_url . '/dist/css/' . $this->renderer->getCssAsset('public.css')
     );
 
     wp_enqueue_script(
       'mailpoet_vendor',
-      Env::$assets_url . '/js/' . $this->renderer->getJsAsset('vendor.js'),
+      Env::$assets_url . '/dist/js/' . $this->renderer->getJsAsset('vendor.js'),
       array(),
       Env::$version,
       true
@@ -106,13 +112,13 @@ class Widget extends \WP_Widget {
 
     wp_enqueue_script(
       'mailpoet_public',
-      Env::$assets_url . '/js/' . $this->renderer->getJsAsset('public.js'),
+      Env::$assets_url . '/dist/js/' . $this->renderer->getJsAsset('public.js'),
       array('jquery'),
       Env::$version,
       true
     );
 
-    $captcha = Setting::getValue('re_captcha');
+    $captcha = $this->settings->get('re_captcha');
     if(!empty($captcha['enabled'])) {
       wp_enqueue_script(
         'mailpoet_recaptcha',
@@ -148,7 +154,7 @@ EOL;
   function setupAdminWidgetPageDependencies() {
     wp_enqueue_script(
       'mailpoet_vendor',
-      Env::$assets_url . '/js/' . $this->renderer->getJsAsset('vendor.js'),
+      Env::$assets_url . '/dist/js/' . $this->renderer->getJsAsset('vendor.js'),
       array(),
       Env::$version,
       true
@@ -156,7 +162,7 @@ EOL;
 
     wp_enqueue_script(
       'mailpoet_admin',
-      Env::$assets_url . '/js/' . $this->renderer->getJsAsset('mailpoet.js'),
+      Env::$assets_url . '/dist/js/' . $this->renderer->getJsAsset('mailpoet.js'),
       array(),
       Env::$version,
       true
@@ -209,7 +215,7 @@ EOL;
         <?php
         foreach($forms as $form) {
           $is_selected = ($selected_form === (int)$form['id']) ? 'selected="selected"' : '';
-        ?>
+          ?>
         <option value="<?php echo (int)$form['id']; ?>" <?php echo $is_selected; ?>><?php echo esc_html($form['name']); ?></option>
         <?php }  ?>
       </select>
@@ -255,7 +261,7 @@ EOL;
       $instance = $args;
     }
 
-    $title = Hooks::applyFilters(
+    $title = $this->wp->applyFilters(
       'widget_title',
       !empty($instance['title']) ? $instance['title'] : '',
       $instance,
@@ -321,7 +327,7 @@ EOL;
       try {
         $output = $renderer->render('form/widget.html', $data);
         $output = do_shortcode($output);
-        $output = Hooks::applyFilters('mailpoet_form_widget_post_process', $output);
+        $output = $this->wp->applyFilters('mailpoet_form_widget_post_process', $output);
       } catch(\Exception $e) {
         $output = $e->getMessage();
       }

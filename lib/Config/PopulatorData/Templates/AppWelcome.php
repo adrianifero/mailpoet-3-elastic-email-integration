@@ -1,6 +1,7 @@
 <?php
-
 namespace MailPoet\Config\PopulatorData\Templates;
+
+if(!defined('ABSPATH')) exit;
 
 class AppWelcome {
 
@@ -8,14 +9,14 @@ class AppWelcome {
   private $social_icon_url;
 
   function __construct($assets_url) {
-     $this->template_image_url = 'https://ps.w.org/mailpoet/assets/newsletter-templates/app_welcome';
+    $this->template_image_url = 'https://ps.w.org/mailpoet/assets/newsletter-templates/app_welcome';
     $this->social_icon_url = $assets_url . '/img/newsletter_editor/social-icons';
   }
 
   function get() {
     return array(
       'name' => __("App Welcome", 'mailpoet'),
-      'categories' => json_encode(array('welcome', 'sample')),
+      'categories' => json_encode(array('welcome', 'all')),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),
       'body' => json_encode($this->getBody()),

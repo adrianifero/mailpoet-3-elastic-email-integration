@@ -9,17 +9,20 @@ use MailPoet\Form\Block;
 use MailPoet\Form\Renderer as FormRenderer;
 use MailPoet\Helpscout\Beacon;
 use MailPoet\Listing;
+use MailPoet\Mailer\MailerLog;
 use MailPoet\Models\CustomField;
 use MailPoet\Models\Form;
 use MailPoet\Models\Segment;
-use MailPoet\Models\Setting;
 use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\Shortcodes\ShortcodesHelper;
 use MailPoet\Router\Endpoints\CronDaemon;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\Hosts;
 use MailPoet\Settings\Pages;
+use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\ImportExport\ImportExportFactory;
+use MailPoet\Tasks\Sending;
+use MailPoet\Tasks\State;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoet\Util\License\License;
 use MailPoet\WP\DateTime;
@@ -31,16 +34,32 @@ if(!defined('ABSPATH')) exit;
 
 class Menu {
   const MAIN_PAGE_SLUG = 'mailpoet-newsletters';
+  const LAST_ANNOUNCEMENT_DATE = '2019-01-28 10:00:00';
 
+  /** @var Renderer */
   public $renderer;
-  public $assets_url;
+  public $mp_api_key_valid;
+  public $premium_key_valid;
+
+  /** @var AccessControl */
   private $access_control;
+  /** @var SettingsController */
+  private $settings;
+  /** @var WPFunctions */
+  private $wp;
+
   private $subscribers_over_limit;
 
-  function __construct($renderer, $assets_url, AccessControl $access_control) {
+  function __construct(
+    Renderer $renderer,
+    AccessControl $access_control,
+    SettingsController $settings,
+    WPFunctions $wp
+  ) {
     $this->renderer = $renderer;
-    $this->assets_url = $assets_url;
     $this->access_control = $access_control;
+    $this->wp = $wp;
+    $this->settings = $settings;
   }
 
   function init() {
@@ -67,6 +86,23 @@ class Menu {
       if($_REQUEST['page'] === 'mailpoet-newsletter-editor') {
         // Disable WP emojis to not interfere with the newsletter editor emoji handling
         $this->disableWPEmojis();
+        add_action('admin_head', function() {
+          $fonts = 'Arvo:400,400i,700,700i'
+           . '|Lato:400,400i,700,700i'
+           . '|Lora:400,400i,700,700i'
+           . '|Merriweather:400,400i,700,700i'
+           . '|Merriweather+Sans:400,400i,700,700i'
+           . '|Noticia+Text:400,400i,700,700i'
+           . '|Open+Sans:400,400i,700,700i'
+           . '|Playfair+Display:400,400i,700,700i'
+           . '|Roboto:400,400i,700,700i'
+           . '|Source+Sans+Pro:400,400i,700,700i'
+           . '|Oswald:400,400i,700,700i'
+           . '|Raleway:400,400i,700,700i'
+           . '|Permanent+Marker:400,400i,700,700i'
+           . '|Pacifico:400,400i,700,700i';
+          echo '<!--[if !mso]><link href="https://fonts.googleapis.com/css?family=' . $fonts . '" rel="stylesheet"><![endif]-->';
+        });
       }
     }
 
@@ -77,7 +113,7 @@ class Menu {
       AccessControl::PERMISSION_ACCESS_PLUGIN_ADMIN,
       self::MAIN_PAGE_SLUG,
       null,
-      $this->assets_url . '/img/menu_icon.png',
+      'none',
       30
     );
 
@@ -275,16 +311,16 @@ class Menu {
       )
     );
 
-    // Welcome page
+    // Welcome wizard page
     add_submenu_page(
       true,
-      $this->setPageTitle(__('Welcome', 'mailpoet')),
-      __('Welcome', 'mailpoet'),
+      $this->setPageTitle(__('Welcome Wizard', 'mailpoet')),
+      __('Welcome Wizard', 'mailpoet'),
       AccessControl::PERMISSION_ACCESS_PLUGIN_ADMIN,
-      'mailpoet-welcome',
+      'mailpoet-welcome-wizard',
       array(
         $this,
-        'welcome'
+        'welcomeWizard'
       )
     );
 
@@ -320,41 +356,26 @@ class Menu {
     remove_action('admin_print_styles', 'print_emoji_styles');
   }
 
-  function welcome() {
-    if((bool)(defined('DOING_AJAX') && DOING_AJAX)) return;
-
-    global $wp;
-    $current_url = home_url(add_query_arg($wp->query_string, $wp->request));
-    $redirect_url =
-      (!empty($_GET['mailpoet_redirect']))
-        ? urldecode($_GET['mailpoet_redirect'])
-        : wp_get_referer();
-
-    if(
-      $redirect_url === $current_url
-      or
-      strpos($redirect_url, 'mailpoet') === false
-    ) {
-      $redirect_url = admin_url('admin.php?page=' . self::MAIN_PAGE_SLUG);
-    }
-
-    $data = array(
-      'settings' => Setting::getAll(),
-      'current_user' => wp_get_current_user(),
-      'redirect_url' => $redirect_url,
-      'sub_menu' => self::MAIN_PAGE_SLUG
-    );
-    $this->displayPage('welcome.html', $data);
-  }
-
   function migration() {
-    $mp2_migrator = new MP2Migrator($this->access_control);
+    $mp2_migrator = new MP2Migrator();
     $mp2_migrator->init();
     $data = array(
       'log_file_url' => $mp2_migrator->log_file_url,
       'progress_url' => $mp2_migrator->progressbar->url,
     );
     $this->displayPage('mp2migration.html', $data);
+  }
+
+  function welcomeWizard() {
+    if((bool)(defined('DOING_AJAX') && DOING_AJAX)) return;
+    $data = [
+      'is_mp2_migration_complete' => (bool)$this->settings->get('mailpoet_migration_complete'),
+      'is_woocommerce_active' => class_exists('WooCommerce'),
+      'finish_wizard_url' => admin_url('admin.php?page=' . self::MAIN_PAGE_SLUG),
+      'sender' => $this->settings->get('sender'),
+      'reply_to' => $this->settings->get('reply_to'),
+    ];
+    $this->displayPage('welcome_wizard.html', $data);
   }
 
   function update() {
@@ -374,7 +395,7 @@ class Menu {
     }
 
     $data = array(
-      'settings' => Setting::getAll(),
+      'settings' => $this->settings->getAll(),
       'current_user' => wp_get_current_user(),
       'redirect_url' => $redirect_url,
       'sub_menu' => self::MAIN_PAGE_SLUG,
@@ -384,7 +405,7 @@ class Menu {
     $data['is_old_user'] = false;
     if(!empty($data['settings']['installed_at'])) {
       $installed_at = Carbon::createFromTimestamp(strtotime($data['settings']['installed_at']));
-      $current_time = Carbon::createFromTimestamp(WPFunctions::currentTime('timestamp'));
+      $current_time = Carbon::createFromTimestamp($this->wp->currentTime('timestamp'));
       $data['is_new_user'] = $current_time->diffInDays($installed_at) <= 30;
       $data['is_old_user'] = $current_time->diffInMonths($installed_at) >= 6;
       $data['stop_call_for_rating'] = isset($data['settings']['stop_call_for_rating']) ? $data['settings']['stop_call_for_rating'] : false;
@@ -404,7 +425,8 @@ class Menu {
   function premium() {
     $data = array(
       'subscriber_count' => Subscriber::getTotalSubscribers(),
-      'sub_menu' => self::MAIN_PAGE_SLUG
+      'sub_menu' => self::MAIN_PAGE_SLUG,
+      'display_discount' => time() <= strtotime('2018-11-30 23:59:59')
     );
 
     $this->displayPage('premium.html', $data);
@@ -412,7 +434,7 @@ class Menu {
 
 
   function settings() {
-    $settings = Setting::getAll();
+    $settings = $this->settings->getAll();
     $flags = $this->_getFlags();
 
     // force MSS key check even if the method isn't active
@@ -432,6 +454,8 @@ class Menu {
       'pages' => Pages::getAll(),
       'flags' => $flags,
       'current_user' => wp_get_current_user(),
+      'linux_cron_path' => dirname(dirname(__DIR__)),
+      'ABSPATH' => ABSPATH,
       'hosts' => array(
         'web' => Hosts::getWebHosts(),
         'smtp' => Hosts::getSMTPHosts()
@@ -447,18 +471,24 @@ class Menu {
 
 
   function help() {
+    $tasks_state = new State();
     $system_info_data = Beacon::getData();
-    $system_status_data = array(
-      'cron' => array(
+    $system_status_data = [
+      'cron' => [
         'url' => CronHelper::getCronUrl(CronDaemon::ACTION_PING),
         'isReachable' => CronHelper::pingDaemon(true)
-      ),
-      'mss' => array(
+      ],
+      'mss' => [
         'enabled' => (Bridge::isMPSendingServiceEnabled()) ?
-          array('isReachable' => Bridge::pingBridge()) :
+          ['isReachable' => Bridge::pingBridge()] :
           false
-      )
-    );
+      ],
+      'cronStatus' => CronHelper::getDaemon(),
+      'queueStatus' => MailerLog::getMailerLog(),
+    ];
+    $system_status_data['cronStatus']['accessible'] = CronHelper::isDaemonAccessible();
+    $system_status_data['queueStatus']['tasksStatusCounts'] = $tasks_state->getCountsPerStatus();
+    $system_status_data['queueStatus']['latestTasks'] = $tasks_state->getLatestTasks(Sending::TASK_TYPE);
     $this->displayPage(
       'help.html',
       array(
@@ -529,8 +559,6 @@ class Menu {
   }
 
   function segments() {
-    if($this->subscribers_over_limit) return $this->displaySubscriberLimitExceededTemplate();
-
     $data = array();
     $data['items_per_page'] = $this->getLimitPerPage('segments');
     $this->displayPage('segments.html', $data);
@@ -566,9 +594,15 @@ class Menu {
       return strcasecmp($a["name"], $b["name"]);
     });
     $data['segments'] = $segments;
-    $data['settings'] = Setting::getAll();
+    $data['settings'] = $this->settings->getAll();
+    $data['current_wp_user'] = wp_get_current_user()->to_array();
+    $data['current_wp_user_firstname'] = wp_get_current_user()->user_firstname;
+    $data['site_url'] = site_url();
     $data['roles'] = $wp_roles->get_names();
     $data['roles']['mailpoet_all'] = __('In any WordPress role', 'mailpoet');
+
+    $installedAtDateTime = new \DateTime($data['settings']['installed_at']);
+    $data['installed_days_ago'] = (int)$installedAtDateTime->diff(new \DateTime())->format('%a');
 
     $date_time = new DateTime();
     $data['current_date'] = $date_time->getCurrentDate(DateTime::DEFAULT_DATE_FORMAT);
@@ -578,9 +612,17 @@ class Menu {
       '+1 hour',
       24
     );
+    $data['mailpoet_main_page'] = admin_url('admin.php?page=' . self::MAIN_PAGE_SLUG);
+    $data['show_congratulate_after_first_newsletter'] = isset($data['settings']['show_congratulate_after_first_newsletter'])?$data['settings']['show_congratulate_after_first_newsletter']:'false';
 
-    $data['tracking_enabled'] = Setting::getValue('tracking.enabled');
+    $data['tracking_enabled'] = $this->settings->get('tracking.enabled');
     $data['premium_plugin_active'] = License::getLicense();
+    $data['is_woocommerce_active'] = class_exists('WooCommerce');
+
+    $user_id = $data['current_wp_user']['ID'];
+    $data['feature_announcement_has_news'] = empty($data['settings']['last_announcement_seen'][$user_id])
+      || $data['settings']['last_announcement_seen'][$user_id] < strtotime(self::LAST_ANNOUNCEMENT_DATE);
+    $data['last_announcement_seen'] = isset($data['settings']['last_announcement_seen']) ? $data['settings']['last_announcement_seen'] : false;
 
     $data['automatic_emails'] = array(
       array(
@@ -643,10 +685,12 @@ class Menu {
   }
 
   function newletterEditor() {
+    $subscriber = Subscriber::getCurrentWPUser();
+    $subscriber_data = $subscriber ? $subscriber->asArray() : [];
     $data = array(
       'shortcodes' => ShortcodesHelper::getShortcodes(),
-      'settings' => Setting::getAll(),
-      'current_wp_user' => Subscriber::getCurrentWPUser(),
+      'settings' => $this->settings->getAll(),
+      'current_wp_user' => array_merge($subscriber_data, wp_get_current_user()->to_array()),
       'sub_menu' => self::MAIN_PAGE_SLUG,
       'mss_active' => Bridge::isMPSendingServiceEnabled()
     );
@@ -809,12 +853,12 @@ class Menu {
   }
 
   function isNewUser() {
-    $installed_at = Setting::getValue('installed_at');
+    $installed_at = $this->settings->get('installed_at');
     if(is_null($installed_at)) {
       return true;
     }
     $installed_at = Carbon::createFromTimestamp(strtotime($installed_at));
-    $current_time = Carbon::createFromTimestamp(WPFunctions::currentTime('timestamp'));
+    $current_time = Carbon::createFromTimestamp($this->wp->currentTime('timestamp'));
     return $current_time->diffInDays($installed_at) <= 30;
   }
 }

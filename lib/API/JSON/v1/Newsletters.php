@@ -20,17 +20,40 @@ use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\Renderer\Renderer;
 use MailPoet\Newsletter\Scheduler\Scheduler;
 use MailPoet\Newsletter\Url as NewsletterUrl;
-use MailPoet\WP\Hooks;
+use MailPoet\Settings\SettingsController;
 use MailPoet\WP\Functions as WPFunctions;
 
 if(!defined('ABSPATH')) exit;
 
-require_once(ABSPATH . 'wp-includes/pluggable.php');
-
 class Newsletters extends APIEndpoint {
+
+  /** @var Listing\BulkActionController */
+  private $bulk_action;
+
+  /** @var Listing\Handler */
+  private $listing_handler;
+
+  /** @var WPFunctions */
+  private $wp;
+
+  /** @var SettingsController */
+  private $settings;
+
   public $permissions = array(
     'global' => AccessControl::PERMISSION_MANAGE_EMAILS
   );
+
+  function __construct(
+    Listing\BulkActionController $bulk_action,
+    Listing\Handler $listing_handler,
+    WPFunctions $wp,
+    SettingsController $settings
+  ) {
+    $this->bulk_action = $bulk_action;
+    $this->listing_handler = $listing_handler;
+    $this->wp = $wp;
+    $this->settings = $settings;
+  }
 
   function get($data = array()) {
     $id = (isset($data['id']) ? (int)$data['id'] : false);
@@ -45,13 +68,13 @@ class Newsletters extends APIEndpoint {
         ->withOptions()
         ->withSendingQueue()
         ->asArray();
-      $newsletter = Hooks::applyFilters('mailpoet_api_newsletters_get_after', $newsletter);
+      $newsletter = $this->wp->applyFilters('mailpoet_api_newsletters_get_after', $newsletter);
       return $this->successResponse($newsletter);
     }
   }
 
   function save($data = array()) {
-    $data = Hooks::applyFilters('mailpoet_api_newsletters_save_before', $data);
+    $data = $this->wp->applyFilters('mailpoet_api_newsletters_save_before', $data);
 
     $segments = array();
     if(isset($data['segments'])) {
@@ -65,10 +88,22 @@ class Newsletters extends APIEndpoint {
       unset($data['options']);
     }
 
+    if(!empty($data['template_id'])) {
+      $template = NewsletterTemplate::whereEqual('id', $data['template_id'])->findOne();
+      if(!empty($template)) {
+        $template = $template->asArray();
+        $data['body'] = $template['body'];
+      }
+      unset($data['template_id']);
+    }
+
     $newsletter = Newsletter::createOrUpdate($data);
     $errors = $newsletter->getErrors();
 
     if(!empty($errors)) return $this->badRequest($errors);
+    // Re-fetch newsletter to sync changes made by DB
+    // updated_at column use CURRENT_TIMESTAMP for update and this change is not updated automatically by ORM
+    $newsletter = Newsletter::findOne($newsletter->id);
 
     if(!empty($segments)) {
       NewsletterSegment::where('newsletter_id', $newsletter->id)
@@ -134,7 +169,7 @@ class Newsletters extends APIEndpoint {
       }
     }
 
-    Hooks::doAction('mailpoet_api_newsletters_save_after', $newsletter);
+    $this->wp->doAction('mailpoet_api_newsletters_save_after', $newsletter);
 
     $preview_url = NewsletterUrl::getViewInBrowserUrl(
       NewsletterUrl::TYPE_LISTING_EDITOR,
@@ -176,13 +211,15 @@ class Newsletters extends APIEndpoint {
       $queue = $newsletter->queue()->findOne();
       if($queue) {
         $queue->task()
-          ->whereLte('scheduled_at', Carbon::createFromTimestamp(WPFunctions::currentTime('timestamp')))
+          ->whereLte('scheduled_at', Carbon::createFromTimestamp($this->wp->currentTime('timestamp')))
           ->where('status', SendingQueue::STATUS_SCHEDULED)
           ->findResultSet()
           ->set('scheduled_at', $next_run_date)
           ->save();
       }
+      Scheduler::createPostNotificationSendingTask($newsletter);
     }
+
 
     return $this->successResponse(
       Newsletter::findOne($newsletter->id)->asArray()
@@ -252,7 +289,7 @@ class Newsletters extends APIEndpoint {
       if(!empty($errors)) {
         return $this->errorResponse($errors);
       } else {
-        Hooks::doAction('mailpoet_api_newsletters_duplicate_after', $newsletter, $duplicate);
+        $this->wp->doAction('mailpoet_api_newsletters_duplicate_after', $newsletter, $duplicate);
         return $this->successResponse(
           Newsletter::findOne($duplicate->id)->asArray(),
           array('count' => 1)
@@ -349,7 +386,7 @@ class Newsletters extends APIEndpoint {
         if($result['response'] === false) {
           $error = sprintf(
             __('The email could not be sent: %s', 'mailpoet'),
-            $result['error_message']
+            $result['error']->getMessage()
           );
           return $this->errorResponse(array(APIError::BAD_REQUEST => $error));
         } else {
@@ -366,11 +403,7 @@ class Newsletters extends APIEndpoint {
   }
 
   function listing($data = array()) {
-    $listing = new Listing\Handler(
-      '\MailPoet\Models\Newsletter',
-      $data
-    );
-    $listing_data = $listing->get();
+    $listing_data = $this->listing_handler->get('\MailPoet\Models\Newsletter', $data);
 
     $data = array();
     foreach($listing_data['items'] as $newsletter) {
@@ -385,6 +418,7 @@ class Newsletters extends APIEndpoint {
         $newsletter
           ->withOptions()
           ->withTotalSent()
+          ->withScheduledToBeSent()
           ->withStatistics();
       } else if($newsletter->type === Newsletter::TYPE_NOTIFICATION) {
         $newsletter
@@ -412,27 +446,23 @@ class Newsletters extends APIEndpoint {
         $queue
       );
 
-      $data[] = Hooks::applyFilters('mailpoet_api_newsletters_listing_item', $newsletter->asArray());
+      $data[] = $this->wp->applyFilters('mailpoet_api_newsletters_listing_item', $newsletter->asArray());
     }
 
     return $this->successResponse($data, array(
       'count' => $listing_data['count'],
       'filters' => $listing_data['filters'],
       'groups' => $listing_data['groups'],
-      'mta_log' => Setting::getValue('mta_log'),
-      'mta_method' => Setting::getValue('mta.method'),
+      'mta_log' => $this->settings->get('mta_log'),
+      'mta_method' => $this->settings->get('mta.method'),
       'cron_accessible' => CronHelper::isDaemonAccessible(),
-      'current_time' => WPFunctions::currentTime('mysql')
+      'current_time' => $this->wp->currentTime('mysql')
     ));
   }
 
   function bulkAction($data = array()) {
     try {
-      $bulk_action = new Listing\BulkAction(
-        '\MailPoet\Models\Newsletter',
-        $data
-      );
-      $meta = $bulk_action->apply();
+      $meta = $this->bulk_action->apply('\MailPoet\Models\Newsletter', $data);
       return $this->successResponse(null, $meta);
     } catch(\Exception $e) {
       return $this->errorResponse(array(

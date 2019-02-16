@@ -5,18 +5,32 @@
 
   <script type="text/javascript">
     var mailpoet_listing_per_page = <%= items_per_page %>;
+    var mailpoet_display_nps_poll = <%= settings.display_nps_poll ? 'true' : 'false' %>;
     var mailpoet_segments = <%= json_encode(segments) %>;
-    var mailpoet_settings = <%= json_encode(settings) %>;
+    var mailpoet_show_congratulate_after_first_newsletter = <%= show_congratulate_after_first_newsletter %>;
+    var mailpoet_installed_at_isoFormat = "<%= settings['installed_at'] | date('c') %>";
+    var mailpoet_installed_days_ago = <%= installed_days_ago %>;
+    var mailpoet_current_wp_user = <%= json_encode(current_wp_user) %>;
+    var mailpoet_current_wp_user_firstname = '<%= current_wp_user_firstname %>';
     var mailpoet_lists = <%= json_encode(lists) %>;
     var mailpoet_roles = <%= json_encode(roles) %>;
     var mailpoet_current_date = <%= json_encode(current_date) %>;
     var mailpoet_current_time = <%= json_encode(current_time) %>;
     var mailpoet_schedule_time_of_day = <%= json_encode(schedule_time_of_day) %>;
     var mailpoet_date_display_format = "<%= wp_date_format() %>";
+    var mailpoet_site_url = "<%= site_url %>";
     var mailpoet_date_storage_format = "Y-m-d";
     var mailpoet_tracking_enabled = <%= json_encode(tracking_enabled) %>;
     var mailpoet_premium_active = <%= json_encode(premium_plugin_active) %>;
+    var mailpoet_woocommerce_active = <%= json_encode(is_woocommerce_active) %>;
     var mailpoet_automatic_emails = <%= json_encode(automatic_emails) %>;
+    var mailpoet_feature_announcement_has_news = <%= json_encode(feature_announcement_has_news) %>;
+    var mailpoet_last_announcement_seen = <%= json_encode(last_announcement_seen) %>;
+    var mailpoet_user_locale = '<%= get_locale() %>';
+    var mailpoet_congratulations_success_image = '<%= cdn_url('newsletter/congrat-illu-success.20181121-1440.png') %>';
+    var mailpoet_congratulations_loading_image = '<%= cdn_url('newsletter/congratulation-page-illustration-transparent-LQ.20181121-1440.png') %>';
+    var mailpoet_main_page = '<%= mailpoet_main_page %>';
+    var mailpoet_review_request_illustration_url = '<%= cdn_url('review-request/review-request-illustration.20181207-1345.png') %>';
     <% set newUser = (is_new_user == true) ? 'true' : 'false' %>
     var mailpoet_is_new_user = <%= newUser %>;
   </script>
@@ -29,6 +43,7 @@
     'tabStandardTitle': __('Newsletters'),
     'tabWelcomeTitle': __('Welcome Emails'),
     'tabNotificationTitle': __('Post Notifications'),
+    'tabWoocommerceTitle': __('WooCommerce Emails'),
 
     'searchLabel': __('Search'),
     'loadingItems': __('Loading emails...'),
@@ -92,7 +107,8 @@
     'active': __('Active'),
     'inactive': __('Not Active'),
     'newsletterQueueCompleted': __('Sent to %$1d of %$2d'),
-    'sentToXSubscribers': __('Sent to %$1d subscribers'),
+    'sentToXSubscribers': _x('%$1d sent', 'number of welcome emails sent'),
+    'scheduledToXSubscribers': _x('%$1d scheduled', 'number of welcome emails scheduled to be sent'),
     'resume': __('Resume'),
     'pause': __('Pause'),
     'paused': __('Paused'),
@@ -123,6 +139,7 @@
     'selectTemplateTitle': __('Select a responsive template'),
 
     'draftNewsletterTitle': __('Subject'),
+    'draftPostNotificationTitle': __('The last [newsletter:total] posts from our blog'),
     'pickCampaignType': __('Select type of email'),
     'seeVideoGuide': __('See video guide'),
     'regularNewsletterTypeTitle': __('Newsletter'),
@@ -193,8 +210,6 @@
     'websiteTimeIs': __("Your website’s time is"),
     'noScheduledDateError': __('Please enter the scheduled date.'),
     'schedule': __('Schedule'),
-    'feedback': __('Feedback?'),
-    'tooltipTemplateTabs': __("Click [link]here[/link] to give your feedback on this feature. We’d love to hear from you."),
 
     'close': __('Close'),
     'today': __('Today'),
@@ -278,19 +293,56 @@
     'savedTemplates': __('Your saved templates'),
     'templatePreview': __('Template preview'),
     'zoom': __('Preview'),
-    'blank': _x('Blank', 'Blank newsletters templates category'),
-    'sample': _x('Sample', 'Sample newsletters templates category'),
+    'allTemplates': _x('All', 'Name of a section with all email templates'),
     'tabImportTitle': _x('Import', 'Importing template tab title'),
     'noTemplates': __('This category does not contain any template yet!'),
 
     'soon': __('Soon'),
     'beta': __('Beta'),
-	'errorWhileTakingScreenshot': __('An error occured while saving the template in "Recently sent"'),
-    'selectAutomaticEmailsEventsHeading': __('Select %1s events'),
+    'errorWhileTakingScreenshot': __('An error occured while saving the template in "Recently sent"'),
+    'selectAutomaticEmailsEventsHeading': __('Select %$1s events'),
     'cronNotAccessibleNotice': __('Oops! There seems to be an issue with the sending on your website. [link]See our guide[/link] to solve this yourself.'),
+
+    'introLists': __('Welcome on board. Let’s get you started quickly. Here, you can create new lists.'),
+    'introForms': __('Create a form and add it to your website so your visitors can subscribe to your list.'),
+    'introChat': __('You have a question? Start a chat or send a message to get an answer from our support team.'),
+    'introEmails': __('We suggest you begin by creating a newsletter, a welcome email or a post notification. Enjoy!'),
+    'introNext': _x('Next', 'A label on a button'),
+    'introBack': _x('Back', 'A label on a button'),
+    'introSkip': _x('Skip', 'A label on a button'),
+    'introDone': _x('Done', 'A label on a button'),
+
+    'whatsNew': __("What’s new"),
+
+    'congratulationsSendSuccessHeader': __('Congratulations, your newsletter is being sent!'),
+    'congratulationsScheduleSuccessHeader': __('Congratulations, your newsletter is scheduled to be sent.'),
+    'congratulationsWooSuccessHeader': __('Congratulations, your WooCommerce email has been activated.'),
+    'congratulationsPostNotificationSuccessHeader': __('Congratulations, your Post Notification is now active.'),
+    'congratulationsWelcomeEmailSuccessHeader': __('Congratulations, your Welcome Email is now active.'),
+    'congratulationsSendFailHeader': __('Oops! We can’t send your newsletter 😕'),
+    'congratulationsSendFailExplain': __('Rest assured, this is fairly common and is usually fixed quickly. [link]See our quick guide[/link] to help you solve this and get your website sending.'),
+    'congratulationsLoadingHeader': __('Congrats, you’re sending your first newsletter! We’re doing a quick verification to make sure everything works fine.'),
+
+    'reviewRequestHeading': _x('Thank you! Time to tell the world?', 'After a user gives us positive feedback via the NPS poll, we ask them to review our plugin on WordPress.org.'),
+    'reviewRequestDidYouKnow': __('[username], did you know that hundreds of WordPress users read the reviews on the plugin repository? They’re also a source of inspiration for our team.'),
+    'reviewRequestUsingForDays': _n('You’ve been using MailPoet for [days] day now, and we would love to read your own review.', 'You’ve been using MailPoet for [days] days now, and we would love to read your own review.', installed_days_ago),
+    'reviewRequestUsingForMonths': _n('You’ve been using MailPoet for [months] month now, and we would love to read your own review.', 'You’ve been using MailPoet for [months] months now, and we would love to read your own review.', (installed_days_ago / 30) | round),
+    'reviewRequestRateUsNow': _x('Rate us now', 'Review our plugin on WordPress.org.'),
+    'reviewRequestNotNow': __('Not now'),
   }) %>
 <% endblock %>
 
 <% block after_translations %>
   <%= do_action('mailpoet_newsletters_translations_after') %>
+<% endblock %>
+
+<% block after_javascript %>
+<% if settings.show_intro %>
+<script>
+  HS.beacon.ready(function () {
+    document.querySelector('#hs-beacon iframe').classList.add('mailpoet-chat');
+    MailPoet.showIntro();
+  });
+</script>
+<% endif %>
 <% endblock %>

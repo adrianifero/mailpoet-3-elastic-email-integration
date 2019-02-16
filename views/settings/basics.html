@@ -10,34 +10,7 @@
         </p>
       </th>
       <td>
-        <!-- default from name & email -->
-        <p>
-          <label for="settings[from_name]"><%= __('From') %></label>
-          <input type="text"
-            id="settings[from_name]"
-            name="sender[name]"
-            value="<%= settings.sender.name %>"
-            placeholder="<%= __('Your name') %>" />
-          <input type="email"
-            id="settings[from_email]"
-            name="sender[address]"
-            value="<%= settings.sender.address %>"
-            placeholder="from@mydomain.com" />
-        </p>
-        <!-- default reply_to name & email -->
-        <p>
-          <label for="settings[reply_name]"><%= __('Reply-to') %></label>
-          <input type="text"
-            id="settings[reply_name]"
-            name="reply_to[name]"
-            value="<%= settings.reply_to.name %>"
-            placeholder="<%= __('Your name') %>" />
-          <input type="email"
-            id="settings[reply_email]"
-            name="reply_to[address]"
-            value="<%= settings.reply_to.address %>"
-            placeholder="reply_to@mydomain.com" />
-        </p>
+        <div id="settings_sender_container"></div>
       </td>
     </tr>
     <!-- email addresses receiving notifications -->
@@ -238,6 +211,7 @@
             class="mailpoet_page_preview"
             href="javascript:;"
             title="<%= __('Preview page') %>"
+            data-automation-id="preview_manage_subscription_page_link"
           ><%= __('Preview') %></a>
         </p>
         <p>
@@ -295,10 +269,96 @@
             class="mailpoet_page_preview"
             href="javascript:;"
             title="<%= __('Preview page') %>"
+            data-automation-id="unsubscribe_page_preview_link"
           ><%= __('Preview') %></a>
         </p>
       </td>
     </tr>
+
+    <!-- Stats notifications -->
+    <tr>
+      <th scope="row">
+        <label for="subscription_unsubscribe_page">
+          <%= _x('Stats notifications', 'name of a setting to automatically send statistics (newsletter open rate, click rate, etc) by email') %>
+        </label>
+        <p class="description">
+          <%= __('Enter the email address that should receive your newsletter’s stats 24 hours after it has been sent.') %>
+      <td>
+        <p>
+          <label>
+            <input
+              type="radio"
+              name="stats_notifications[enabled]"
+              value="1"
+              <% if(settings.stats_notifications.enabled) %>
+                checked
+              <% endif %>
+            /><%= __('Yes') %>
+          </label>
+          &nbsp;
+          <label>
+            <input
+              type="radio"
+              name="stats_notifications[enabled]"
+              value=""
+              <% if not(settings.stats_notifications.enabled) %>
+                checked
+              <% endif %>
+            ><%= __('No') %>
+          </label>
+          <br>
+          <input type="email"
+            id="stats_notifications[address]"
+            name="stats_notifications[address]"
+            value="<%= settings.stats_notifications.address %>"
+            placeholder="me@mydomain.com" >
+          <br>
+          <div id="settings_stats_notifications_error" class="mailpoet_error_item mailpoet_error">
+            <%= __('Please fill the email address.') %>
+          </div>
+
+    <!-- New subscriber emails notifications -->
+    <tr>
+      <th scope="row">
+        <label for="subscription_unsubscribe_page">
+          <%= __('New subscriber notifications') %> <span id="new_subscriber_announcement" class="new_subscriber_announcement" />
+        </label>
+        <p class="description">
+          <%= __('Enter the email address that should receive notifications when someone subscribes.') %>
+      <td>
+        <p>
+          <label>
+            <input
+              type="radio"
+              name="subscriber_email_notification[enabled]"
+              value="1"
+            <% if(settings.subscriber_email_notification.enabled) %>
+            checked
+            <% endif %>
+            /><%= __('Yes') %>
+          </label>
+          &nbsp;
+          <label>
+            <input
+              type="radio"
+              name="subscriber_email_notification[enabled]"
+              value=""
+            <% if not(settings.subscriber_email_notification.enabled) %>
+            checked
+            <% endif %>
+            /><%= __('No') %>
+          </label>
+          <br>
+          <input type="email"
+                 id="subscriber_email_notification[address]"
+                 name="subscriber_email_notification[address]"
+                 value="<%= settings.subscriber_email_notification.address %>"
+                 placeholder="me@mydomain.com" />
+          <br>
+        <div id="settings_subscriber_email_notification_error" class="mailpoet_error_item mailpoet_error">
+          <%= __('Please fill the email address.') %>
+        </div>
+
     <!-- shortcode: archive page  -->
     <tr>
       <th scope="row">
@@ -368,6 +428,26 @@
               <option value="<%= segment.id %>"><%= segment.name %> (<%= segment.subscribers %>)</option>
             <% endfor %>
           </select>
+        </p>
+      </td>
+    </tr>
+    <!-- gdpr compliant  -->
+    <tr>
+      <th scope="row">
+        <label>
+          <%= __('Be GDPR compliant') %>
+        </label>
+        <p class="description">
+          <%= __('You need to comply with European law in regards to data privacy if you have European subscribers. Rest assured, it’s easy!') %>
+        </p>
+      </th>
+      <td>
+        <p>
+          <a
+            href="https://beta.docs.mailpoet.com/article/246-guide-to-conform-to-gdpr"
+            title="<%= __('Read our guide') %>"
+            target="_blank"
+          ><%= __('Read our guide') %></a>
         </p>
       </td>
     </tr>

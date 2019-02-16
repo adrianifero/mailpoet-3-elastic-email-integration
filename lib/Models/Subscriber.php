@@ -1,13 +1,25 @@
 <?php
 namespace MailPoet\Models;
-use MailPoet\Mailer\Mailer;
+
 use MailPoet\Newsletter\Scheduler\Scheduler;
+use MailPoet\Settings\SettingsController;
+use MailPoet\Subscribers\ConfirmationEmailMailer;
+use MailPoet\Subscribers\NewSubscriberNotificationMailer;
 use MailPoet\Subscribers\Source;
 use MailPoet\Util\Helpers;
-use MailPoet\Subscription;
+use function MailPoet\Util\array_column;
 
 if(!defined('ABSPATH')) exit;
 
+/**
+ * @property int $id
+ * @property string $email
+ * @property int $wp_user_id
+ * @property array $segments
+ * @property array $subscriptions
+ * @property string $unconfirmed_data
+ * @property int $is_woocommerce_user
+ */
 class Subscriber extends Model {
   public static $_table = MP_SUBSCRIBERS_TABLE;
 
@@ -53,7 +65,7 @@ class Subscriber extends Model {
 
   function delete() {
     // WP Users cannot be deleted
-    if($this->isWPUser()) {
+    if($this->isWPUser() || $this->isWooCommerceUser()) {
       return false;
     } else {
       // delete all relations to segments
@@ -66,7 +78,7 @@ class Subscriber extends Model {
 
   function trash() {
     // WP Users cannot be trashed
-    if($this->isWPUser()) {
+    if($this->isWPUser() || $this->isWooCommerceUser()) {
       return false;
     } else {
       return parent::trash();
@@ -77,74 +89,13 @@ class Subscriber extends Model {
     return ($this->wp_user_id !== null);
   }
 
+  function isWooCommerceUser() {
+    return (bool)$this->is_woocommerce_user;
+  }
+
   static function getCurrentWPUser() {
     $wp_user = wp_get_current_user();
     return self::where('wp_user_id', $wp_user->ID)->findOne();
-  }
-
-  function sendConfirmationEmail() {
-    $signup_confirmation = Setting::getValue('signup_confirmation');
-
-    if((bool)$signup_confirmation['enabled'] === false) {
-      return false;
-    }
-
-    $segments = $this->segments()->findMany();
-    $segment_names = array_map(function($segment) {
-      return $segment->name;
-    }, $segments);
-
-    $body = nl2br($signup_confirmation['body']);
-
-    // replace list of segments shortcode
-    $body = str_replace(
-      '[lists_to_confirm]',
-      '<strong>'.join(', ', $segment_names).'</strong>',
-      $body
-    );
-
-    // replace activation link
-    $body = Helpers::replaceLinkTags(
-      $body,
-      Subscription\Url::getConfirmationUrl($this),
-      array('target' => '_blank'),
-      'activation_link'
-    );
-
-    // build email data
-    $email = array(
-      'subject' => $signup_confirmation['subject'],
-      'body' => array(
-        'html' => $body,
-        'text' => $body
-      )
-    );
-
-    // convert subscriber to array
-    $subscriber = $this->asArray();
-
-    // set from
-    $from = (
-      !empty($signup_confirmation['from'])
-      && !empty($signup_confirmation['from']['address'])
-    ) ? $signup_confirmation['from']
-      : false;
-
-    // set reply to
-    $reply_to = (
-      !empty($signup_confirmation['reply_to'])
-      && !empty($signup_confirmation['reply_to']['address'])
-    ) ? $signup_confirmation['reply_to']
-      : false;
-
-    // send email
-    try {
-      $mailer = new Mailer(false, $from, $reply_to);
-      return $mailer->send($email, $subscriber);
-    } catch(\Exception $e) {
-      $this->setError($e->getMessage());
-      return false;
-    }
   }
 
   static function generateToken($email = null) {
@@ -171,7 +122,8 @@ class Subscriber extends Model {
     // that should not be editable when subscribing
     $subscriber_data = self::filterOutReservedColumns($subscriber_data);
 
-    $signup_confirmation_enabled = (bool)Setting::getValue(
+    $settings = new SettingsController();
+    $signup_confirmation_enabled = (bool)$settings->get(
       'signup_confirmation.enabled'
     );
 
@@ -215,11 +167,13 @@ class Subscriber extends Model {
       // link subscriber to segments
       SubscriberSegment::subscribeToSegments($subscriber, $segment_ids);
 
-      // signup confirmation
-      $subscriber->sendConfirmationEmail();
+      $sender = new ConfirmationEmailMailer();
+      $sender->sendConfirmationEmail($subscriber);
 
-      // welcome email
       if($subscriber->status === self::STATUS_SUBSCRIBED) {
+        $sender = new NewSubscriberNotificationMailer();
+        $sender->send($subscriber, Segment::whereIn('id', $segment_ids)->findMany());
+
         Scheduler::scheduleSubscriberWelcomeNotification(
           $subscriber->id,
           $segment_ids
@@ -234,6 +188,7 @@ class Subscriber extends Model {
     $reserved_columns = array(
       'id',
       'wp_user_id',
+      'is_woocommerce_user',
       'status',
       'subscribed_ip',
       'confirmed_ip',
@@ -266,7 +221,7 @@ class Subscriber extends Model {
 
     $segments = Segment::orderByAsc('name')
       ->whereNull('deleted_at')
-      ->whereIn('type', array(Segment::TYPE_WP_USERS, Segment::TYPE_DEFAULT))
+      ->whereIn('type', array(Segment::TYPE_DEFAULT, Segment::TYPE_WP_USERS, Segment::TYPE_WC_USERS))
       ->findMany();
     $segment_list = array();
     $segment_list[] = array(
@@ -434,7 +389,7 @@ class Subscriber extends Model {
   }
 
   static function getSubscribedInSegments($segment_ids) {
-    $subscribers = SubscriberSegment::table_alias('relation')
+    $subscribers = SubscriberSegment::tableAlias('relation')
       ->whereIn('relation.segment_id', $segment_ids)
       ->where('relation.status', 'subscribed')
       ->join(
@@ -532,7 +487,7 @@ class Subscriber extends Model {
     $custom_fields = CustomField::select('id')->findArray();
     if(empty($custom_fields)) return $this;
 
-    $custom_field_ids = Helpers::arrayColumn($custom_fields, 'id');
+    $custom_field_ids = array_column($custom_fields, 'id');
     $relations = SubscriberCustomField::select('custom_field_id')
       ->select('value')
       ->whereIn('custom_field_id', $custom_field_ids)
@@ -574,7 +529,7 @@ class Subscriber extends Model {
     $custom_field_ids = array_keys($custom_fields_data);
 
     // get custom fields
-    $custom_fields = CustomField::findMany($custom_field_ids);
+    $custom_fields = CustomField::whereIdIn($custom_field_ids)->findMany();
 
     foreach($custom_fields as $custom_field) {
       $value = (isset($custom_fields_data[$custom_field->id])
@@ -690,8 +645,9 @@ class Subscriber extends Model {
 
     $emails_sent = 0;
     if(!empty($subscribers)) {
+      $sender = new ConfirmationEmailMailer();
       foreach($subscribers as $subscriber) {
-        if($subscriber->sendConfirmationEmail()) {
+        if($sender->sendConfirmationEmail($subscriber)) {
           $emails_sent++;
         }
       }
@@ -719,7 +675,8 @@ class Subscriber extends Model {
           'WHERE `id` IN ('.
             rtrim(str_repeat('?,', count($subscriber_ids)), ',')
           .')',
-          'AND `wp_user_id` IS NULL'
+          'AND `wp_user_id` IS NULL',
+          'AND `is_woocommerce_user` = 0'
         )),
         $subscriber_ids
       );
@@ -737,6 +694,7 @@ class Subscriber extends Model {
       // delete subscribers (except WP Users)
       Subscriber::whereIn('id', $subscriber_ids)
         ->whereNull('wp_user_id')
+        ->whereEqual('is_woocommerce_user', 0)
         ->deleteMany();
     });
 
@@ -798,6 +756,7 @@ class Subscriber extends Model {
   static function updateMultiple($columns, $subscribers, $updated_at = false) {
     $ignore_columns_on_update = array(
       'wp_user_id',
+      'is_woocommerce_user',
       'email',
       'created_at',
       'status'
@@ -845,7 +804,7 @@ class Subscriber extends Model {
       '(' . rtrim(str_repeat('?,', count($subscribers)), ',') . ')',
       array_merge(
         Helpers::flattenArray($sql('values')),
-        Helpers::arrayColumn($subscribers, $email_position)
+        array_column($subscribers, $email_position)
       )
     );
   }
@@ -865,10 +824,11 @@ class Subscriber extends Model {
   }
 
   static function setRequiredFieldsDefaultValues($data) {
+    $settings = new SettingsController();
     $required_field_default_values = array(
       'first_name' => '',
       'last_name' => '',
-      'status' => (!Setting::getValue('signup_confirmation.enabled')) ? self::STATUS_SUBSCRIBED : self::STATUS_UNCONFIRMED
+      'status' => (!$settings->get('signup_confirmation.enabled')) ? self::STATUS_SUBSCRIBED : self::STATUS_UNCONFIRMED
     );
     foreach($required_field_default_values as $field => $value) {
       if(!isset($data[$field])) {
@@ -890,7 +850,7 @@ class Subscriber extends Model {
   }
 
   public function getAllSegmentNamesWithStatus() {
-    return Segment::table_alias('segment')
+    return Segment::tableAlias('segment')
       ->select('name')
       ->select('subscriber_segment.segment_id', 'segment_id')
       ->select('subscriber_segment.status', 'status')

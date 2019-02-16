@@ -2,13 +2,31 @@
 namespace MailPoet\Models;
 use Carbon\Carbon;
 use MailPoet\Newsletter\Renderer\Renderer;
+use MailPoet\Settings\SettingsController;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\Util\Helpers;
 use MailPoet\Util\Security;
 use MailPoet\WP\Emoji;
+use function MailPoet\Util\array_column;
 
 if(!defined('ABSPATH')) exit;
 
+/**
+ * @property int $id
+ * @property string $type
+ * @property object $queue
+ * @property string $hash
+ * @property string $status
+ * @property string|object $meta
+ * @property array $options
+ * @property int $children_count
+ * @property bool|array $statistics
+ * @property string $deleted_at
+ * @property int $children_count
+ * @property int $total_sent
+ * @property int $total_scheduled
+ * @property array $segments
+ */
 class Newsletter extends Model {
   public static $_table = MP_NEWSLETTERS_TABLE;
   const TYPE_AUTOMATIC = 'automatic';
@@ -24,11 +42,14 @@ class Newsletter extends Model {
   // automatic newsletters status
   const STATUS_ACTIVE = 'active';
 
+  private $emoji;
+
   function __construct() {
     parent::__construct();
     $this->addValidations('type', array(
       'required' => __('Please specify a type.', 'mailpoet')
     ));
+    $this->emoji = new Emoji();
   }
 
   function queue() {
@@ -88,7 +109,7 @@ class Newsletter extends Model {
       }
       $this->set(
         'body',
-        Emoji::encodeForUTF8Column(self::$_table, 'body', $this->body)
+        $this->emoji->encodeForUTF8Column(self::$_table, 'body', $this->body)
       );
     }
 
@@ -367,12 +388,12 @@ class Newsletter extends Model {
 
     if($duplicate->getErrors() === false) {
       // create relationships between duplicate and segments
-      $segments = $this->segments()->findArray();
+      $segments = $this->segments()->findMany();
 
       if(!empty($segments)) {
         foreach($segments as $segment) {
           $relation = NewsletterSegment::create();
-          $relation->segment_id = $segment['id'];
+          $relation->segment_id = $segment->id;
           $relation->newsletter_id = $duplicate->id;
           $relation->save();
         }
@@ -380,14 +401,14 @@ class Newsletter extends Model {
 
       // duplicate options
       $options = NewsletterOption::where('newsletter_id', $this->id)
-        ->findArray();
+        ->findMany();
 
       if(!empty($options)) {
         foreach($options as $option) {
           $relation = NewsletterOption::create();
           $relation->newsletter_id = $duplicate->id;
-          $relation->option_field_id = $option['option_field_id'];
-          $relation->value = $option['value'];
+          $relation->option_field_id = $option->option_field_id;
+          $relation->value = $option->value;
           $relation->save();
         }
       }
@@ -426,12 +447,12 @@ class Newsletter extends Model {
 
     if($notification_history->getErrors() === false) {
       // create relationships between notification history and segments
-      $segments = $this->segments()->findArray();
+      $segments = $this->segments()->findMany();
 
       if(!empty($segments)) {
         foreach($segments as $segment) {
           $relation = NewsletterSegment::create();
-          $relation->segment_id = $segment['id'];
+          $relation->segment_id = $segment->id;
           $relation->newsletter_id = $notification_history->id;
           $relation->save();
         }
@@ -460,7 +481,7 @@ class Newsletter extends Model {
 
   function withDeletedSegments() {
     if(!empty($this->segments)) {
-      $segment_ids = Helpers::arrayColumn($this->segments, 'id');
+      $segment_ids = array_column($this->segments, 'id');
       $links = $this->segmentRelations()
         ->whereNotIn('segment_id', $segment_ids)->findArray();
       $deleted_segments = array();
@@ -501,7 +522,7 @@ class Newsletter extends Model {
     if(empty($options)) {
       $this->options = array();
     } else {
-      $this->options = Helpers::arrayColumn($options, 'value', 'name');
+      $this->options = array_column($options, 'value', 'name');
     }
     return $this;
   }
@@ -511,6 +532,13 @@ class Newsletter extends Model {
     $this->total_sent = (int)SendingQueue::findTaskByNewsletterId($this->id)
       ->where('tasks.status', SendingQueue::STATUS_COMPLETED)
       ->sum('queues.count_processed');
+    return $this;
+  }
+
+  function withScheduledToBeSent() {
+    $this->total_scheduled = (int)SendingQueue::findTaskByNewsletterId($this->id)
+      ->where('tasks.status', SendingQueue::STATUS_SCHEDULED)
+      ->count();
     return $this;
   }
 
@@ -550,11 +578,25 @@ class Newsletter extends Model {
           ))->findOne();
       }
 
-      $result[$name] = !empty($row->cnt) ? $row->cnt : 0;
+      $result[$name] = !empty($row->cnt) ? (int)$row->cnt : 0;
     }
 
     return $result;
   }
+
+  function wasScheduledForSubscriber($subscriber_id) {
+    $count = (int)SendingQueue::rawQuery(
+      "SELECT COUNT(*) as count
+      FROM `" . SendingQueue::$_table . "`
+      JOIN `" . ScheduledTask::$_table . "` ON " . SendingQueue::$_table . ".task_id = " . ScheduledTask::$_table . ".id
+      JOIN `" . ScheduledTaskSubscriber::$_table . "` ON " . ScheduledTask::$_table . ".id = " . ScheduledTaskSubscriber::$_table . ".task_id
+      WHERE " . ScheduledTaskSubscriber::$_table . ".subscriber_id = " . $subscriber_id . "
+      AND " . SendingQueue::$_table . ".newsletter_id = " . $this->id
+    )->findOne()->count;
+
+    return $count > 0;
+  }
+
 
   static function getAnalytics() {
     $welcome_newsletters_count = Newsletter::getPublished()
@@ -567,7 +609,19 @@ class Newsletter extends Model {
       ->filter('filterStatus', self::STATUS_ACTIVE)
       ->count();
 
-    $sent_newsletters = static::table_alias('newsletters')
+    $sent_newsletters_3_months = self::sentAfter(Carbon::now()->subMonths(3));
+    $sent_newsletters_30_days = self::sentAfter(Carbon::now()->subDays(30));
+
+    return array(
+      'welcome_newsletters_count' => $welcome_newsletters_count,
+      'notifications_count' => $notifications_count,
+      'sent_newsletters_3_months' => $sent_newsletters_3_months,
+      'sent_newsletters_30_days' => $sent_newsletters_30_days,
+    );
+  }
+
+  static function sentAfter($date) {
+    return static::tableAlias('newsletters')
       ->where('newsletters.type', self::TYPE_STANDARD)
       ->where('newsletters.status', self::STATUS_SENT)
       ->join(
@@ -581,14 +635,8 @@ class Newsletter extends Model {
         'tasks'
       )
       ->where('tasks.status', SendingQueue::STATUS_COMPLETED)
-      ->whereGte('tasks.processed_at', Carbon::now()->subMonths(3))
+      ->whereGte('tasks.processed_at', $date)
       ->count();
-
-    return array(
-      'welcome_newsletters_count' => $welcome_newsletters_count,
-      'notifications_count' => $notifications_count,
-      'sent_newsletters' => $sent_newsletters,
-    );
   }
 
   static function search($orm, $search = '') {
@@ -888,9 +936,10 @@ class Newsletter extends Model {
 
   static function createOrUpdate($data = array()) {
     return parent::_createOrUpdate($data, false, function($data) {
+      $settings = new SettingsController();
       // set default sender based on settings
       if(empty($data['sender'])) {
-        $sender = Setting::getValue('sender', array());
+        $sender = $settings->get('sender', []);
         $data['sender_name'] = (
           !empty($sender['name'])
           ? $sender['name']
@@ -905,7 +954,7 @@ class Newsletter extends Model {
 
       // set default reply_to based on settings
       if(empty($data['reply_to'])) {
-        $reply_to = Setting::getValue('reply_to', array());
+        $reply_to = $settings->get('reply_to', array());
         $data['reply_to_name'] = (
           !empty($reply_to['name'])
           ? $reply_to['name']
@@ -923,7 +972,7 @@ class Newsletter extends Model {
   }
 
   static function getWelcomeNotificationsForSegments($segments) {
-    return NewsletterOption::table_alias('options')
+    return NewsletterOption::tableAlias('options')
       ->select('options.newsletter_id')
       ->select('options.value', 'segment_id')
       ->join(
@@ -944,7 +993,7 @@ class Newsletter extends Model {
   }
 
   static function getArchives($segment_ids = array()) {
-    $orm = self::table_alias('newsletters')
+    $orm = self::tableAlias('newsletters')
       ->distinct()->select('newsletters.*')
       ->select('newsletter_rendered_subject')
       ->whereIn('newsletters.type', array(

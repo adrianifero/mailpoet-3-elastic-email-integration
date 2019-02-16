@@ -65,6 +65,35 @@
                  %>
           </label>
         </p>
+        <p>
+          <label>
+            <input
+              type="radio"
+              name="cron_trigger[method]"
+              value="<%= cron_trigger.linux_cron %>"
+            <% if (settings.cron_trigger.method == cron_trigger.linux_cron) %>
+            checked="checked"
+            <% endif %>
+            /><%= __("Server side cron (Linux cron)")
+            %>
+          </label>
+        </p>
+        <div id="settings_linux_cron">
+          <p>
+            <%= __("To use this option please add this command to your crontab:") %><br>
+            <input
+               value="php <%= linux_cron_path %>/mailpoet-cron.php <%= ABSPATH %>"
+               class="large-text"
+               readonly
+            />
+          <p>
+            <%= __("With the frequency of running it every minute:") %><br>
+            <input
+               value="*/1 * * * *"
+               class="large-text"
+               readonly
+            />
+        </div>
       </td>
     </tr>
     <!-- roles and capabilities -->
@@ -104,6 +133,7 @@
             <input
               type="radio"
               name="tracking[enabled]"
+              data-automation-id="tracking-enabled-radio"
               value="1"
               <% if(settings.tracking.enabled) %>
               checked="checked"
@@ -115,6 +145,7 @@
             <input
               type="radio"
               name="tracking[enabled]"
+              data-automation-id="tracking-disabled-radio"
               value=""
               <% if not(settings.tracking.enabled) %>
               checked="checked"
@@ -220,7 +251,7 @@
             />
           </p>
           <div id="settings_re_captcha_tokens_error" class="mailpoet_error_item mailpoet_error">
-            <%= __('Please fill the reCAPTCHA keys.') %> 
+            <%= __('Please fill the reCAPTCHA keys.') %>
           </div>
         </div>
       </td>
@@ -242,5 +273,34 @@
         </p>
       </td>
     </tr>
+    <!-- logging -->
+    <tr>
+      <th scope="row">
+        <label><%= __('Logging') %></label>
+        <p class="description">
+          <%= __('Enables logging for diagnostics of plugin behavior.') %>
+      <td>
+        <select
+          name="logging"
+        >
+          <option
+            value="everything"
+            <% if settings.logging == "everything" %>
+              selected
+            <% endif %>
+          ><%= _x('Everything', 'In settings: "Logging: Everything"') %>
+          <option
+            value="errors"
+            <% if settings.logging != "nothing" and settings.logging != "everything" %>
+              selected
+            <% endif %>
+          ><%= _x('Errors only', 'In settings: "Logging: Errors only"') %>
+          <option
+            value="nothing"
+            <% if settings.logging == "nothing" %>
+              selected
+            <% endif %>
+          ><%= _x('Nothing', 'In settings: "Logging: Nothing"') %>
+        </select>
   </tbody>
 </table>

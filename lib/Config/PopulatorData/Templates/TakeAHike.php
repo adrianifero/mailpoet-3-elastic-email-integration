@@ -9,13 +9,13 @@ class TakeAHike {
 
   function __construct($assets_url) {
      $this->template_image_url = 'https://ps.w.org/mailpoet/assets/newsletter-templates/take_a_hike';
-    $this->social_icon_url = $assets_url . '/img/newsletter_editor/social-icons';
+     $this->social_icon_url = $assets_url . '/img/newsletter_editor/social-icons';
   }
 
   function get() {
     return array(
       'name' => __("Take a Hike", 'mailpoet'),
-      'categories' => json_encode(array('standard', 'sample')),
+      'categories' => json_encode(array('standard', 'all')),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),
       'body' => json_encode($this->getBody()),

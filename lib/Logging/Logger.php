@@ -2,9 +2,10 @@
 
 namespace MailPoet\Logging;
 
-use MailPoet\Dependencies\Monolog\Processor\IntrospectionProcessor;
-use MailPoet\Dependencies\Monolog\Processor\MemoryUsageProcessor;
-use MailPoet\Dependencies\Monolog\Processor\WebProcessor;
+use MailPoet\Settings\SettingsController;
+use MailPoetVendor\Monolog\Processor\IntrospectionProcessor;
+use MailPoetVendor\Monolog\Processor\MemoryUsageProcessor;
+use MailPoetVendor\Monolog\Processor\WebProcessor;
 use MailPoet\Models\Setting;
 
 /**
@@ -24,18 +25,18 @@ use MailPoet\Models\Setting;
  */
 class Logger {
 
-  /** @var \MailPoet\Dependencies\Monolog\Logger[] */
+  /** @var \MailPoetVendor\Monolog\Logger[] */
   private static $instance = [];
 
   /**
    * @param string $name
    * @param bool $attach_processors
    *
-   * @return \MailPoet\Dependencies\Monolog\Logger
+   * @return \MailPoetVendor\Monolog\Logger
    */
   public static function getLogger($name = 'MailPoet', $attach_processors = WP_DEBUG) {
     if(!isset(self::$instance[$name])) {
-      self::$instance[$name] = new \MailPoet\Dependencies\Monolog\Logger($name);
+      self::$instance[$name] = new \MailPoetVendor\Monolog\Logger($name);
 
       if($attach_processors) {
         // Adds the line/file/class/method from which the log call originated
@@ -52,14 +53,15 @@ class Logger {
   }
 
   private static function getDefaultLogLevel() {
-    $settings = Setting::getValue('logging', 'errors');
-    switch ($settings) {
+    $settings = new SettingsController();
+    $log_level = $settings->get('logging', 'errors');
+    switch ($log_level) {
       case 'everything':
-        return \MailPoet\Dependencies\Monolog\Logger::DEBUG;
+        return \MailPoetVendor\Monolog\Logger::DEBUG;
       case 'nothing':
-        return \MailPoet\Dependencies\Monolog\Logger::EMERGENCY;
+        return \MailPoetVendor\Monolog\Logger::EMERGENCY;
       default:
-        return \MailPoet\Dependencies\Monolog\Logger::ERROR;
+        return \MailPoetVendor\Monolog\Logger::ERROR;
     }
   }
 

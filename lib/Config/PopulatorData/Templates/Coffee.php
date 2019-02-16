@@ -1,6 +1,7 @@
 <?php
-
 namespace MailPoet\Config\PopulatorData\Templates;
+
+if(!defined('ABSPATH')) exit;
 
 class Coffee {
 
@@ -15,7 +16,7 @@ class Coffee {
   function get() {
     return array(
       'name' => __("Coffee", 'mailpoet'),
-      'categories' => json_encode(array('standard', 'sample')),
+      'categories' => json_encode(array('standard', 'all')),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),
       'body' => json_encode($this->getBody()),
@@ -696,7 +697,7 @@ class Coffee {
                               1 =>
                                 array (
                                   'type' => 'text',
-                                  'text' => '<p style="text-align: left;" data-post-id="1997"><span style="color: #6fb910;"><strong>Capsule MFG Launches Upgraded Line of Modular Coffee Bars</strong></span></p>
+                                  'text' => '<p style="text-align: left;"><span style="color: #6fb910;"><strong>Capsule MFG Launches Upgraded Line of Modular Coffee Bars</strong></span></p>
 <p style="text-align: left;">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
 <p style="text-align: left;">Integer vehicula magna sit amet lorem venenatis, quis condimentum odio egestas.</p>
 <p style="text-align: left;"></p>
@@ -737,7 +738,7 @@ class Coffee {
                               1 =>
                                 array (
                                   'type' => 'text',
-                                  'text' => '<p style="text-align: left;" data-post-id="1997"><span style="color: #6fb910;"><strong>British-Designed Niche Zero Aims to Leave No Grind Behind</strong></span></p>
+                                  'text' => '<p style="text-align: left;"><span style="color: #6fb910;"><strong>British-Designed Niche Zero Aims to Leave No Grind Behind</strong></span></p>
 <p style="text-align: left;">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
 <p style="text-align: left;">Integer vehicula magna sit amet lorem venenatis, quis condimentum odio egestas.</p>
 <p style="text-align: left;"></p>
@@ -778,7 +779,7 @@ class Coffee {
                               1 =>
                                 array (
                                   'type' => 'text',
-                                  'text' => '<p style="text-align: left;" data-post-id="1997"><span style="color: #6fb910;"><strong>Boyd&rsquo;s Being Acquired by Farmer Bros for Approximately $58.6M</strong></span></p>
+                                  'text' => '<p style="text-align: left;"><span style="color: #6fb910;"><strong>Boyd&rsquo;s Being Acquired by Farmer Bros for Approximately $58.6M</strong></span></p>
 <p style="text-align: left;">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
 <p style="text-align: left;">Integer vehicula magna sit amet lorem venenatis, quis condimentum odio egestas.</p>
 <p style="text-align: left;"></p>

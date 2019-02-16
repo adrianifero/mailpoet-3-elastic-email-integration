@@ -15,35 +15,35 @@
     >
       <!-- tabs -->
       <h2 class="nav-tab-wrapper" id="mailpoet_settings_tabs">
-        <a class="nav-tab" href="#basics"><%= __('Basics') %></a>
-        <a class="nav-tab" href="#signup"><%= __('Sign-up Confirmation') %></a>
-        <a class="nav-tab" href="#mta"><%= __('Send With...') %></a>
-        <a class="nav-tab" href="#advanced"><%= __('Advanced') %></a>
-        <a class="nav-tab" href="#premium"><%= __('Key Activation') %></a>
+        <a class="nav-tab" href="#basics" data-automation-id="basic_settings_tab"><%= __('Basics') %></a>
+        <a class="nav-tab" href="#signup" data-automation-id="signup_settings_tab"><%= __('Sign-up Confirmation') %></a>
+        <a class="nav-tab" href="#mta" data-automation-id="send_with_settings_tab"><%= __('Send With...') %></a>
+        <a class="nav-tab" href="#advanced" data-automation-id="settings-advanced-tab"><%= __('Advanced') %></a>
+        <a class="nav-tab" href="#premium" data-automation-id="activation_settings_tab"><%= __('Key Activation') %></a>
       </h2>
 
       <!-- sending method -->
-      <div data-tab="mta" class="mailpoet_panel">
+      <div data-tab="mta" class="mailpoet_tab_panel">
         <% include 'settings/mta.html' %>
       </div>
 
        <!-- basics -->
-      <div data-tab="basics" class="mailpoet_panel">
+      <div data-tab="basics" class="mailpoet_tab_panel">
         <% include 'settings/basics.html' %>
       </div>
 
       <!-- sign-up confirmation -->
-      <div data-tab="signup" class="mailpoet_panel">
+      <div data-tab="signup" class="mailpoet_tab_panel">
         <% include 'settings/signup.html' %>
       </div>
 
      <!-- advanced -->
-      <div data-tab="advanced" class="mailpoet_panel">
+      <div data-tab="advanced" class="mailpoet_tab_panel">
         <% include 'settings/advanced.html' %>
       </div>
 
       <!-- premium -->
-      <div data-tab="premium" class="mailpoet_panel">
+      <div data-tab="premium" class="mailpoet_tab_panel">
         <% include 'settings/premium.html' %>
       </div>
 
@@ -52,6 +52,7 @@
           type="submit"
           class="button button-primary"
           name="submit"
+          data-automation-id="settings-submit-button"
           value="<%= __('Save settings') %>"
         />
       </p>
@@ -64,6 +65,7 @@
       $(function() {
         // on form submission
         $('#mailpoet_settings_form').on('submit', function() {
+          var errorFound = false;
           // Check if filled emails are valid
           var invalidEmails = $.map($('#mailpoet_settings_form')[0].elements, function(el) {
             return el.type === 'email' && el.value && !window.mailpoet_email_regex.test(el.value) ? el.value : null;
@@ -73,7 +75,7 @@
               "<%= __('Invalid email addresses: ') | escape('js') %>" + invalidEmails.join(', '),
               { scroll: true }
             );
-            return false;
+            errorFound = true;
           }
           // if reCAPTCHA is enabled but keys are emty, show error
           var enabled = $('input[name="re_captcha[enabled]"]:checked').val(),
@@ -82,9 +84,32 @@
           if (enabled && (site_key == '' || secret_key == '')) {
             $('#settings_re_captcha_tokens_error').show();
             window.location.href = '#advanced';
-            return false;
+            errorFound = true;
           } else {
             $('#settings_re_captcha_tokens_error').hide();
+          }
+          // if new subscriber notification is enabled but sender is empty, show error
+          var notifications_enabled = $('input[name="subscriber_email_notification[enabled]"]:checked').val(),
+            address = $('input[name="subscriber_email_notification[address]"]').val().trim();
+          if (notifications_enabled && address == '') {
+            $('#settings_subscriber_email_notification_error').show();
+            window.location.href = '#basics';
+            errorFound = true;
+          } else {
+            $('#settings_subscriber_email_notification_error').hide();
+          }
+          var stats_notifications_enabled = $('input[name="stats_notifications[enabled]"]:checked').val(),
+            stats_notifications_address = $('input[name="stats_notifications[address]"]').val().trim();
+          if (stats_notifications_enabled && stats_notifications_address == '') {
+            $('#settings_stats_notifications_error').show();
+            window.location.href = '#basics';
+            errorFound = true;
+          } else {
+            $('#settings_stats_notifications_error').hide();
+          }
+          // stop processing if an error was found
+          if (errorFound) {
+            return false;
           }
           // if we're setting up a sending method, try to activate it
           if ($('.mailpoet_mta_setup_save').is(':visible')) {
@@ -165,6 +190,19 @@
         toggleReCaptchaSettings();
         $('#settings_re_captcha_tokens_error').hide();
 
+        $('#settings_subscriber_email_notification_error').hide();
+        $('#settings_stats_notifications_error').hide();
+
+        function toggleLinuxCronSettings() {
+          if ($('input[name="cron_trigger[method]"]:checked').val() === '<%= cron_trigger.linux_cron %>') {
+            $('#settings_linux_cron').show();
+          } else {
+            $('#settings_linux_cron').hide();
+          }
+        }
+        $('input[name="cron_trigger[method]"]').on('click', toggleLinuxCronSettings);
+        toggleLinuxCronSettings();
+
         // page preview
         $('.mailpoet_page_preview').on('click', function() {
           var selection = $(this).siblings('.mailpoet_page_selection');
@@ -179,10 +217,25 @@
         });
       });
     });
+    var mailpoet_in_app_announcements = <%= json_encode(settings.in_app_announcements) %>;
+    var mailpoet_new_subscriber_announcement_image = '<%= cdn_url('in-app-announcements/new-subscriber-notification.20181121-1440.png') %>';
+    var mailpoet_installed_at = <%= json_encode(settings.installed_at) %>;
+    <% set newUser = (is_new_user == true) ? 'true' : 'false' %>
+    var mailpoet_is_new_user = <%= newUser %>;
+    var mailpoet_settings_sender_name = "<%= settings.sender.name %>";
+    var mailpoet_settings_sender_adddress = "<%= settings.sender.address %>";
+    var mailpoet_settings_reply_to_name = "<%= settings.reply_to.name %>";
+    var mailpoet_settings_reply_to_address = "<%= settings.reply_to.address %>";
   </script>
 <% endblock %>
 <% block translations %>
   <%= localize({
-    'reinstallConfirmation': __('Are you sure? All of your MailPoet data will be permanently erased (newsletters, statistics, subscribers, etc.).')
+    'reinstallConfirmation': __('Are you sure? All of your MailPoet data will be permanently erased (newsletters, statistics, subscribers, etc.).'),
+    'announcementHeader': __('Get notified when someone subscribes'),
+    'announcementParagraph1': __('It’s been a popular feature request from our users, we hope you get lots of emails about all your new subscribers!'),
+    'announcementParagraph2': __('(You can turn this feature off if it’s too many emails.)'),
+    'yourName': __('Your name'),
+    'from': __('From'),
+    'replyTo': __('Reply-to'),
   }) %>
 <% endblock %>

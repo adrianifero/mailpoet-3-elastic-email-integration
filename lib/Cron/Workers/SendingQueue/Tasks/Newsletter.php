@@ -9,11 +9,11 @@ use MailPoet\Mailer\MailerLog;
 use MailPoet\Models\Newsletter as NewsletterModel;
 use MailPoet\Models\NewsletterSegment as NewsletterSegmentModel;
 use MailPoet\Models\SendingQueue as SendingQueueModel;
-use MailPoet\Models\Setting;
 use MailPoet\Newsletter\Links\Links as NewsletterLinks;
 use MailPoet\Newsletter\Renderer\PostProcess\OpenTracking;
+use MailPoet\Settings\SettingsController;
 use MailPoet\Util\Helpers;
-use MailPoet\WP\Hooks;
+use MailPoet\WP\Functions as WPFunctions;
 
 if(!defined('ABSPATH')) exit;
 
@@ -21,8 +21,16 @@ class Newsletter {
   public $tracking_enabled;
   public $tracking_image_inserted;
 
-  function __construct() {
-    $this->tracking_enabled = (boolean)Setting::getValue('tracking.enabled');
+  /** @var WPFunctions */
+  private $wp;
+
+  function __construct(WPFunctions $wp = null) {
+    $settings = new SettingsController();
+    $this->tracking_enabled = (boolean)$settings->get('tracking.enabled');
+    if($wp == null) {
+      $wp = new WPFunctions;
+    }
+    $this->wp = $wp;
   }
 
   function getNewsletterFromQueue($queue) {
@@ -53,7 +61,7 @@ class Newsletter {
     return $newsletter;
   }
 
-  function preProcessNewsletter($newsletter, $queue) {
+  function preProcessNewsletter(\MailPoet\Models\Newsletter $newsletter, $queue) {
     // return the newsletter if it was previously rendered
     if(!is_null($queue->getNewsletterRenderedBody())) {
       return (!$queue->validate()) ?
@@ -66,7 +74,7 @@ class Newsletter {
       $this->tracking_image_inserted = OpenTracking::addTrackingImage();
       // render newsletter
       $rendered_newsletter = $newsletter->render();
-      $rendered_newsletter = Hooks::applyFilters(
+      $rendered_newsletter = $this->wp->applyFilters(
         'mailpoet_sending_newsletter_render_after',
         $rendered_newsletter,
         $newsletter
@@ -76,7 +84,7 @@ class Newsletter {
     } else {
       // render newsletter
       $rendered_newsletter = $newsletter->render();
-      $rendered_newsletter = Hooks::applyFilters(
+      $rendered_newsletter = $this->wp->applyFilters(
         'mailpoet_sending_newsletter_render_after',
         $rendered_newsletter,
         $newsletter
@@ -101,6 +109,11 @@ class Newsletter {
       null,
       $queue
     );
+    // if the rendered subject is empty, use a default subject,
+    // having no subject in a newsletter is considered spammy
+    if(empty(trim($queue->newsletter_rendered_subject))) {
+      $queue->newsletter_rendered_subject = __('No subject', 'mailpoet');
+    }
     $queue->newsletter_rendered_body = $rendered_newsletter;
     $queue->save();
     // catch DB errors
@@ -172,7 +185,7 @@ class Newsletter {
   function stopNewsletterPreProcessing($error_code = null) {
     MailerLog::processError(
       'queue_save',
-      __('There was an error processing your newsletter during sending. If possible, please contact us and report this issue.'),
+      __('There was an error processing your newsletter during sending. If possible, please contact us and report this issue.', 'mailpoet'),
       $error_code
     );
   }

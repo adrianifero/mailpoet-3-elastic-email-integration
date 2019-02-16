@@ -3,13 +3,16 @@
 namespace MailPoet\Newsletter\Scheduler;
 
 use Carbon\Carbon;
+use MailPoet\Logging\Logger;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterOption;
 use MailPoet\Models\NewsletterOptionField;
 use MailPoet\Models\NewsletterPost;
+use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoet\WP\Posts;
 
 class Scheduler {
   const SECONDS_IN_HOUR = 3600;
@@ -22,7 +25,27 @@ class Scheduler {
   const INTERVAL_MONTHLY = 'monthly';
   const INTERVAL_NTHWEEKDAY = 'nthWeekDay';
 
+  static function transitionHook($new_status, $old_status, $post) {
+    Logger::getLogger('post-notifications')->addInfo(
+      'transition post notification hook initiated',
+      [
+        'post_id' => $post->ID,
+        'new_status' => $new_status,
+        'old_status' => $old_status,
+      ]
+    );
+    $types = Posts::getTypes();
+    if(($new_status !== 'publish') || !isset($types[$post->post_type])) {
+      return;
+    }
+    self::schedulePostNotification($post->ID);
+  }
+
   static function schedulePostNotification($post_id) {
+    Logger::getLogger('post-notifications')->addInfo(
+      'schedule post notification hook',
+      ['post_id' => $post_id]
+    );
     $newsletters = self::getNewsletters(Newsletter::TYPE_NOTIFICATION);
     if(!count($newsletters)) return false;
     foreach($newsletters as $newsletter) {
@@ -124,9 +147,21 @@ class Scheduler {
   }
 
   static function createPostNotificationSendingTask($newsletter) {
-    $existing_notification_history = Newsletter::where('parent_id', $newsletter->id)
-      ->where('type', Newsletter::TYPE_NOTIFICATION_HISTORY)
-      ->where('status', Newsletter::STATUS_SENDING)
+    $existing_notification_history = Newsletter::tableAlias('newsletters')
+      ->where('newsletters.parent_id', $newsletter->id)
+      ->where('newsletters.type', Newsletter::TYPE_NOTIFICATION_HISTORY)
+      ->where('newsletters.status', Newsletter::STATUS_SENDING)
+      ->join(
+        MP_SENDING_QUEUES_TABLE,
+        'queues.newsletter_id = newsletters.id',
+        'queues'
+      )
+      ->join(
+        MP_SCHEDULED_TASKS_TABLE,
+        'queues.task_id = tasks.id',
+        'tasks'
+      )
+      ->whereNotEqual('tasks.status', ScheduledTask::STATUS_PAUSED)
       ->findOne();
     if($existing_notification_history) {
       return;
@@ -143,6 +178,10 @@ class Scheduler {
     $sending_task->status = SendingQueue::STATUS_SCHEDULED;
     $sending_task->scheduled_at = $next_run_date;
     $sending_task->save();
+    Logger::getLogger('post-notifications')->addInfo(
+      'schedule post notification',
+      ['sending_task' => $sending_task->id(), 'scheduled_at' => $next_run_date]
+    );
     return $sending_task;
   }
 
@@ -155,9 +194,6 @@ class Scheduler {
       $newsletter->nthWeekDay :
       '#' . $newsletter->nthWeekDay;
     switch($interval_type) {
-      case self::INTERVAL_IMMEDIATELY:
-        $schedule = '* * * * *';
-        break;
       case self::INTERVAL_IMMEDIATE:
       case self::INTERVAL_DAILY:
         $schedule = sprintf('0 %s * * *', $hour);
@@ -170,6 +206,10 @@ class Scheduler {
         break;
       case self::INTERVAL_MONTHLY:
         $schedule = sprintf('0 %s %s * *', $hour, $month_day);
+        break;
+      case self::INTERVAL_IMMEDIATELY:
+      default:
+        $schedule = '* * * * *';
         break;
     }
     $option_field = NewsletterOptionField::where('name', 'schedule')->findOne();
@@ -187,7 +227,8 @@ class Scheduler {
   }
 
   static function getNextRunDate($schedule, $from_timestamp = false) {
-    $from_timestamp = ($from_timestamp) ? $from_timestamp : WPFunctions::currentTime('timestamp');
+    $wp = new WPFunctions();
+    $from_timestamp = ($from_timestamp) ? $from_timestamp : $wp->currentTime('timestamp');
     try {
       $schedule = \Cron\CronExpression::factory($schedule);
       $next_run_date = $schedule->getNextRunDate(Carbon::createFromTimestamp($from_timestamp))
@@ -199,7 +240,8 @@ class Scheduler {
   }
 
   static function getPreviousRunDate($schedule, $from_timestamp = false) {
-    $from_timestamp = ($from_timestamp) ? $from_timestamp : WPFunctions::currentTime('timestamp');
+    $wp = new WPFunctions();
+    $from_timestamp = ($from_timestamp) ? $from_timestamp : $wp->currentTime('timestamp');
     try {
       $schedule = \Cron\CronExpression::factory($schedule);
       $previous_run_date = $schedule->getPreviousRunDate(Carbon::createFromTimestamp($from_timestamp))
@@ -211,7 +253,8 @@ class Scheduler {
   }
 
   static function getScheduledTimeWithDelay($after_time_type, $after_time_number) {
-    $current_time = Carbon::createFromTimestamp(WPFunctions::currentTime('timestamp'));
+    $wp = new WPFunctions();
+    $current_time = Carbon::createFromTimestamp($wp->currentTime('timestamp'));
     switch($after_time_type) {
       case 'hours':
         return $current_time->addHours($after_time_number);

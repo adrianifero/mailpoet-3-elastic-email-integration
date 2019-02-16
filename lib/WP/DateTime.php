@@ -10,24 +10,30 @@ class DateTime {
   const DEFAULT_TIME_FORMAT = 'H:i:s';
   const DEFAULT_DATE_TIME_FORMAT = 'Y-m-d H:i:s';
 
-  function __construct() {
+  private $wp;
+
+  function __construct(WPFunctions $wp = null) {
+    if($wp === null) {
+      $wp = new WPFunctions();
+    }
+    $this->wp = $wp;
   }
 
   function getTimeFormat() {
-    $time_format = get_option('time_format');
+    $time_format = $this->wp->getOption('time_format');
     if (empty($time_format)) $time_format = self::DEFAULT_TIME_FORMAT;
     return $time_format;
   }
 
   function getDateFormat() {
-    $date_format = get_option('date_format');
+    $date_format = $this->wp->getOption('date_format');
     if (empty($date_format)) $date_format = self::DEFAULT_DATE_FORMAT;
     return $date_format;
   }
 
   function getCurrentTime($format=false) {
     if (empty($format)) $format = $this->getTimeFormat();
-    return WPFunctions::currentTime($format);
+    return $this->wp->currentTime($format);
   }
 
   function getCurrentDate($format=false) {

@@ -1,6 +1,7 @@
 <?php
-
 namespace MailPoet\Config\PopulatorData\Templates;
+
+if(!defined('ABSPATH')) exit;
 
 class Charity {
 
@@ -15,7 +16,7 @@ class Charity {
   function get() {
     return array(
       'name' => __("Charity", 'mailpoet'),
-      'categories' => json_encode(array('standard', 'sample')),
+      'categories' => json_encode(array('standard', 'all')),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),
       'body' => json_encode($this->getBody()),
@@ -498,7 +499,7 @@ class Charity {
                                 array (
                                   'type' => 'image',
                                   'link' => '',
-                                  'src' => 'http://mailpoet.info/wp-content/uploads/2017/08/Charity-Child.png',
+                                  'src' => $this->template_image_url . '/Charity-Child.png',
                                   'alt' => 'Charity-Child',
                                   'fullWidth' => false,
                                   'width' => '200px',
@@ -582,7 +583,7 @@ class Charity {
                                 array (
                                   'type' => 'image',
                                   'link' => '',
-                                  'src' => 'http://mailpoet.info/wp-content/uploads/2017/08/Charity-Video.jpg',
+                                  'src' => $this->template_image_url . '/Charity-Video.jpg',
                                   'alt' => 'Charity-Video',
                                   'fullWidth' => false,
                                   'width' => '1280px',
@@ -651,7 +652,7 @@ class Charity {
                                 array (
                                   'type' => 'image',
                                   'link' => '',
-                                  'src' => 'http://mailpoet.info/wp-content/uploads/2017/08/Charity-Logo-Small.png',
+                                  'src' => $this->template_image_url . '/Charity-Logo-Small.png',
                                   'alt' => 'Charity-Logo-Small',
                                   'fullWidth' => false,
                                   'width' => '407px',

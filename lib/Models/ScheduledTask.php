@@ -6,14 +6,27 @@ use MailPoet\WP\Functions as WPFunctions;
 
 if(!defined('ABSPATH')) exit;
 
+/**
+ * @property int $id
+ * @property string $processed_at
+ * @property int $priority
+ */
 class ScheduledTask extends Model {
   public static $_table = MP_SCHEDULED_TASKS_TABLE;
   const STATUS_COMPLETED = 'completed';
   const STATUS_SCHEDULED = 'scheduled';
   const STATUS_PAUSED = 'paused';
+  const VIRTUAL_STATUS_RUNNING = 'running'; // For historical reasons this is stored as null in DB
   const PRIORITY_HIGH = 1;
   const PRIORITY_MEDIUM = 5;
   const PRIORITY_LOW = 10;
+
+  private $wp;
+
+  function __construct() {
+    parent::__construct();
+    $this->wp = new WPFunctions();
+  }
 
   function subscribers() {
     return $this->hasManyThrough(
@@ -21,6 +34,15 @@ class ScheduledTask extends Model {
       __NAMESPACE__.'\ScheduledTaskSubscriber',
       'task_id',
       'subscriber_id'
+    );
+  }
+
+  /** @return StatsNotification */
+  function statsNotification() {
+    return $this->hasOne(
+      StatsNotification::class,
+      'task_id',
+      'id'
     );
   }
 
@@ -60,7 +82,7 @@ class ScheduledTask extends Model {
   }
 
   function complete() {
-    $this->processed_at = WPFunctions::currentTime('mysql');
+    $this->processed_at = $this->wp->currentTime('mysql');
     $this->set('status', self::STATUS_COMPLETED);
     $this->save();
     return ($this->getErrors() === false && $this->id() > 0);
@@ -73,6 +95,18 @@ class ScheduledTask extends Model {
     }
     parent::save();
     return $this;
+  }
+
+  function delete() {
+    try {
+      \ORM::get_db()->beginTransaction();
+      ScheduledTaskSubscriber::where('task_id', $this->id)->deleteMany();
+      parent::delete();
+      \ORM::get_db()->commit();
+    } catch(\Exception $error) {
+      \ORM::get_db()->rollBack();
+      throw $error;
+    }
   }
 
   static function touchAllByIds(array $ids) {

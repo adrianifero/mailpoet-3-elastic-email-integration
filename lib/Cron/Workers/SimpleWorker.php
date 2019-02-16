@@ -11,20 +11,25 @@ if(!defined('ABSPATH')) exit;
 
 abstract class SimpleWorker {
   public $timer;
-
+  private $wp;
+  const TASK_TYPE = null;
   const TASK_BATCH_SIZE = 5;
 
   function __construct($timer = false) {
-    if(!defined('static::TASK_TYPE')) {
+    if(static::TASK_TYPE === null) {
       throw new \Exception('Constant TASK_TYPE is not defined on subclass ' . get_class($this));
     }
     $this->timer = ($timer) ? $timer : microtime(true);
     // abort if execution limit is reached
     CronHelper::enforceExecutionLimit($this->timer);
+    $this->wp = new WPFunctions();
   }
 
   function checkProcessingRequirements() {
     return true;
+  }
+
+  function init() {
   }
 
   function process() {
@@ -32,9 +37,7 @@ abstract class SimpleWorker {
       return false;
     }
 
-    if(is_callable(array($this, 'init'))) {
-      $this->init();
-    }
+    $this->init();
 
     $scheduled_tasks = self::getScheduledTasks();
     $running_tasks = self::getRunningTasks();
@@ -98,19 +101,20 @@ abstract class SimpleWorker {
   }
 
   function complete(ScheduledTask $task) {
-    $task->processed_at = WPFunctions::currentTime('mysql');
+    $task->processed_at = $this->wp->currentTime('mysql');
     $task->status = ScheduledTask::STATUS_COMPLETED;
     $task->save();
   }
 
   function reschedule(ScheduledTask $task, $timeout) {
-    $scheduled_at = Carbon::createFromTimestamp(WPFunctions::currentTime('timestamp'));
+    $scheduled_at = Carbon::createFromTimestamp($this->wp->currentTime('timestamp'));
     $task->scheduled_at = $scheduled_at->addMinutes($timeout);
     $task->save();
   }
 
   static function getNextRunDate() {
-    $date = Carbon::createFromTimestamp(WPFunctions::currentTime('timestamp'));
+    $wp = new WPFunctions();
+    $date = Carbon::createFromTimestamp($wp->currentTime('timestamp'));
     // Random day of the next week
     $date->setISODate($date->format('o'), $date->format('W') + 1, mt_rand(1, 7));
     $date->startOfDay();
@@ -119,8 +123,9 @@ abstract class SimpleWorker {
 
   static function getScheduledTasks($future = false) {
     $dateWhere = ($future) ? 'whereGt' : 'whereLte';
+    $wp = new WPFunctions();
     return ScheduledTask::where('type', static::TASK_TYPE)
-      ->$dateWhere('scheduled_at', Carbon::createFromTimestamp(WPFunctions::currentTime('timestamp')))
+      ->$dateWhere('scheduled_at', Carbon::createFromTimestamp($wp->currentTime('timestamp')))
       ->whereNull('deleted_at')
       ->where('status', ScheduledTask::STATUS_SCHEDULED)
       ->limit(self::TASK_BATCH_SIZE)
@@ -128,8 +133,9 @@ abstract class SimpleWorker {
   }
 
   static function getRunningTasks() {
+    $wp = new WPFunctions();
     return ScheduledTask::where('type', static::TASK_TYPE)
-      ->whereLte('scheduled_at', Carbon::createFromTimestamp(WPFunctions::currentTime('timestamp')))
+      ->whereLte('scheduled_at', Carbon::createFromTimestamp($wp->currentTime('timestamp')))
       ->whereNull('deleted_at')
       ->whereNull('status')
       ->limit(self::TASK_BATCH_SIZE)

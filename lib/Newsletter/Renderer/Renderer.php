@@ -15,13 +15,16 @@ class Renderer {
   public $CSS_inliner;
   public $newsletter;
   public $preview;
+  public $premium_activated;
+  public $mss_activated;
+  private $template;
   const NEWSLETTER_TEMPLATE = 'Template.html';
   const FILTER_POST_PROCESS = 'mailpoet_rendering_post_process';
 
   function __construct($newsletter, $preview = false) {
     $this->newsletter = (is_object($newsletter)) ? $newsletter->asArray() : $newsletter;
     $this->preview = $preview;
-    $this->blocks_renderer = new Blocks\Renderer($this->newsletter, $this->preview);
+    $this->blocks_renderer = new Blocks\Renderer($this->newsletter);
     $this->columns_renderer = new Columns\Renderer();
     $this->DOM_parser = new pQuery();
     $this->CSS_inliner = new \MailPoet\Util\CSS();
@@ -50,10 +53,12 @@ class Renderer {
     $content = $this->preProcessALC($content);
     $rendered_body = $this->renderBody($content);
     $rendered_styles = $this->renderStyles($styles);
+    $custom_fonts_links = StylesHelper::getCustomFontsLinks($styles);
 
     $template = $this->injectContentIntoTemplate($this->template, array(
       htmlspecialchars($newsletter['subject']),
       $rendered_styles,
+      $custom_fonts_links,
       $newsletter['preheader'],
       $rendered_body
     ));
@@ -97,17 +102,12 @@ class Renderer {
 
     $_this = $this;
     $rendered_content = array_map(function($content_block) use($_this) {
-      $column_count = count($content_block['blocks']);
-      $column_data = $_this->blocks_renderer->render(
-        $content_block,
-        $column_count
-      );
-      $content_block_image = isset($content_block['image'])?$content_block['image']:null;
+
+      $columns_data = $_this->blocks_renderer->render($content_block);
+
       return $_this->columns_renderer->render(
-        $content_block['styles'],
-        $content_block_image,
-        $column_count,
-        $column_data
+        $content_block,
+        $columns_data
       );
     }, $blocks);
     return implode('', $rendered_content);

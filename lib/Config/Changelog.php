@@ -2,10 +2,22 @@
 
 namespace MailPoet\Config;
 
-use MailPoet\Models\Setting;
+use MailPoet\Settings\SettingsController;
 use MailPoet\Util\Url;
+use MailPoet\WP\Functions as WPFunctions;
 
 class Changelog {
+  /** @var WPFunctions */
+  private $wp;
+
+  /** @var SettingsController */
+  private $settings;
+  
+  function __construct(SettingsController $settings, WPFunctions $wp) {
+    $this->settings = $settings;
+    $this->wp = $wp;
+  }
+
   function init() {
     $doing_ajax = (bool)(defined('DOING_AJAX') && DOING_AJAX);
 
@@ -30,7 +42,7 @@ class Changelog {
   }
 
   function check() {
-    $version = Setting::getValue('version', null);
+    $version = $this->settings->get('version');
     $redirect_url = null;
 
     $mp2_migrator = new MP2Migrator();
@@ -44,14 +56,22 @@ class Changelog {
           // Migration from MP2
           $redirect_url = admin_url('admin.php?page=mailpoet-migration');
         } else {
-          $redirect_url = admin_url('admin.php?page=mailpoet-welcome');
+          $skip_wizard = $this->wp->applyFilters('mailpoet_skip_welcome_wizard', false);
+          $redirect_url = $skip_wizard ? null : admin_url('admin.php?page=mailpoet-welcome-wizard');
+
+          // ensure there was no MP2 migration (migration resets $version so it must be checked)
+          if($this->settings->get('mailpoet_migration_started') === null) {
+            $this->settings->set('show_intro', true);
+          }
         }
+        $this->settings->set('show_congratulate_after_first_newsletter', true);
+        $this->settings->set('show_poll_success_delivery_preview', true);
       }
     }
 
     if($redirect_url !== null) {
       // save version number
-      Setting::setValue('version', Env::$version);
+      $this->settings->set('version', Env::$version);
 
       Url::redirectWithReferer($redirect_url);
     }

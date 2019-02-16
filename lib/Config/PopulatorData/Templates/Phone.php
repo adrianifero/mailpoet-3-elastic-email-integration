@@ -1,6 +1,7 @@
 <?php
-
 namespace MailPoet\Config\PopulatorData\Templates;
+
+if(!defined('ABSPATH')) exit;
 
 class Phone {
 
@@ -15,7 +16,7 @@ class Phone {
   function get() {
     return array(
       'name' => __("New Phone Purchase", 'mailpoet'),
-      'categories' => json_encode(array('welcome', 'sample')),
+      'categories' => json_encode(array('welcome', 'all')),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),
       'body' => json_encode($this->getBody()),

@@ -58,6 +58,14 @@
     'newsletter/templates/blocks/container/twoColumnLayoutWidget.hbs'
   ) %>
   <%= partial(
+    'newsletter_editor_template_container_two_column_12_widget',
+    'newsletter/templates/blocks/container/twoColumnLayoutWidget12.hbs'
+  ) %>
+  <%= partial(
+    'newsletter_editor_template_container_two_column_21_widget',
+    'newsletter/templates/blocks/container/twoColumnLayoutWidget21.hbs'
+  ) %>
+  <%= partial(
     'newsletter_editor_template_container_three_column_widget',
     'newsletter/templates/blocks/container/threeColumnLayoutWidget.hbs'
   ) %>
@@ -239,8 +247,9 @@
 <!-- Hidden heading for notices to appear under -->
 <h1 style="display:none"><%= __('Newsletter Editor') %></h1>
 <div id="mailpoet_editor">
-  <div id="mailpoet_editor_heading"></div>
   <div id="mailpoet_editor_breadcrumb" class="mailpoet_breadcrumbs"></div>
+  <div id="mailpoet_editor_top"></div>
+  <div id="mailpoet_editor_heading"></div>
   <div class="clearfix"></div>
   <div id="mailpoet_editor_main_wrapper">
     <div id="mailpoet_editor_styles"></div>
@@ -340,8 +349,7 @@
     'newsletterPreviewSent': __('Your test email has been sent!'),
     'templateNameMissing': __('Please add a template name'),
     'helpTooltipSendPreview': helpTooltipSendPreview,
-    'helpTooltipDesignerStyles': __('We only include fonts that will display in all email clients. We understand it can feel limiting!'),
-    'helpTooltipDesignerSubjectLine': __("You can add MailPoet shortcodes here. For example, you can add your subscribers' first names by using this shortcode: [subscriber:firstname | default:reader] Simply copy and paste the shortcode into the field."),
+    'helpTooltipDesignerSubjectLine': __("You can add MailPoet shortcodes here. For example, you can add your subscribers' first names by using this shortcode: [subscriber:firstname | default:reader]. Simply copy and paste the shortcode into the field."),
     'helpTooltipDesignerPreheader': __("This optional text will appear in your subscribers' inboxes, beside the subject line. Write something enticing!"),
     'helpTooltipDesignerFullWidth': __("This option eliminates padding around the image. It only works if the image is larger than the column size."),
     'helpTooltipDesignerIdealWidth': __("Use images with widths of at least 1,000 pixels to ensure sharp display on high density screens, like mobile devices."),
@@ -357,7 +365,7 @@
     'selectColor': _x('Select', 'select color'),
     'cancelColorSelection': _x('Cancel', 'cancel color selection'),
     'newsletterIsPaused': __('Email sending has been paused.'),
-
+    'tutorialVideoTitle': __('Before you start, this is how you drag and drop in MailPoet'),
     'selectType': __('Select type'),
     'events': __('Events'),
     'conditions': _x('Conditions', 'Configuration options for automatic email events'),
@@ -375,7 +383,7 @@
 
 <% block after_javascript %>
   <%= javascript(
-    'lib/tinymce/tinymce.jquery.min.js',
+    'lib/tinymce/tinymce.min.js',
     'lib/tinymce/jquery.tinymce.min.js',
     'lib/mailpoet_shortcodes/plugin.js',
     'lib/wplink/plugin.js',
@@ -385,6 +393,21 @@
   <%= do_action('mailpoet_newsletter_editor_after_javascript') %>
 
   <script type="text/javascript">
+    function renderWithFont(node) {
+      if (!node.element) return node.text;
+      var $wrapper = jQuery('<span></span>');
+      $wrapper.css({'font-family': Handlebars.helpers.fontWithFallback(node.element.value)});
+      $wrapper.text(node.text);
+      return $wrapper;
+    }
+    function fontsSelect(selector) {
+      jQuery(selector).select2({
+        minimumResultsForSearch: Infinity,
+        templateSelection: renderWithFont,
+        templateResult: renderWithFont
+      });
+    }
+
     var templates = {
       styles: Handlebars.compile(
         jQuery('#newsletter_editor_template_styles').html()
@@ -430,6 +453,12 @@
       ),
       twoColumnLayoutInsertion: Handlebars.compile(
         jQuery('#newsletter_editor_template_container_two_column_widget').html()
+      ),
+      twoColumn12LayoutInsertion: Handlebars.compile(
+        jQuery('#newsletter_editor_template_container_two_column_12_widget').html()
+      ),
+      twoColumn21LayoutInsertion: Handlebars.compile(
+        jQuery('#newsletter_editor_template_container_two_column_21_widget').html()
       ),
       threeColumnLayoutInsertion: Handlebars.compile(
         jQuery('#newsletter_editor_template_container_three_column_widget').html()
@@ -586,17 +615,35 @@
           '10px', '12px', '14px', '16px', '18px', '20px', '22px', '24px',
           '26px', '30px', '36px', '40px'
         ],
-        fonts: [
-          'Arial',
-          'Comic Sans MS',
-          'Courier New',
-          'Georgia',
-          'Lucida',
-          'Tahoma',
-          'Times New Roman',
-          'Trebuchet MS',
-          'Verdana'
-        ],
+        fonts: {
+          standard: [
+            'Arial',
+            'Comic Sans MS',
+            'Courier New',
+            'Georgia',
+            'Lucida',
+            'Tahoma',
+            'Times New Roman',
+            'Trebuchet MS',
+            'Verdana'
+          ],
+          custom: [
+            'Arvo',
+            'Lato',
+            'Lora',
+            'Merriweather',
+            'Merriweather Sans',
+            'Noticia Text',
+            'Open Sans',
+            'Playfair Display',
+            'Roboto',
+            'Source Sans Pro',
+            'Oswald',
+            'Raleway',
+            'Permanent Marker',
+            'Pacifico',
+          ]
+        },
         socialIconSets: {
           'default': {
             'custom': '<%= image_url(
@@ -1223,6 +1270,11 @@
         },
         social: {
           iconSet: 'default',
+          styles: {
+            block: {
+              textAlign: 'center'
+            }
+          },
           icons: [
           {
             type: 'socialIcon',
@@ -1283,7 +1335,8 @@
       sidepanelWidth: '331px',
       newsletterPreview: {
         width: '1024px',
-        height: '768px'
+        height: '768px',
+        previewTypeLocalStorageKey: 'newsletter_editor.preview_type'
       },
       validation: {
         validateUnsubscribeLinkPresent: <%= mss_active ? 'true' : 'false' %>,
@@ -1294,7 +1347,12 @@
           "newsletter_editor/image-missing.svg"
         ) %>',
       },
+      dragDemoUrl: '<%= cdn_url('newsletter-editor/editor-drag-demo.20181121-1440.mp4') %>',
+      currentUserId: '<%= current_wp_user.wp_user_id %>',
+      dragDemoUrlSettings: '<%= settings["user_seen_editor_tutorial" ~ current_wp_user.wp_user_id] %>',
+      installedAt: '<%= settings["installed_at"] %>',
     };
     wp.hooks.doAction('mailpoet_newsletters_editor_initialize', config);
+
   </script>
 <% endblock %>

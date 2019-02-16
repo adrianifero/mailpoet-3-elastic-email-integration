@@ -8,6 +8,8 @@ use MailPoet\Models\CustomField;
 use MailPoet\Models\Setting;
 use MailPoet\Models\Segment;
 use MailPoet\Newsletter\Scheduler\Scheduler;
+use MailPoet\Settings\SettingsController;
+use MailPoet\Subscribers\NewSubscriberNotificationMailer;
 use MailPoet\Util\Helpers;
 use MailPoet\Util\Url as UrlHelper;
 use MailPoet\Form\Renderer as FormRenderer;
@@ -22,13 +24,23 @@ class Pages {
   private $action;
   private $data;
   private $subscriber;
+  /** @var NewSubscriberNotificationMailer */
+  private $new_subscriber_notification_sender;
+  /** @var SettingsController */
+  private $settings;
 
-  function __construct($action = false, $data = array(), $init_shortcodes = false, $init_page_filters = false) {
+  function __construct($action = false, $data = array(), $init_shortcodes = false, $init_page_filters = false, $new_subscriber_notification_sender = null) {
     $this->action = $action;
     $this->data = $data;
     $this->subscriber = $this->getSubscriber();
     if($init_page_filters) $this->initPageFilters();
     if($init_shortcodes) $this->initShortcodes();
+    if($new_subscriber_notification_sender) {
+      $this->new_subscriber_notification_sender = $new_subscriber_notification_sender;
+    } else {
+      $this->new_subscriber_notification_sender = new NewSubscriberNotificationMailer();
+    }
+    $this->settings = new SettingsController();
   }
 
   private function isPreview() {
@@ -76,13 +88,17 @@ class Pages {
 
     if($this->subscriber->getErrors() === false) {
       // send welcome notification
-      $subsciber_segments = $this->subscriber->segments()->findArray();
-      if($subsciber_segments) {
+      $subscriber_segments = $this->subscriber->segments()->findMany();
+      if($subscriber_segments) {
         Scheduler::scheduleSubscriberWelcomeNotification(
           $this->subscriber->id,
-          Helpers::arrayColumn($subsciber_segments, 'id')
+          array_map(function ($segment) {
+            return $segment->get('id');
+          }, $subscriber_segments)
         );
       }
+
+      $this->new_subscriber_notification_sender->send($this->subscriber, $subscriber_segments);
 
       // update subscriber from stored data after confirmation
       if(!empty($subscriber_data)) {
@@ -248,7 +264,7 @@ class Pages {
       return $custom_field;
     }, CustomField::findMany());
 
-    $segment_ids = Setting::getValue('subscription.segments', array());
+    $segment_ids = $this->settings->get('subscription.segments', []);
     if(!empty($segment_ids)) {
       $segments = Segment::getPublic()
         ->whereIn('id', $segment_ids)
@@ -282,7 +298,7 @@ class Pages {
         'params' => array(
           'label' => __('First name', 'mailpoet'),
           'value' => $subscriber->first_name,
-          'disabled' => ($subscriber->isWPUser())
+          'disabled' => ($subscriber->isWPUser() || $subscriber->isWooCommerceUser())
         )
       ),
       array(
@@ -291,7 +307,7 @@ class Pages {
         'params' => array(
           'label' => __('Last name', 'mailpoet'),
           'value' => $subscriber->last_name,
-          'disabled' => ($subscriber->isWPUser())
+          'disabled' => ($subscriber->isWPUser() || $subscriber->isWooCommerceUser())
         )
       ),
       array(
@@ -375,7 +391,7 @@ class Pages {
     $form_html .= '<label>Email *<br /><strong>'.$subscriber->email.'</strong></label>';
     $form_html .= '<br /><span style="font-size:85%;">';
     // special case for WP users as they cannot edit their subscriber's email
-    if($subscriber->isWPUser()) {
+    if($subscriber->isWPUser() || $subscriber->isWooCommerceUser()) {
       // check if subscriber's associated WP user is the currently logged in WP user
       $wp_current_user = wp_get_current_user();
       if($wp_current_user->user_email === $subscriber->email) {
@@ -424,7 +440,7 @@ class Pages {
     );
 
     return '<a href="'.Url::getManageUrl(
-      $this->subscriber
+      $this->subscriber ?: null
     ).'">'.$text.'</a>';
   }
 }

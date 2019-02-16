@@ -8,15 +8,16 @@ use MailPoet\Config\AccessControl;
 use MailPoet\Form\Util\FieldNameObfuscator;
 use MailPoet\Listing;
 use MailPoet\Models\Form;
-use MailPoet\Models\Setting;
 use MailPoet\Models\StatisticsForms;
 use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\Scheduler\Scheduler;
 use MailPoet\Segments\BulkAction;
 use MailPoet\Segments\SubscribersListings;
+use MailPoet\Settings\SettingsController;
+use MailPoet\Subscribers\RequiredCustomFieldValidator;
 use MailPoet\Subscribers\Source;
 use MailPoet\Subscription\Throttling as SubscriptionThrottling;
-use MailPoet\WP\Hooks;
+use MailPoet\WP\Functions as WPFunctions;
 
 if(!defined('ABSPATH')) exit;
 
@@ -27,6 +28,40 @@ class Subscribers extends APIEndpoint {
     'global' => AccessControl::PERMISSION_MANAGE_SUBSCRIBERS,
     'methods' => array('subscribe' => AccessControl::NO_ACCESS_RESTRICTION)
   );
+
+  /** @var Listing\BulkActionController */
+  private $bulk_action_controller;
+
+  /** @var SubscribersListings */
+  private $subscribers_listings;
+
+  /** @var RequiredCustomFieldValidator */
+  private $required_custom_field_validator;
+
+  /** @var Listing\Handler */
+  private $listing_handler;
+
+  /** @var WPFunctions */
+  private $wp;
+
+  /** @var SettingsController */
+  private $settings;
+
+  public function __construct(
+    Listing\BulkActionController $bulk_action_controller,
+    SubscribersListings $subscribers_listings,
+    RequiredCustomFieldValidator $required_custom_field_validator,
+    Listing\Handler $listing_handler,
+    WPFunctions $wp,
+    SettingsController $settings
+  ) {
+    $this->bulk_action_controller = $bulk_action_controller;
+    $this->subscribers_listings = $subscribers_listings;
+    $this->required_custom_field_validator = $required_custom_field_validator;
+    $this->listing_handler = $listing_handler;
+    $this->wp = $wp;
+    $this->settings = $settings;
+  }
 
   function get($data = array()) {
     $id = (isset($data['id']) ? (int)$data['id'] : false);
@@ -48,12 +83,9 @@ class Subscribers extends APIEndpoint {
   function listing($data = array()) {
 
     if(!isset($data['filter']['segment'])) {
-      $listing = new Listing\Handler('\MailPoet\Models\Subscriber', $data);
-
-      $listing_data = $listing->get();
+      $listing_data = $this->listing_handler->get('\MailPoet\Models\Subscriber', $data);
     } else {
-      $listings = new SubscribersListings();
-      $listing_data = $listings->getListingsInSegment($data);
+      $listing_data = $this->subscribers_listings->getListingsInSegment($data);
     }
 
     $data = array();
@@ -63,7 +95,7 @@ class Subscribers extends APIEndpoint {
         ->asArray();
     }
 
-    $listing_data['filters']['segment'] = Hooks::applyFilters(
+    $listing_data['filters']['segment'] = $this->wp->applyFilters(
       'mailpoet_subscribers_listings_filters_segments',
       $listing_data['filters']['segment']
     );
@@ -79,7 +111,7 @@ class Subscribers extends APIEndpoint {
     $form = Form::findOne($form_id);
     unset($data['form_id']);
 
-    $recaptcha = Setting::getValue('re_captcha');
+    $recaptcha = $this->settings->get('re_captcha');
 
     if(!$form) {
       return $this->badRequest(array(
@@ -104,7 +136,7 @@ class Subscribers extends APIEndpoint {
         'body' => array(
           'secret' => $recaptcha['secret_token'],
           'response' => $res
-        ) 
+        )
       ));
       if(is_wp_error($res)) {
         return $this->badRequest(array(
@@ -120,6 +152,12 @@ class Subscribers extends APIEndpoint {
     }
 
     $data = $this->deobfuscateFormPayload($data);
+
+    try {
+      $this->required_custom_field_validator->validate($data);
+    } catch (\Exception $e) {
+      return $this->badRequest([APIError::BAD_REQUEST => $e->getMessage()]);
+    }
 
     $segment_ids = (!empty($data['segments'])
       ? (array)$data['segments']
@@ -254,11 +292,14 @@ class Subscribers extends APIEndpoint {
   function bulkAction($data = array()) {
     try {
       if(!isset($data['listing']['filter']['segment'])) {
-        $bulk_action = new Listing\BulkAction('\MailPoet\Models\Subscriber', $data);
+        return $this->successResponse(
+          null,
+          $this->bulk_action_controller->apply('\MailPoet\Models\Subscriber', $data)
+        );
       } else {
         $bulk_action = new BulkAction($data);
+        return $this->successResponse(null, $bulk_action->apply());
       }
-      return $this->successResponse(null, $bulk_action->apply());
     } catch(\Exception $e) {
       return $this->errorResponse(array(
         $e->getCode() => $e->getMessage()

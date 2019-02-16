@@ -6,12 +6,35 @@ use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
 use MailPoet\Newsletter\Scheduler\Scheduler;
+use MailPoet\Subscribers\RequiredCustomFieldValidator;
+use MailPoet\Subscribers\ConfirmationEmailMailer;
+use MailPoet\Subscribers\NewSubscriberNotificationMailer;
 use MailPoet\Subscribers\Source;
 use MailPoet\Tasks\Sending;
 
 if(!defined('ABSPATH')) exit;
 
 class API {
+
+  /** @var NewSubscriberNotificationMailer */
+  private $new_subscribe_notification_mailer;
+
+  /** @var ConfirmationEmailMailer */
+  private $confirmation_email_mailer;
+
+  /** @var RequiredCustomFieldValidator */
+  private $required_custom_field_validator;
+
+  public function __construct(
+    NewSubscriberNotificationMailer $new_subscribe_notification_mailer,
+    ConfirmationEmailMailer $confirmation_email_mailer,
+    RequiredCustomFieldValidator $required_custom_field_validator
+  ) {
+    $this->new_subscribe_notification_mailer = $new_subscribe_notification_mailer;
+    $this->confirmation_email_mailer = $confirmation_email_mailer;
+    $this->required_custom_field_validator = $required_custom_field_validator;
+  }
+
   function getSubscriberFields() {
     $data = array(
       array(
@@ -63,11 +86,14 @@ class API {
       throw new \Exception($exception);
     }
 
-    // throw exception when trying to subscribe to a WP Users segment
+    // throw exception when trying to subscribe to WP Users or WooCommerce Customers segments
     $found_segments_ids = array();
     foreach($found_segments as $found_segment) {
       if($found_segment->type === Segment::TYPE_WP_USERS) {
         throw new \Exception(__(sprintf("Can't subscribe to a WordPress Users list with ID %d.", $found_segment->id), 'mailpoet'));
+      }
+      if($found_segment->type === Segment::TYPE_WC_USERS) {
+        throw new \Exception(__(sprintf("Can't subscribe to a WooCommerce Customers list with ID %d.", $found_segment->id), 'mailpoet'));
       }
       $found_segments_ids[] = $found_segment->id;
     }
@@ -85,7 +111,7 @@ class API {
     SubscriberSegment::subscribeToSegments($subscriber, $found_segments_ids);
 
     // schedule welcome email
-    if($schedule_welcome_email) {
+    if($schedule_welcome_email && $subscriber->status === Subscriber::STATUS_SUBSCRIBED) {
       $this->_scheduleWelcomeNotification($subscriber, $found_segments_ids);
     }
 
@@ -114,11 +140,14 @@ class API {
       throw new \Exception($exception);
     }
 
-    // throw exception when trying to subscribe to a WP Users segment
+    // throw exception when trying to subscribe to WP Users or WooCommerce Customers segments
     $found_segments_ids = array();
     foreach($found_segments as $segment) {
       if($segment->type === Segment::TYPE_WP_USERS) {
-        throw new \Exception(__(sprintf("Can't subscribe to a WordPress Users list with ID %d.", $segment->id), 'mailpoet'));
+        throw new \Exception(__(sprintf("Can't unsubscribe from a WordPress Users list with ID %d.", $segment->id), 'mailpoet'));
+      }
+      if($segment->type === Segment::TYPE_WC_USERS) {
+        throw new \Exception(__(sprintf("Can't unsubscribe from a WooCommerce Customers list with ID %d.", $segment->id), 'mailpoet'));
       }
       $found_segments_ids[] = $segment->id;
     }
@@ -138,12 +167,14 @@ class API {
   }
 
   function getLists() {
-    return Segment::whereNotEqual('type', Segment::TYPE_WP_USERS)->findArray();
+    return Segment::whereNotIn('type', [Segment::TYPE_WP_USERS, Segment::TYPE_WC_USERS])
+      ->findArray();
   }
 
   function addSubscriber(array $subscriber, $segments = array(), $options = array()) {
     $send_confirmation_email = (isset($options['send_confirmation_email']) && $options['send_confirmation_email'] === false) ? false : true;
     $schedule_welcome_email = (isset($options['schedule_welcome_email']) && $options['schedule_welcome_email'] === false) ? false : true;
+    $skip_subscriber_notification = (isset($options['skip_subscriber_notification']) && $options['skip_subscriber_notification'] === true) ? true : false;
 
     // throw exception when subscriber email is missing
     if(empty($subscriber['email'])) {
@@ -163,6 +194,8 @@ class API {
     list($default_fields, $custom_fields) = Subscriber::extractCustomFieldsFromFromObject($subscriber);
     // if some required default fields are missing, set their values
     $default_fields = Subscriber::setRequiredFieldsDefaultValues($default_fields);
+
+    $this->required_custom_field_validator->validate($custom_fields);
 
     // add subscriber
     $new_subscriber = Subscriber::create();
@@ -198,6 +231,10 @@ class API {
       // schedule welcome email(s)
       if($schedule_welcome_email && $new_subscriber->status === Subscriber::STATUS_SUBSCRIBED) {
         $this->_scheduleWelcomeNotification($new_subscriber, $segments);
+      }
+
+      if(!$skip_subscriber_notification) {
+        $this->sendSubscriberNotification($new_subscriber, $segments);
       }
     }
     return $new_subscriber->withCustomFields()->withSubscriptions()->asArray();
@@ -244,7 +281,7 @@ class API {
   }
 
   protected function _sendConfirmationEmail(Subscriber $subscriber) {
-    return $subscriber->sendConfirmationEmail();
+    return $this->confirmation_email_mailer->sendConfirmationEmail($subscriber);
   }
 
   protected function _scheduleWelcomeNotification(Subscriber $subscriber, array $segments) {
@@ -259,5 +296,9 @@ class API {
       }
     }
     return $result;
+  }
+
+  private function sendSubscriberNotification(Subscriber $subscriber, array $segment_ids) {
+    $this->new_subscribe_notification_mailer->send($subscriber, Segment::whereIn('id', $segment_ids)->findMany());
   }
 }

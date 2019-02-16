@@ -6,7 +6,7 @@ use MailPoet\Newsletter\Renderer\Columns\ColumnsHelper;
 use MailPoet\Newsletter\Renderer\StylesHelper;
 
 class Image {
-  static function render($element, $column_count) {
+  static function render($element, $column_base_width) {
     if(empty($element['src'])) {
       return '';
     }
@@ -14,12 +14,25 @@ class Image {
       $element['src'] = get_option('siteurl') . $element['src'];
     }
 
-    $element['width'] = (int)$element['width'];
-    $element['height'] = (int)$element['height'];
-    $element = self::adjustImageDimensions($element, $column_count);
+    $element['width'] = str_replace('px', '', $element['width']);
+    $element['height'] = str_replace('px', '', $element['height']);
+    $original_width = 0;
+    if(is_numeric($element['width']) && is_numeric($element['height'])) {
+      $element['width'] = (int)$element['width'];
+      $element['height'] = (int)$element['height'];
+      $original_width = $element['width'];
+      $element = self::adjustImageDimensions($element, $column_base_width);
+    }
+
+    // If image was downsized because of column width set width to aways fill full column (e.g. on mobile)
+    $style = '';
+    if($element['fullWidth'] === true && $original_width > $element['width']) {
+      $style = 'style="width:100%"';
+    }
+
     $image_template = '
-      <img style="max-width:' . $element['width'] . 'px;" src="' . $element['src'] . '"
-      width="' . $element['width'] . '" alt="' . $element['alt'] . '"/>
+      <img src="' . $element['src'] . '"
+      width="' . $element['width'] . '" alt="' . $element['alt'] . '"' . $style . '/>
       ';
     if(!empty($element['link'])) {
       $image_template = '<a href="' . $element['link'] . '">' . $image_template . '</a>';
@@ -28,6 +41,7 @@ class Image {
     if(!empty($element['styles']['block']['textAlign']) && in_array($element['styles']['block']['textAlign'], array('left', 'right'))) {
       $align = $element['styles']['block']['textAlign'];
     }
+
     $template = '
       <tr>
         <td class="mailpoet_image ' . (($element['fullWidth'] === false) ? 'mailpoet_padded_bottom mailpoet_padded_side' : '') . '" align="' . $align . '" valign="top">
@@ -37,21 +51,20 @@ class Image {
     return $template;
   }
 
-  static function adjustImageDimensions($element, $column_count) {
-    $column_width = ColumnsHelper::columnWidth($column_count);
+  static function adjustImageDimensions($element, $column_base_width) {
     $padded_width = StylesHelper::$padding_width * 2;
     // scale image to fit column width
-    if($element['width'] > $column_width) {
-      $ratio = $element['width'] / $column_width;
-      $element['width'] = $column_width;
+    if($element['width'] > $column_base_width) {
+      $ratio = $element['width'] / $column_base_width;
+      $element['width'] = $column_base_width;
       $element['height'] = (int)ceil($element['height'] / $ratio);
     }
     // resize image if the image is padded and wider than padded column width
     if($element['fullWidth'] === false &&
-      $element['width'] > ($column_width - $padded_width)
+      $element['width'] > ($column_base_width - $padded_width)
     ) {
-      $ratio = $element['width'] / ($column_width - $padded_width);
-      $element['width'] = $column_width - $padded_width;
+      $ratio = $element['width'] / ($column_base_width - $padded_width);
+      $element['width'] = $column_base_width - $padded_width;
       $element['height'] = (int)ceil($element['height'] / $ratio);
     }
     return $element;

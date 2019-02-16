@@ -2,10 +2,11 @@
 namespace MailPoet\API\JSON;
 
 use MailPoet\Config\AccessControl;
-use MailPoet\Models\Setting;
+use MailPoet\Settings\SettingsController;
+use MailPoetVendor\Psr\Container\ContainerInterface;
 use MailPoet\Util\Helpers;
 use MailPoet\Util\Security;
-use MailPoet\WP\Hooks;
+use MailPoet\WP\Functions as WPFunctions;
 
 if(!defined('ABSPATH')) exit;
 
@@ -20,11 +21,31 @@ class API {
   private $_available_api_versions = array(
       'v1'
   );
+  /** @var ContainerInterface */
+  private $container;
+
+  /** @var AccessControl */
   private $access_control;
+  
+  /** @var WPFunctions */
+  private $wp;
+
+  /** @var SettingsController */
+  private $settings;
+
   const CURRENT_VERSION = 'v1';
 
-  function __construct(AccessControl $access_control) {
+
+  function __construct(
+    ContainerInterface $container,
+    AccessControl $access_control,
+    SettingsController $settings,
+    WPFunctions $wp
+  ) {
+    $this->container = $container;
     $this->access_control = $access_control;
+    $this->settings = $settings;
+    $this->wp = $wp;
     foreach($this->_available_api_versions as $available_api_version) {
       $this->addEndpointNamespace(
         sprintf('%s\%s', __NAMESPACE__, $available_api_version),
@@ -54,17 +75,17 @@ class API {
   }
 
   function setupAjax() {
-    Hooks::doAction('mailpoet_api_setup', array($this));
+    $this->wp->doAction('mailpoet_api_setup', array($this));
     $this->setRequestData($_POST);
 
     $ignoreToken = (
-      Setting::getValue('re_captcha.enabled') && 
-      $this->_request_endpoint === 'subscribers' && 
+      $this->settings->get('re_captcha.enabled') &&
+      $this->_request_endpoint === 'subscribers' &&
       $this->_request_method === 'subscribe'
-    ); 
+    );
 
     if(!$ignoreToken && $this->checkToken() === false) {
-      $error_message = __('Sorry, but we couldn\'t connect to the MailPoet server. Please refresh the web page and try again.', 'mailpoet');
+      $error_message = __("Sorry, but we couldn't connect to the MailPoet server. Please refresh the web page and try again.", 'mailpoet');
       $error_response = $this->createErrorResponse(Error::UNAUTHORIZED, $error_message, Response::STATUS_UNAUTHORIZED);
       return $error_response->send();
     }
@@ -101,7 +122,7 @@ class API {
           $namespace,
           ucfirst($this->_request_endpoint)
         );
-        if(class_exists($endpoint_class)) {
+        if($this->container->has($endpoint_class)) {
           $this->_request_endpoint_class = $endpoint_class;
           break;
         }
@@ -131,12 +152,13 @@ class API {
 
   function processRoute() {
     try {
-      if(empty($this->_request_endpoint_class)) {
+      if(empty($this->_request_endpoint_class) ||
+        !$this->container->has($this->_request_endpoint_class)
+      ) {
         throw new \Exception(__('Invalid API endpoint.', 'mailpoet'));
       }
 
-      $endpoint = new $this->_request_endpoint_class();
-
+      $endpoint = $this->container->get($this->_request_endpoint_class);
       if(!method_exists($endpoint, $this->_request_method)) {
         throw new \Exception(__('Invalid API endpoint method.', 'mailpoet'));
       }

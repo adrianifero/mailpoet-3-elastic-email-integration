@@ -5,6 +5,11 @@ if(!defined('ABSPATH')) exit;
 
 class WelcomeBlank1Column {
 
+  private $assets_url;
+  private $external_template_image_url;
+  private $template_image_url;
+  private $social_icon_url;
+
   function __construct($assets_url) {
     $this->assets_url = $assets_url;
     $this->external_template_image_url = 'https://ps.w.org/mailpoet/assets/newsletter-templates/welcome-email-blank-1-column';
@@ -15,7 +20,7 @@ class WelcomeBlank1Column {
   function get() {
     return array(
       'name' => __("Welcome Email: Blank 1 Column", 'mailpoet'),
-      'categories' => json_encode(array('welcome', 'blank')),
+      'categories' => json_encode(array('welcome')),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),
       'body' => json_encode($this->getBody()),

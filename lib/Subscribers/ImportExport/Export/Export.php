@@ -4,11 +4,8 @@ namespace MailPoet\Subscribers\ImportExport\Export;
 
 use MailPoet\Config\Env;
 use MailPoet\Models\CustomField;
-use MailPoet\Models\Segment;
-use MailPoet\Models\Subscriber;
-use MailPoet\Models\SubscriberSegment;
 use MailPoet\Subscribers\ImportExport\ImportExportFactory;
-use MailPoet\Util\Helpers;
+use function MailPoet\Util\array_column;
 use MailPoet\Util\Security;
 use MailPoet\Util\XLSXWriter;
 
@@ -31,12 +28,12 @@ class Export {
     }
 
     $this->default_subscribers_getter = new DefaultSubscribersGetter(
-      $data['segments'], 
+      $data['segments'],
       self::SUBSCRIBER_BATCH_SIZE
     );
 
     $this->dynamic_subscribers_getter = new DynamicSubscribersGetter(
-      $data['segments'], 
+      $data['segments'],
       self::SUBSCRIBER_BATCH_SIZE
     );
 
@@ -192,7 +189,7 @@ class Export {
   }
 
   function getSubscriberCustomFields() {
-    return Helpers::arrayColumn(
+    return array_column(
       CustomField::findArray(),
       'name',
       'id'

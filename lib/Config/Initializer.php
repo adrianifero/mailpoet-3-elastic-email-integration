@@ -4,11 +4,15 @@ namespace MailPoet\Config;
 
 use MailPoet\API;
 use MailPoet\Cron\CronTrigger;
+use MailPoet\DI\ContainerWrapper;
 use MailPoet\Models\Setting;
 use MailPoet\Router;
+use MailPoet\Settings\SettingsController;
 use MailPoet\Util\ConflictResolver;
 use MailPoet\Util\Helpers;
+use MailPoet\Util\Notices\PermanentNotices;
 use MailPoet\WP\Notice as WPNotice;
+use MailPoetVendor\Psr\Container\ContainerInterface;
 
 if(!defined('ABSPATH')) exit;
 
@@ -17,6 +21,8 @@ require_once(ABSPATH . 'wp-admin/includes/plugin.php');
 class Initializer {
   private $access_control;
   private $renderer;
+  /** @var ContainerInterface */
+  private $container;
 
   const INITIALIZED = 'MAILPOET_INITIALIZED';
 
@@ -48,6 +54,8 @@ class Initializer {
         array('target' => '_blank')
       ));
     }
+
+    $this->loadContainer();
 
     // activation function
     register_activation_hook(
@@ -89,13 +97,17 @@ class Initializer {
     ));
   }
 
+  function loadContainer() {
+    $this->container = ContainerWrapper::getInstance(WP_DEBUG);
+  }
+
   function checkRequirements() {
     $requirements = new RequirementsChecker();
     return $requirements->checkAllRequirements();
   }
 
   function runActivator() {
-    $activator = new Activator();
+    $activator = $this->container->get(Activator::class);
     return $activator->activate();
   }
 
@@ -114,9 +126,7 @@ class Initializer {
   }
 
   function setupRenderer() {
-    $caching = !WP_DEBUG;
-    $debugging = WP_DEBUG;
-    $this->renderer = new Renderer($caching, $debugging);
+    $this->renderer = $this->container->get(Renderer::class);
   }
 
   function setupWidget() {
@@ -144,7 +154,7 @@ class Initializer {
 
       $this->setupPages();
 
-      $this->setupPHPVersionWarnings();
+      $this->setupPermanentNotices();
       $this->setupDeactivationSurvey();
 
       do_action('mailpoet_initialized', MAILPOET_VERSION);
@@ -157,7 +167,7 @@ class Initializer {
 
   function maybeDbUpdate() {
     try {
-      $current_db_version = Setting::getValue('db_version');
+      $current_db_version = $this->container->get(SettingsController::class)->get('db_version');
     } catch(\Exception $e) {
       $current_db_version = null;
     }
@@ -169,7 +179,7 @@ class Initializer {
   }
 
   function setupAccessControl() {
-    $this->access_control = new AccessControl();
+    $this->access_control = $this->container->get(AccessControl::class);
   }
 
   function setupInstaller() {
@@ -204,7 +214,7 @@ class Initializer {
   }
 
   function setupMenu() {
-    $menu = new Menu($this->renderer, Env::$assets_url, $this->access_control);
+    $menu = $this->container->get(Menu::class);
     $menu->init();
   }
 
@@ -218,14 +228,14 @@ class Initializer {
   }
 
   function setupChangelog() {
-    $changelog = new Changelog();
+    $changelog = $this->container->get(Changelog::class);
     $changelog->init();
   }
 
   function setupCronTrigger() {
     // setup cron trigger only outside of cli environment
     if(php_sapi_name() !== 'cli') {
-      $cron_trigger = new CronTrigger();
+      $cron_trigger = $this->container->get(CronTrigger::class);
       $cron_trigger->init();
     }
   }
@@ -248,12 +258,11 @@ class Initializer {
   }
 
   function setupJSONAPI() {
-    $json_api = API\API::JSON($this->access_control);
-    $json_api->init();
+    $this->container->get(API\JSON\API::class)->init();
   }
 
   function setupRouter() {
-    $router = new Router\Router($this->access_control);
+    $router = new Router\Router($this->access_control, $this->container);
     $router->init();
   }
 
@@ -270,8 +279,7 @@ class Initializer {
   }
 
   function setupHooks() {
-    $hooks = new Hooks();
-    $hooks->init();
+    $this->container->get(\MailPoet\Config\Hooks::class)->init();
   }
 
   function setupPrivacyPolicy() {
@@ -289,10 +297,9 @@ class Initializer {
     $erasers->init();
   }
 
-  function setupPHPVersionWarnings() {
-    $php_version_warnings = new PHPVersionWarnings();
-    $warnings = $php_version_warnings->init(phpversion(), Menu::isOnMailPoetAdminPage());
-    if(is_string($warnings)) echo $warnings;
+  function setupPermanentNotices() {
+    $notices = new PermanentNotices();
+    $notices->init();
   }
 
   function handleFailedInitialization($exception) {

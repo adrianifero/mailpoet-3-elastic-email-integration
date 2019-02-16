@@ -1,6 +1,7 @@
 <?php
-
 namespace MailPoet\Config\PopulatorData\Templates;
+
+if(!defined('ABSPATH')) exit;
 
 class Avocado {
 
@@ -15,7 +16,7 @@ class Avocado {
   function get() {
     return array(
       'name' => __("Avocado", 'mailpoet'),
-      'categories' => json_encode(array('woocommerce', 'sample')),
+      'categories' => json_encode(array('woocommerce', 'all')),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),
       'body' => json_encode($this->getBody()),
