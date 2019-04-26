@@ -2,8 +2,8 @@
 Contributors: mailpoet, wysija
 Tags: email marketing, newsletter, newsletter subscribers, email, welcome email, post notification, WooCommerce emails, newsletter builder
 Requires at least: 4.7
-Tested up to: 5.0
-Stable tag: 3.19.1
+Tested up to: 5.1
+Stable tag: 3.24.0
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -18,6 +18,8 @@ Our newsletter builder integrates perfectly with WordPress so any website owner 
 Schedule your newsletters, send them right away or set it up to send new blog post notifications automatically in just a few clicks.
 
 Trusted by 300,000 WordPress websites since 2011.
+
+[Visit our website to see the templates or try the demo](https://www.mailpoet.com/)
 
 = All features =
 
@@ -92,23 +94,26 @@ The MailPoet Sending Service is very easy to setup, you just have to enter a key
 
 = Translations =
 
+* Arabic
+* British
+* Catalan
+* Chinese
+* Danish
+* Dutch
 * French (FR and CA)
 * German
+* Hungarian
 * Italian
-* Spanish
-* Dutch
-* Portuguese (BR and PT)
-* British
-* Russian
 * Japanese
+* Mexican
 * Persian (IR)
 * Polish
-* Catalan
-* Danish
+* Portuguese (BR and PT)
+* Russian
+* Serbian
+* Spanish
 * Swedish
 * Turkish
-* Chinese
-* Hungarian
 
 We welcome experienced translators to translate directly on [our Transifex project](https://www.transifex.com/wysija/mp3/). Please note that any translations submitted via the "Translating WordPress" web site will not work.
 
@@ -168,6 +173,77 @@ Stop by our [support site](https://www.mailpoet.com/support).
 6. WooCommerce emails
 
 == Changelog ==
+
+= 3.24.0 - 2019-04-23 =
+* Added: add WooCommerce product blocks to your email;
+* Added: an optional way to automatically deactivate inactive subscribers who don't read your emails;
+* Added: setting to stop sending for inactive subscribers who haven't opened newsletters in a span of time.
+
+= 3.23.2 - 2019-04-16 =
+* Improved: UI clarity and user-friendliness;
+* Improved: security of the plugin. Thanks to Jan van der Put and Harm Blankers of REQON Security for the report!
+* Improved: UX for stats reporting emails;
+* Fixed: subscription confirmation email to include a plain text version of the email. Thanks Mathieu!
+
+= 3.23.1 - 2019-04-08 =
+* Added: new email type icons;
+* Improved: clearer steps in welcome wizard;
+* Fixed: added missing translation string;
+* Fixed: previewing unsubscribe page no longer unsubscribes the viewer;
+* Fixed: form validation error message translation strings.
+
+= 3.23.0 - 2019-04-02 =
+* Added: 12 fresh new templates;
+* Improved: mouse over highlights entire text block instead of partially;
+* Fixed: post titles with single and double quotes break email rendering in ALC and Post blocks;
+* Fixed: "import again" subscriber import errors fixed;
+* Fixed: Twig conflicts with third party plugins.
+* Fixed: import subscribers with custom fields no longer fails;
+* Fixed: social icon margins;
+* Fixed: updating an imported subscriber no longer triggers welcome email.
+
+= 3.22.0 - 2019-03-26 =
+* Improved: minor tweaks and fixes, special thanks to valdrinkoshi for a very helpful PR;
+* Improved: admin notices for authorizing FROM addresses;
+* Fixed: German umlaut characters no longer break JSON encoding and sending on some hosts. Thanks Oliver and others;
+* Fixed: increased limit for visible custom fields in form editor to 40;
+* Fixed: sending post notifications with "Monthly on the..." setting.
+
+= 3.21.1 - 2019-03-18 =
+* Improved: better highlighting when resizing widgets in editor;
+* Improved: sending with consistent FROM address;
+* Fixed: db connection issues for connections via socket. Thanks Nicolas!
+* Fixed: react console warnings when sending is paused.
+
+= 3.21.0 - 2019-03-11 =
+* Added: backwards compatibility method to fix 3rd party integrations;
+* Added: option to position the title of your post above the excerpt;
+* Added: change the default line heights in Styles sidebar;
+* Improved: human readable error message when mail mail function fails;
+* Fixed: incorrect "authorize your address" link in plugin.
+
+= 3.20.0 - 2019-03-05 =
+* Added: requirement for all "from" email addresses to be authorized to enable sending;
+* Added: WooCommerce revenues in stats email notifications;
+* Added: new image for WordPress repo;
+* Improved: adjustments for third-party plugins who do not integrate MailPoet correctly;
+* Improved: email type selection CSS improved to prevent issues with some languages;
+* Fixed: double elements in form editor;
+* Fixed: MailPoet Sending Service can be activated with a key that has an 'expiring' status;
+* Fixed: display bug for 1:2 and 2:1 column layouts in editor;
+* Fixed: pagination controls on listings pages.
+
+= 3.19.3 - 2019-02-26 =
+* Added: new step in import to educate users about good sending practices during subscriber import;
+* Improved: editor controls;
+* Fixed: issue with duplicating ALC posts.
+
+= 3.19.2 - 2019-02-19 =
+* Added: 13 brand new templates;
+* Improved: TinyMCE is hidden on mouse drag;
+* Improved: block and widget controls are hidden on mouse drag;
+* Fixed: cursor position does not get lost with long text on Chrome;
+* Fixed: Mailpoet icon in the Members plugin looks good again.
 
 = 3.19.1 - 2019-02-12 =
 * Added: warning against using free email address in "from" fields;

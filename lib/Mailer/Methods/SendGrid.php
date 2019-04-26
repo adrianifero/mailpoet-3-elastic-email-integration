@@ -1,5 +1,4 @@
 <?php
-// https://elasticemail.com/resources/api/send/
 
 namespace MailPoet\Mailer\Methods;
 
@@ -7,7 +6,7 @@ use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\Methods\ErrorMappers\SendGridMapper;
 use MailPoet\WP\Functions as WPFunctions;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 class SendGrid {
   public $url = 'https://api.elasticemail.com/v2/email/send';
@@ -33,11 +32,11 @@ class SendGrid {
       $this->url,
       $this->request($newsletter, $subscriber, $extra_params)
     );
-    if(is_wp_error($result)) {
+    if (is_wp_error($result)) {
       $error = $this->error_mapper->getConnectionError($result->get_error_message());
       return Mailer::formatMailerErrorResult($error);
     }
-    if($this->wp->wpRemoteRetrieveResponseCode($result) !== 200) {
+    if ($this->wp->wpRemoteRetrieveResponseCode($result) !== 200) {
       $response = json_decode($result['body'], true);
       $error = $this->error_mapper->getErrorFromResponse($response, $subscriber);
       return Mailer::formatMailerErrorResult($error);
@@ -52,21 +51,21 @@ class SendGrid {
       'fromname' => $this->sender['from_name'],
       'replyto' => $this->reply_to['reply_to_email'],
       'subject' => $newsletter['subject'],
-      'apikey' => $this->api_key,
+	  'apikey' => $this->api_key,
       'isTransactional' => false
     );
     $headers = array();
-    if(!empty($extra_params['unsubscribe_url'])) {
+    if (!empty($extra_params['unsubscribe_url'])) {
       $headers['List-Unsubscribe'] = '<' . $extra_params['unsubscribe_url'] . '>';
     }
-    if($headers) {
+    if ($headers) {
       $body['headers'] = json_encode($headers);
     }
-    if(!empty($newsletter['body']['html'])) {
-      $body['bodyHtml'] = $newsletter['body']['html'];
+    if (!empty($newsletter['body']['html'])) {
+      $body['html'] = $newsletter['body']['html'];
     }
-    if(!empty($newsletter['body']['text'])) {
-      $body['bodyText'] = $newsletter['body']['text'];
+    if (!empty($newsletter['body']['text'])) {
+      $body['text'] = $newsletter['body']['text'];
     }
     return $body;
   }

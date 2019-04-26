@@ -8,7 +8,7 @@ use MailPoet\Config\AccessControl;
 use MailPoet\Config\Activator;
 use MailPoet\Settings\SettingsController;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 class Setup extends APIEndpoint {
   private $wp;
@@ -27,7 +27,7 @@ class Setup extends APIEndpoint {
       $activator->activate();
       $this->wp->doAction('mailpoet_setup_reset');
       return $this->successResponse();
-    } catch(\Exception $e) {
+    } catch (\Exception $e) {
       return $this->errorResponse(array(
         $e->getCode() => $e->getMessage()
       ));

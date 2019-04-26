@@ -7,7 +7,7 @@ use MailPoet\Config\AccessControl;
 use MailPoet\Models\Segment;
 use MailPoet\Subscribers\ImportExport\Import\MailChimp;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 class ImportExport extends APIEndpoint {
   public $permissions = array(
@@ -19,7 +19,7 @@ class ImportExport extends APIEndpoint {
       $mailChimp = new MailChimp($data['api_key']);
       $lists = $mailChimp->getLists();
       return $this->successResponse($lists);
-    } catch(\Exception $e) {
+    } catch (\Exception $e) {
       return $this->errorResponse(array(
         $e->getCode() => $e->getMessage()
       ));
@@ -31,7 +31,7 @@ class ImportExport extends APIEndpoint {
       $mailChimp = new MailChimp($data['api_key']);
       $subscribers = $mailChimp->getSubscribers($data['lists']);
       return $this->successResponse($subscribers);
-    } catch(\Exception $e) {
+    } catch (\Exception $e) {
       return $this->errorResponse(array(
         $e->getCode() => $e->getMessage()
       ));
@@ -42,12 +42,12 @@ class ImportExport extends APIEndpoint {
     $segment = Segment::createOrUpdate($data);
     $errors = $segment->getErrors();
 
-    if(!empty($errors)) {
+    if (!empty($errors)) {
       return $this->errorResponse($errors);
     } else {
-      return $this->successResponse(
-        Segment::findOne($segment->id)->asArray()
-      );
+      $segment = Segment::findOne($segment->id);
+      if(!$segment instanceof Segment) return $this->errorResponse();
+      return $this->successResponse($segment->asArray());
     }
   }
 
@@ -58,7 +58,7 @@ class ImportExport extends APIEndpoint {
       );
       $process = $import->process();
       return $this->successResponse($process);
-    } catch(\Exception $e) {
+    } catch (\Exception $e) {
       return $this->errorResponse(array(
         $e->getCode() => $e->getMessage()
       ));
@@ -72,7 +72,7 @@ class ImportExport extends APIEndpoint {
       );
       $process = $export->process();
       return $this->successResponse($process);
-    } catch(\Exception $e) {
+    } catch (\Exception $e) {
       return $this->errorResponse(array(
         $e->getCode() => $e->getMessage()
       ));

@@ -5,7 +5,7 @@ use MailPoet\Models\Subscriber;
 use MailPoet\Models\Newsletter;
 use MailPoet\Util\Helpers;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 
@@ -45,6 +45,7 @@ class Migrator {
       'statistics_forms',
       'mapping_to_external_entities',
       'log',
+      'user_flags',
     ];
   }
 
@@ -52,7 +53,7 @@ class Migrator {
     global $wpdb;
 
     $output = [];
-    foreach($this->models as $model) {
+    foreach ($this->models as $model) {
       $modelMethod = Helpers::underscoreToCamelCase($model);
       $output = array_merge(dbDelta($this->$modelMethod()), $output);
     }
@@ -197,12 +198,13 @@ class Migrator {
       'updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
       'deleted_at timestamp NULL,',
       'unconfirmed_data longtext,',
-      "source enum('form','imported','administrator','api','wordpress_user','unknown') DEFAULT 'unknown',",
+      "source enum('form','imported','administrator','api','wordpress_user','woocommerce_user','unknown') DEFAULT 'unknown',",
       'count_confirmations int(11) unsigned NOT NULL DEFAULT 0,',
       'PRIMARY KEY  (id),',
       'UNIQUE KEY email (email),',
       'KEY wp_user_id (wp_user_id),',
-      'KEY updated_at (updated_at)',
+      'KEY updated_at (updated_at),',
+      'KEY status_deleted_at (status,deleted_at)',
     );
     return $this->sqlify(__FUNCTION__, $attributes);
   }
@@ -264,7 +266,8 @@ class Migrator {
       'created_at timestamp NULL,',
       'updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
       'deleted_at timestamp NULL,',
-      'PRIMARY KEY  (id)'
+      'PRIMARY KEY  (id),',
+      'KEY type_status (type,status)'
     );
     return $this->sqlify(__FUNCTION__, $attributes);
   }
@@ -337,7 +340,8 @@ class Migrator {
       'updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
       'PRIMARY KEY  (id),',
       'KEY newsletter_id (newsletter_id),',
-      'KEY queue_id (queue_id)',
+      'KEY queue_id (queue_id),',
+      'KEY url (url(255))',
     );
     return $this->sqlify(__FUNCTION__, $attributes);
   }
@@ -412,7 +416,8 @@ class Migrator {
       'PRIMARY KEY  (id),',
       'KEY newsletter_id (newsletter_id),',
       'KEY queue_id (queue_id),',
-      'KEY subscriber_id (subscriber_id)',
+      'KEY subscriber_id (subscriber_id),',
+      'KEY created_at (created_at)',
     );
     return $this->sqlify(__FUNCTION__, $attributes);
   }
@@ -465,6 +470,20 @@ class Migrator {
       'created_at timestamp DEFAULT CURRENT_TIMESTAMP,',
       'PRIMARY KEY (id)',
     ];
+    return $this->sqlify(__FUNCTION__, $attributes);
+  }
+
+  function userFlags() {
+    $attributes = array(
+      'id int(11) unsigned NOT NULL AUTO_INCREMENT,',
+      'user_id bigint(20) NOT NULL,',
+      'name varchar(50) NOT NULL,',
+      'value varchar(255),',
+      'created_at timestamp NULL,',
+      'updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
+      'PRIMARY KEY (id),',
+      'UNIQUE KEY user_id_name (user_id, name)',
+    );
     return $this->sqlify(__FUNCTION__, $attributes);
   }
 

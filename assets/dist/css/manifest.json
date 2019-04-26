@@ -1,8 +1,8 @@
 {
-    "admin-global.css": "admin-global.bcd24dab.css",
-    "admin.css": "admin.cccdf337.css",
-    "importExport.css": "importExport.b3745466.css",
-    "newsletter_editor.css": "newsletter_editor.e7dbc3c9.css",
-    "public.css": "public.57ec16af.css",
-    "rtl.css": "rtl.58324dad.css"
+    "admin.css": "admin.e1f7eff2.css",
+    "adminGlobal.css": "adminGlobal.23524fe1.css",
+    "importExport.css": "importExport.44183941.css",
+    "newsletterEditor.css": "newsletterEditor.c7984640.css",
+    "public.css": "public.82ef7cbc.css",
+    "rtl.css": "rtl.c2536d81.css"
 }

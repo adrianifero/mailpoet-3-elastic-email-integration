@@ -3,8 +3,9 @@
 namespace MailPoet\API\JSON;
 
 use MailPoet\Config\AccessControl;
+use MailPoet\WP\Functions as WPFunctions;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 abstract class Endpoint {
   public $permissions = array(
@@ -21,18 +22,18 @@ abstract class Endpoint {
   function errorResponse(
     $errors = array(), $meta = array(), $status = Response::STATUS_NOT_FOUND
   ) {
-    if(empty($errors)) {
+    if (empty($errors)) {
       $errors = array(
-        Error::UNKNOWN => __('An unknown error occurred.', 'mailpoet')
+        Error::UNKNOWN => WPFunctions::get()->__('An unknown error occurred.', 'mailpoet')
       );
     }
     return new ErrorResponse($errors, $meta, $status);
   }
 
   function badRequest($errors = array(), $meta = array()) {
-    if(empty($errors)) {
+    if (empty($errors)) {
       $errors = array(
-        Error::BAD_REQUEST => __('Invalid request parameters', 'mailpoet')
+        Error::BAD_REQUEST => WPFunctions::get()->__('Invalid request parameters', 'mailpoet')
       );
     }
     return new ErrorResponse($errors, $meta, Response::STATUS_BAD_REQUEST);

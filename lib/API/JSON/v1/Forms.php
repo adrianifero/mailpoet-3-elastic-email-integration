@@ -10,8 +10,9 @@ use MailPoet\Form\Util;
 use MailPoet\Listing;
 use MailPoet\Models\Form;
 use MailPoet\Models\StatisticsForms;
+use MailPoet\WP\Functions as WPFunctions;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 class Forms extends APIEndpoint {
 
@@ -36,20 +37,19 @@ class Forms extends APIEndpoint {
   function get($data = array()) {
     $id = (isset($data['id']) ? (int)$data['id'] : false);
     $form = Form::findOne($id);
-    if($form === false) {
-      return $this->errorResponse(array(
-        APIError::NOT_FOUND => __('This form does not exist.', 'mailpoet')
-      ));
-    } else {
+    if ($form instanceof Form) {
       return $this->successResponse($form->asArray());
     }
+    return $this->errorResponse(array(
+      APIError::NOT_FOUND => WPFunctions::get()->__('This form does not exist.', 'mailpoet')
+    ));
   }
 
   function listing($data = array()) {
     $listing_data = $this->listing_handler->get('\MailPoet\Models\Form', $data);
 
     $data = array();
-    foreach($listing_data['items'] as $form) {
+    foreach ($listing_data['items'] as $form) {
       $form = $form->asArray();
 
       $form['signups'] = StatisticsForms::getTotalSignups($form['id']);
@@ -73,31 +73,31 @@ class Forms extends APIEndpoint {
   function create() {
     // create new form
     $form_data = array(
-      'name' => __('New form', 'mailpoet'),
+      'name' => WPFunctions::get()->__('New form', 'mailpoet'),
       'body' => array(
         array(
           'id' => 'email',
-          'name' => __('Email', 'mailpoet'),
+          'name' => WPFunctions::get()->__('Email', 'mailpoet'),
           'type' => 'text',
           'static' => true,
           'params' => array(
-            'label' => __('Email', 'mailpoet'),
+            'label' => WPFunctions::get()->__('Email', 'mailpoet'),
             'required' => true
           )
         ),
         array(
           'id' => 'submit',
-          'name' => __('Submit', 'mailpoet'),
+          'name' => WPFunctions::get()->__('Submit', 'mailpoet'),
           'type' => 'submit',
           'static' => true,
           'params' => array(
-            'label' => __('Subscribe!', 'mailpoet')
+            'label' => WPFunctions::get()->__('Subscribe!', 'mailpoet')
           )
         )
       ),
       'settings' => array(
         'on_success' => 'message',
-        'success_message' => __('Check your inbox or spam folder to confirm your subscription.', 'mailpoet'),
+        'success_message' => WPFunctions::get()->__('Check your inbox or spam folder to confirm your subscription.', 'mailpoet'),
         'segments' => null,
         'segments_selected_by' => 'admin'
       )
@@ -110,13 +110,12 @@ class Forms extends APIEndpoint {
     $form = Form::createOrUpdate($data);
     $errors = $form->getErrors();
 
-    if(!empty($errors)) {
-      return $this->badRequest($errors);
-    } else {
-      return $this->successResponse(
-        Form::findOne($form->id)->asArray()
-      );
+    if (empty($errors)) {
+      $form = Form::findOne($form->id);
+      if(!$form instanceof Form) return $this->errorResponse();
+      return $this->successResponse($form->asArray());
     }
+    return $this->badRequest($errors);
   }
 
   function previewEditor($data = array()) {
@@ -124,7 +123,7 @@ class Forms extends APIEndpoint {
     $html = FormRenderer::renderHTML($data);
 
     // convert shortcodes
-    $html = do_shortcode($html);
+    $html = WPFunctions::get()->doShortcode($html);
 
     // styles
     $css = new Util\Styles(FormRenderer::getStyles($data));
@@ -138,31 +137,28 @@ class Forms extends APIEndpoint {
   function exportsEditor($data = array()) {
     $id = (isset($data['id']) ? (int)$data['id'] : false);
     $form = Form::findOne($id);
-    if($form === false) {
-      return $this->errorResponse(array(
-        APIError::NOT_FOUND => __('This form does not exist.', 'mailpoet')
-      ));
-    } else {
+    if ($form instanceof Form) {
       $exports = Util\Export::getAll($form->asArray());
       return $this->successResponse($exports);
     }
+    return $this->errorResponse(array(
+      APIError::NOT_FOUND => WPFunctions::get()->__('This form does not exist.', 'mailpoet')
+    ));
   }
 
   function saveEditor($data = array()) {
-    $id = (isset($data['id']) ? (int)$data['id'] : false);
-
     $form_id = (isset($data['id']) ? (int)$data['id'] : 0);
-    $name = (isset($data['name']) ? $data['name'] : __('New form', 'mailpoet'));
+    $name = (isset($data['name']) ? $data['name'] : WPFunctions::get()->__('New form', 'mailpoet'));
     $body = (isset($data['body']) ? $data['body'] : array());
     $settings = (isset($data['settings']) ? $data['settings'] : array());
     $styles = (isset($data['styles']) ? $data['styles'] : '');
 
     // check if the form is used as a widget
     $is_widget = false;
-    $widgets = get_option('widget_mailpoet_form');
-    if(!empty($widgets)) {
-      foreach($widgets as $widget) {
-        if(isset($widget['form']) && (int)$widget['form'] === $form_id) {
+    $widgets = WPFunctions::get()->getOption('widget_mailpoet_form');
+    if (!empty($widgets)) {
+      foreach ($widgets as $widget) {
+        if (isset($widget['form']) && (int)$widget['form'] === $form_id) {
           $is_widget = true;
           break;
         }
@@ -173,10 +169,10 @@ class Forms extends APIEndpoint {
     // or if it's selected by the admin
     $has_segment_selection = false;
     $list_selection = [];
-    foreach($body as $i => $block) {
-      if($block['type'] === 'segment') {
+    foreach ($body as $i => $block) {
+      if ($block['type'] === 'segment') {
         $has_segment_selection = true;
-        if(!empty($block['params']['values'])) {
+        if (!empty($block['params']['values'])) {
           $list_selection = array_filter(
             array_map(function($segment) {
               return (isset($segment['id'])
@@ -191,7 +187,7 @@ class Forms extends APIEndpoint {
     }
 
     // check list selection
-    if($has_segment_selection === true) {
+    if ($has_segment_selection === true) {
       $settings['segments_selected_by'] = 'user';
       $settings['segments'] = $list_selection;
     } else {
@@ -208,58 +204,64 @@ class Forms extends APIEndpoint {
 
     $errors = $form->getErrors();
 
-    if(!empty($errors)) {
+    if (!empty($errors)) {
       return $this->badRequest($errors);
-    } else {
-      return $this->successResponse(
-        Form::findOne($form->id)->asArray(),
-        array('is_widget' => $is_widget)
-      );
     }
+    $form = Form::findOne($form->id);
+    if(!$form instanceof Form) return $this->errorResponse();
+    return $this->successResponse(
+      $form->asArray(),
+      array('is_widget' => $is_widget)
+    );
   }
 
   function restore($data = array()) {
     $id = (isset($data['id']) ? (int)$data['id'] : false);
     $form = Form::findOne($id);
-    if($form === false) {
-      return $this->errorResponse(array(
-        APIError::NOT_FOUND => __('This form does not exist.', 'mailpoet')
-      ));
-    } else {
+    if ($form instanceof Form) {
       $form->restore();
+      $form = Form::findOne($form->id);
+      if(!$form instanceof Form) return $this->errorResponse();
       return $this->successResponse(
-        Form::findOne($form->id)->asArray(),
+        $form->asArray(),
         array('count' => 1)
       );
+    } else {
+      return $this->errorResponse(array(
+        APIError::NOT_FOUND => WPFunctions::get()->__('This form does not exist.', 'mailpoet')
+      ));
     }
   }
 
   function trash($data = array()) {
     $id = (isset($data['id']) ? (int)$data['id'] : false);
     $form = Form::findOne($id);
-    if($form === false) {
-      return $this->errorResponse(array(
-        APIError::NOT_FOUND => __('This form does not exist.', 'mailpoet')
-      ));
-    } else {
+    if ($form instanceof Form) {
       $form->trash();
+      $form = Form::findOne($form->id);
+      if(!$form instanceof Form) return $this->errorResponse();
       return $this->successResponse(
-        Form::findOne($form->id)->asArray(),
+        $form->asArray(),
         array('count' => 1)
       );
+    } else {
+      return $this->errorResponse(array(
+        APIError::NOT_FOUND => WPFunctions::get()->__('This form does not exist.', 'mailpoet')
+      ));
     }
   }
 
   function delete($data = array()) {
     $id = (isset($data['id']) ? (int)$data['id'] : false);
     $form = Form::findOne($id);
-    if($form === false) {
-      return $this->errorResponse(array(
-        APIError::NOT_FOUND => __('This form does not exist.', 'mailpoet')
-      ));
-    } else {
+    if ($form instanceof Form) {
       $form->delete();
+
       return $this->successResponse(null, array('count' => 1));
+    } else {
+      return $this->errorResponse(array(
+        APIError::NOT_FOUND => WPFunctions::get()->__('This form does not exist.', 'mailpoet')
+      ));
     }
   }
 
@@ -267,25 +269,27 @@ class Forms extends APIEndpoint {
     $id = (isset($data['id']) ? (int)$data['id'] : false);
     $form = Form::findOne($id);
 
-    if($form === false) {
-      return $this->errorResponse(array(
-        APIError::NOT_FOUND => __('This form does not exist.', 'mailpoet')
-      ));
-    } else {
+    if ($form instanceof Form) {
       $data = array(
         'name' => sprintf(__('Copy of %s', 'mailpoet'), $form->name)
       );
       $duplicate = $form->duplicate($data);
       $errors = $duplicate->getErrors();
 
-      if(!empty($errors)) {
+      if (!empty($errors)) {
         return $this->errorResponse($errors);
       } else {
+        $duplicate = Form::findOne($duplicate->id);
+        if(!$duplicate instanceof Form) return $this->errorResponse();
         return $this->successResponse(
-          Form::findOne($duplicate->id)->asArray(),
+          $duplicate->asArray(),
           array('count' => 1)
         );
       }
+    } else {
+      return $this->errorResponse(array(
+        APIError::NOT_FOUND => WPFunctions::get()->__('This form does not exist.', 'mailpoet')
+      ));
     }
   }
 
@@ -293,7 +297,7 @@ class Forms extends APIEndpoint {
     try {
       $meta = $this->bulk_action->apply('\MailPoet\Models\Form', $data);
       return $this->successResponse(null, $meta);
-    } catch(\Exception $e) {
+    } catch (\Exception $e) {
       return $this->errorResponse(array(
         $e->getCode() => $e->getMessage()
       ));

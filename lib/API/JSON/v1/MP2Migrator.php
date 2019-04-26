@@ -5,7 +5,7 @@ namespace MailPoet\API\JSON\v1;
 use MailPoet\API\JSON\Endpoint as APIEndpoint;
 use MailPoet\Config\AccessControl;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 class MP2Migrator extends APIEndpoint {
   public $permissions = array(
@@ -27,7 +27,7 @@ class MP2Migrator extends APIEndpoint {
     try {
       $process = $this->MP2Migrator->import($data);
       return $this->successResponse($process);
-    } catch(\Exception $e) {
+    } catch (\Exception $e) {
       return $this->errorResponse(array(
         $e->getCode() => $e->getMessage()
       ));
@@ -44,7 +44,7 @@ class MP2Migrator extends APIEndpoint {
     try {
       $process = $this->MP2Migrator->stopImport();
       return $this->successResponse($process);
-    } catch(\Exception $e) {
+    } catch (\Exception $e) {
       return $this->errorResponse(array(
         $e->getCode() => $e->getMessage()
       ));
@@ -61,7 +61,7 @@ class MP2Migrator extends APIEndpoint {
     try {
       $process = $this->MP2Migrator->skipImport();
       return $this->successResponse($process);
-    } catch(\Exception $e) {
+    } catch (\Exception $e) {
       return $this->errorResponse(array(
         $e->getCode() => $e->getMessage()
       ));

@@ -1,12 +1,14 @@
 <?php
 namespace MailPoet\Config;
 
-use MailPoet\Models\Setting;
 use MailPoet\Services\Bridge;
 use MailPoet\Services\Release\API;
 use MailPoet\Settings\SettingsController;
 
-if(!defined('ABSPATH')) exit;
+use MailPoet\WP\Functions as WPFunctions;
+
+if (!defined('ABSPATH')) exit;
+
 
 class Updater {
   private $plugin;
@@ -17,25 +19,25 @@ class Updater {
   private $settings;
 
   function __construct($plugin_name, $slug, $version) {
-    $this->plugin = plugin_basename($plugin_name);
+    $this->plugin = WPFunctions::get()->pluginBasename($plugin_name);
     $this->slug = $slug;
     $this->version = $version;
     $this->settings = new SettingsController();
   }
 
   function init() {
-    add_filter('pre_set_site_transient_update_plugins', array($this, 'checkForUpdate'));
+    WPFunctions::get()->addFilter('pre_set_site_transient_update_plugins', array($this, 'checkForUpdate'));
   }
 
   function checkForUpdate($update_transient) {
-    if(!is_object($update_transient)) {
+    if (!$update_transient instanceof \stdClass) {
       $update_transient = new \stdClass;
     }
 
     $latest_version = $this->getLatestVersion();
 
-    if(isset($latest_version->new_version)) {
-      if(version_compare($this->version, $latest_version->new_version, '<')) {
+    if (isset($latest_version->new_version)) {
+      if (version_compare($this->version, $latest_version->new_version, '<')) {
         $update_transient->response[$this->plugin] = $latest_version;
       }
       $update_transient->last_checked = time();

@@ -6,8 +6,9 @@ use MailPoet\API\JSON\Endpoint as APIEndpoint;
 use MailPoet\API\JSON\Error as APIError;
 use MailPoet\Config\AccessControl;
 use MailPoet\Models\NewsletterTemplate;
+use MailPoet\WP\Functions as WPFunctions;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 class NewsletterTemplates extends APIEndpoint {
   public $permissions = array(
@@ -17,14 +18,14 @@ class NewsletterTemplates extends APIEndpoint {
   function get($data = array()) {
     $id = (isset($data['id']) ? (int)$data['id'] : false);
     $template = NewsletterTemplate::findOne($id);
-    if($template === false) {
-      return $this->errorResponse(array(
-        APIError::NOT_FOUND => __('This template does not exist.', 'mailpoet')
-      ));
-    } else {
+    if ($template instanceof NewsletterTemplate) {
       return $this->successResponse(
         $template->asArray()
       );
+    } else {
+      return $this->errorResponse(array(
+        APIError::NOT_FOUND => WPFunctions::get()->__('This template does not exist.', 'mailpoet')
+      ));
     }
   }
 
@@ -43,9 +44,10 @@ class NewsletterTemplates extends APIEndpoint {
   }
 
   function save($data = array()) {
-    if(!empty($data['newsletter_id'])) {
+    ignore_user_abort(true);
+    if (!empty($data['newsletter_id'])) {
       $template = NewsletterTemplate::whereEqual('newsletter_id', $data['newsletter_id'])->findOne();
-      if(!empty($template)) {
+      if ($template instanceof NewsletterTemplate) {
         $data['id'] = $template->id;
       }
     }
@@ -55,11 +57,13 @@ class NewsletterTemplates extends APIEndpoint {
 
     NewsletterTemplate::cleanRecentlySent($data);
 
-    if(!empty($errors)) {
+    if (!empty($errors)) {
       return $this->errorResponse($errors);
     } else {
+      $template = NewsletterTemplate::findOne($template->id);
+      if(!$template instanceof NewsletterTemplate) return $this->errorResponse();
       return $this->successResponse(
-        NewsletterTemplate::findOne($template->id)->asArray()
+        $template->asArray()
       );
     }
   }
@@ -67,13 +71,13 @@ class NewsletterTemplates extends APIEndpoint {
   function delete($data = array()) {
     $id = (isset($data['id']) ? (int)$data['id'] : false);
     $template = NewsletterTemplate::findOne($id);
-    if($template === false) {
-      return $this->errorResponse(array(
-        APIError::NOT_FOUND => __('This template does not exist.', 'mailpoet')
-      ));
-    } else {
+    if ($template instanceof NewsletterTemplate) {
       $template->delete();
       return $this->successResponse(null, array('count' => 1));
+    } else {
+      return $this->errorResponse(array(
+        APIError::NOT_FOUND => WPFunctions::get()->__('This template does not exist.', 'mailpoet')
+      ));
     }
   }
 }

@@ -11,25 +11,25 @@ use MailPoet\WP\Functions as WPFunctions;
 
 class Shortcodes {
   private $wp;
-  
+
   function __construct() {
     $this->wp = new WPFunctions;
   }
 
   function init() {
     // form widget shortcode
-    add_shortcode('mailpoet_form', array($this, 'formWidget'));
+    WPFunctions::get()->addShortcode('mailpoet_form', array($this, 'formWidget'));
 
     // subscribers count shortcode
-    add_shortcode('mailpoet_subscribers_count', array(
+    WPFunctions::get()->addShortcode('mailpoet_subscribers_count', array(
       $this, 'getSubscribersCount'
     ));
-    add_shortcode('wysija_subscribers_count', array(
+    WPFunctions::get()->addShortcode('wysija_subscribers_count', array(
       $this, 'getSubscribersCount'
     ));
 
     // archives page
-    add_shortcode('mailpoet_archive', array(
+    WPFunctions::get()->addShortcode('mailpoet_archive', array(
       $this, 'getArchive'
     ));
 
@@ -47,9 +47,9 @@ class Shortcodes {
 
   function formWidget($params = array()) {
     // IMPORTANT: fixes conflict with MagicMember
-    remove_shortcode('user_list');
+    WPFunctions::get()->removeShortcode('user_list');
 
-    if(isset($params['id']) && (int)$params['id'] > 0) {
+    if (isset($params['id']) && (int)$params['id'] > 0) {
       $form_widget = new \MailPoet\Form\Widget();
       return $form_widget->widget(array(
         'form' => (int)$params['id'],
@@ -59,16 +59,16 @@ class Shortcodes {
   }
 
   function getSubscribersCount($params) {
-    if(!empty($params['segments'])) {
+    if (!empty($params['segments'])) {
       $segment_ids = array_map(function($segment_id) {
         return (int)trim($segment_id);
       }, explode(',', $params['segments']));
     }
 
-    if(empty($segment_ids)) {
-      return number_format_i18n(Subscriber::filter('subscribed')->count());
+    if (empty($segment_ids)) {
+      return WPFunctions::get()->numberFormatI18n(Subscriber::filter('subscribed')->count());
     } else {
-      return number_format_i18n(
+      return WPFunctions::get()->numberFormatI18n(
         SubscriberSegment::whereIn('segment_id', $segment_ids)
           ->select('subscriber_id')->distinct()
           ->filter('subscribed')
@@ -79,7 +79,7 @@ class Shortcodes {
 
   function getArchive($params) {
     $segment_ids = array();
-    if(!empty($params['segments'])) {
+    if (!empty($params['segments'])) {
       $segment_ids = array_map(function($segment_id) {
         return (int)trim($segment_id);
       }, explode(',', $params['segments']));
@@ -91,18 +91,18 @@ class Shortcodes {
 
     $subscriber = Subscriber::getCurrentWPUser();
 
-    if(empty($newsletters)) {
+    if (empty($newsletters)) {
       return $this->wp->applyFilters(
         'mailpoet_archive_no_newsletters',
-        __('Oops! There are no newsletters to display.', 'mailpoet')
+        WPFunctions::get()->__('Oops! There are no newsletters to display.', 'mailpoet')
       );
     } else {
       $title = $this->wp->applyFilters('mailpoet_archive_title', '');
-      if(!empty($title)) {
+      if (!empty($title)) {
         $html .= '<h3 class="mailpoet_archive_title">'.$title.'</h3>';
       }
       $html .= '<ul class="mailpoet_archive">';
-      foreach($newsletters as $newsletter) {
+      foreach ($newsletters as $newsletter) {
         $queue = $newsletter->queue()->findOne();
         $html .= '<li>'.
           '<span class="mailpoet_archive_date">'.
@@ -119,8 +119,8 @@ class Shortcodes {
   }
 
   function renderArchiveDate($newsletter) {
-    return date_i18n(
-      get_option('date_format'),
+    return WPFunctions::get()->dateI18n(
+      WPFunctions::get()->getOption('date_format'),
       strtotime($newsletter->processed_at)
     );
   }

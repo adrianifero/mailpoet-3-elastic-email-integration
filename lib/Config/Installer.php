@@ -1,13 +1,13 @@
 <?php
 namespace MailPoet\Config;
 
-use MailPoet\Models\Setting;
 use MailPoet\Services\Bridge;
 use MailPoet\Services\Release\API;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Util\License\License;
+use MailPoet\WP\Functions as WPFunctions;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 class Installer {
   const PREMIUM_PLUGIN_SLUG = 'mailpoet-premium';
@@ -23,11 +23,11 @@ class Installer {
   }
 
   function init() {
-    add_filter('plugins_api', array($this, 'getPluginInformation'), 10, 3);
+    WPFunctions::get()->addFilter('plugins_api', array($this, 'getPluginInformation'), 10, 3);
   }
 
   function getPluginInformation($data, $action = '', $args = null) {
-    if($action === 'plugin_information'
+    if ($action === 'plugin_information'
       && isset($args->slug)
       && $args->slug === $this->slug
     ) {
@@ -59,37 +59,37 @@ class Installer {
   }
 
   static function getPluginInstallationUrl($slug) {
-    $install_url = add_query_arg(
+    $install_url = WPFunctions::get()->addQueryArg(
       array(
         'action'   => 'install-plugin',
         'plugin'   => $slug,
-        '_wpnonce' => wp_create_nonce('install-plugin_' . $slug),
+        '_wpnonce' => WPFunctions::get()->wpCreateNonce('install-plugin_' . $slug),
       ),
-      self_admin_url('update.php')
+      WPFunctions::get()->selfAdminUrl('update.php')
     );
     return $install_url;
   }
 
   static function getPluginActivationUrl($slug) {
     $plugin_file = self::getPluginFile($slug);
-    if(empty($plugin_file)) {
+    if (empty($plugin_file)) {
       return false;
     }
-    $activate_url = add_query_arg(
+    $activate_url = WPFunctions::get()->addQueryArg(
       array(
         'action'   => 'activate',
         'plugin'   => $plugin_file,
-        '_wpnonce' => wp_create_nonce('activate-plugin_' . $plugin_file),
+        '_wpnonce' => WPFunctions::get()->wpCreateNonce('activate-plugin_' . $plugin_file),
       ),
-      self_admin_url('plugins.php')
+      WPFunctions::get()->selfAdminUrl('plugins.php')
     );
     return $activate_url;
   }
 
   private static function getInstalledPlugin($slug) {
     $installed_plugin = array();
-    if(is_dir(WP_PLUGIN_DIR . '/' . $slug)) {
-      $installed_plugin = get_plugins('/' . $slug);
+    if (is_dir(WP_PLUGIN_DIR . '/' . $slug)) {
+      $installed_plugin = WPFunctions::get()->getPlugins('/' . $slug);
     }
     return $installed_plugin;
   }
@@ -97,7 +97,7 @@ class Installer {
   static function getPluginFile($slug) {
     $plugin_file = false;
     $installed_plugin = self::getInstalledPlugin($slug);
-    if(!empty($installed_plugin)) {
+    if (!empty($installed_plugin)) {
       $plugin_file = $slug . '/' . key($installed_plugin);
     }
     return $plugin_file;
@@ -113,7 +113,7 @@ class Installer {
 
   private function formatInformation($info) {
     // cast sections object to array for WP to understand
-    if(isset($info->sections)) {
+    if (isset($info->sections)) {
       $info->sections = (array)$info->sections;
     }
     return $info;

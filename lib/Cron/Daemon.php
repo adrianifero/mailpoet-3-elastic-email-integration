@@ -3,7 +3,7 @@ namespace MailPoet\Cron;
 
 use MailPoet\Cron\Workers\WorkersFactory;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 class Daemon {
   public $timer;
@@ -27,7 +27,10 @@ class Daemon {
       $this->executeSendingServiceKeyCheckWorker();
       $this->executePremiumKeyCheckWorker();
       $this->executeBounceWorker();
-    } catch(\Exception $e) {
+      $this->executeExportFilesCleanupWorker();
+      $this->executeInactiveSubscribersWorker();
+      // TODO: execute WooCommerceSync worker
+    } catch (\Exception $e) {
       CronHelper::saveDaemonLastError($e->getMessage());
     }
     // Log successful execution
@@ -64,9 +67,23 @@ class Daemon {
     return $bounce->process();
   }
 
+  function executeWooCommerceSyncWorker() {
+    $worker = $this->workers_factory->createWooCommerceSyncWorker($this->timer);
+    return $worker->process();
+  }
+
   function executeMigrationWorker() {
     $migration = $this->workers_factory->createMigrationWorker($this->timer);
     return $migration->process();
   }
 
+  function executeExportFilesCleanupWorker() {
+    $worker = $this->workers_factory->createExportFilesCleanupWorker($this->timer);
+    return $worker->process();
+  }
+
+  function executeInactiveSubscribersWorker() {
+    $worker = $this->workers_factory->createInactiveSubscribersWorker($this->timer);
+    return $worker->process();
+  }
 }

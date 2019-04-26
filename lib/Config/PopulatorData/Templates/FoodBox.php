@@ -1,7 +1,10 @@
 <?php
 namespace MailPoet\Config\PopulatorData\Templates;
 
-if(!defined('ABSPATH')) exit;
+use MailPoet\WP\Functions as WPFunctions;
+
+if (!defined('ABSPATH')) exit;
+
 
 class FoodBox {
 
@@ -15,8 +18,8 @@ class FoodBox {
 
   function get() {
     return array(
-      'name' => __("Welcome to FoodBox", 'mailpoet'),
-      'categories' => json_encode(array('standard', 'all')),
+      'name' => WPFunctions::get()->__("Welcome to FoodBox", 'mailpoet'),
+      'categories' => json_encode(array('welcome', 'all')),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),
       'body' => json_encode($this->getBody()),

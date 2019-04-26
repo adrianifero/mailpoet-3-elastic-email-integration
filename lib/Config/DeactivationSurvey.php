@@ -3,6 +3,7 @@
 namespace MailPoet\Config;
 
 use MailPoet\WP\Notice;
+use MailPoet\WP\Functions as WPFunctions;
 
 class DeactivationSurvey {
 
@@ -14,24 +15,24 @@ class DeactivationSurvey {
   }
 
   public function init() {
-    add_action('admin_print_scripts', array($this, 'js'), 20);
-    add_action('admin_print_scripts', array($this, 'css'));
-    add_action('admin_footer', array($this, 'modal'));
+    WPFunctions::get()->addAction('admin_print_scripts', array($this, 'js'), 20);
+    WPFunctions::get()->addAction('admin_print_scripts', array($this, 'css'));
+    WPFunctions::get()->addAction('admin_footer', array($this, 'modal'));
   }
 
   private function shouldShow() {
-    if(!function_exists('get_current_screen')) {
+    if (!function_exists('get_current_screen')) {
       return false;
     }
-    $screen = get_current_screen();
-    if(!is_object($screen)) {
+    $screen = WPFunctions::get()->getCurrentScreen();
+    if (!is_object($screen)) {
       return false;
     }
     return (in_array(get_current_screen()->id, array('plugins', 'plugins-network'), true));
   }
 
   public function js() {
-    if(!$this->shouldShow()) {
+    if (!$this->shouldShow()) {
       return;
     }
     $this->render('deactivationSurvey/js.html');
@@ -39,14 +40,14 @@ class DeactivationSurvey {
   }
 
   public function css() {
-    if(!$this->shouldShow()) {
+    if (!$this->shouldShow()) {
       return;
     }
     $this->render('deactivationSurvey/css.html');
   }
 
   public function modal() {
-    if(!$this->shouldShow()) {
+    if (!$this->shouldShow()) {
       return;
     }
     $this->render('deactivationSurvey/index.html');

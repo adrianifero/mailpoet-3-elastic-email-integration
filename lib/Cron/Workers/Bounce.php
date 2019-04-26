@@ -13,7 +13,7 @@ use MailPoet\Services\Bridge;
 use MailPoet\Services\Bridge\API;
 use function MailPoet\Util\array_column;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 class Bounce extends SimpleWorker {
   const TASK_TYPE = 'bounce';
@@ -26,7 +26,7 @@ class Bounce extends SimpleWorker {
   public $api;
 
   function init() {
-    if(!$this->api) {
+    if (!$this->api) {
       $mailer_config = Mailer::getMailerConfig();
       $this->api = new API($mailer_config['mailpoet_api_key']);
     }
@@ -39,7 +39,7 @@ class Bounce extends SimpleWorker {
   function prepareTask(ScheduledTask $task) {
     BounceTask::prepareSubscribers($task);
 
-    if(!ScheduledTaskSubscriber::getUnprocessedCount($task->id)) {
+    if (!ScheduledTaskSubscriber::getUnprocessedCount($task->id)) {
       $task->delete();
       return false;
     }
@@ -50,14 +50,14 @@ class Bounce extends SimpleWorker {
   function processTask(ScheduledTask $task) {
     $subscriber_batches = new BatchIterator($task->id, self::BATCH_SIZE);
 
-    if(count($subscriber_batches) === 0) {
+    if (count($subscriber_batches) === 0) {
       $task->delete();
       return false;
     }
 
     $task_subscribers = new TaskSubscribers($task);
 
-    foreach($subscriber_batches as $subscribers_to_process_ids) {
+    foreach ($subscriber_batches as $subscribers_to_process_ids) {
       // abort if execution limit is reached
       CronHelper::enforceExecutionLimit($this->timer);
 
@@ -81,11 +81,11 @@ class Bounce extends SimpleWorker {
   }
 
   function processApiResponse(array $checked_emails) {
-    foreach($checked_emails as $email) {
-      if(!isset($email['address'], $email['bounce'])) {
+    foreach ($checked_emails as $email) {
+      if (!isset($email['address'], $email['bounce'])) {
         continue;
       }
-      if($email['bounce'] === self::BOUNCED_HARD) {
+      if ($email['bounce'] === self::BOUNCED_HARD) {
         $subscriber = Subscriber::findOne($email['address']);
         $subscriber->status = Subscriber::STATUS_BOUNCED;
         $subscriber->save();

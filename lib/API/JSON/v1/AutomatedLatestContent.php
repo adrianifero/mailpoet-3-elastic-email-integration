@@ -7,7 +7,7 @@ use MailPoet\Config\AccessControl;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoet\WP\Posts as WPPosts;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 class AutomatedLatestContent extends APIEndpoint {
   /** @var \MailPoet\Newsletter\AutomatedLatestContent  */
@@ -36,7 +36,7 @@ class AutomatedLatestContent extends APIEndpoint {
 
   function getTaxonomies($data = array()) {
     $post_type = (isset($data['postType'])) ? $data['postType'] : 'post';
-    $all_taxonomies = get_object_taxonomies($post_type, 'objects');
+    $all_taxonomies = WPFunctions::get()->getObjectTaxonomies($post_type, 'objects');
     $taxonomies_with_label = array_filter($all_taxonomies, function($taxonomy) {
       return $taxonomy->label;
     });
@@ -81,11 +81,11 @@ class AutomatedLatestContent extends APIEndpoint {
     $used_posts = array();
     $rendered_posts = array();
 
-    foreach($data['blocks'] as $block) {
+    foreach ($data['blocks'] as $block) {
       $posts = $this->ALC->getPosts($block, $used_posts);
       $rendered_posts[] = $this->ALC->transformPosts($block, $posts);
 
-      foreach($posts as $post) {
+      foreach ($posts as $post) {
         $used_posts[] = $post->ID;
       }
     }

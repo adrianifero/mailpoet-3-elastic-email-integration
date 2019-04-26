@@ -12,8 +12,9 @@ use MailPoet\Models\SubscriberSegment;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Util\Notices\AfterMigrationNotice;
 use MailPoet\Util\ProgressBar;
+use MailPoet\WP\Functions as WPFunctions;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 class MP2Migrator {
   const IMPORT_TIMEOUT_IN_SECONDS = 7200; // Timeout = 2 hours
@@ -93,7 +94,7 @@ class MP2Migrator {
    * @return boolean
    */
   public function isMigrationNeeded() {
-    if($this->settings->get('mailpoet_migration_complete')) {
+    if ($this->settings->get('mailpoet_migration_complete')) {
       return false;
     } else {
       return $this->tableExists($this->mp2_campaign_table); // Check if the MailPoet 2 tables exist
@@ -133,7 +134,7 @@ class MP2Migrator {
    *
    */
   public function init() {
-    if(!$this->settings->get('mailpoet_migration_started', false)) {
+    if (!$this->settings->get('mailpoet_migration_started', false)) {
       $this->emptyLog();
       $this->progressbar->setTotalCount(0);
     }
@@ -145,7 +146,7 @@ class MP2Migrator {
    *
    */
   private function enqueueScripts() {
-    wp_enqueue_script('jquery-ui-progressbar');
+    WPFunctions::get()->wpEnqueueScript('jquery-ui-progressbar');
   }
 
   /**
@@ -163,7 +164,7 @@ class MP2Migrator {
    * @return string Result
    */
   public function import() {
-    if(strpos(@ini_get('disable_functions'), 'set_time_limit') === false) {
+    if (strpos(@ini_get('disable_functions'), 'set_time_limit') === false) {
       @set_time_limit(3600);
     }
     ob_start();
@@ -171,7 +172,7 @@ class MP2Migrator {
     $this->log(sprintf('=== ' . mb_strtoupper(__('Start import', 'mailpoet'), 'UTF-8') . ' %s ===', $datetime->formatTime(time(), \MailPoet\WP\DateTime::DEFAULT_DATE_TIME_FORMAT)));
     $this->settings->set('import_stopped', false); // Reset the stop import action
 
-    if(!$this->settings->get('mailpoet_migration_started', false)) {
+    if (!$this->settings->get('mailpoet_migration_started', false)) {
       $this->eraseMP3Data();
       $this->settings->set('mailpoet_migration_started', true);
       $this->displayDataToMigrate();
@@ -185,7 +186,7 @@ class MP2Migrator {
     $this->importForms();
     $this->importSettings();
 
-    if(!$this->importStopped()) {
+    if (!$this->importStopped()) {
       $this->settings->set('mailpoet_migration_complete', true);
       $this->log(mb_strtoupper(__('Import complete', 'mailpoet'), 'UTF-8'));
       $after_migration_notice = new AfterMigrationNotice();
@@ -231,9 +232,9 @@ class MP2Migrator {
   }
 
   private function loadDoubleOptinSettings() {
-    $encoded_option = get_option('wysija');
+    $encoded_option = WPFunctions::get()->getOption('wysija');
     $values = unserialize(base64_decode($encoded_option));
-    if(isset($values['confirm_dbleoptin']) && $values['confirm_dbleoptin'] === '0') {
+    if (isset($values['confirm_dbleoptin']) && $values['confirm_dbleoptin'] === '0') {
       $this->double_optin_enabled = false;
     }
   }
@@ -287,7 +288,7 @@ class MP2Migrator {
 
     $this->progressbar->setTotalCount(0);
 
-    $result .= __('MailPoet 2 data found:', 'mailpoet') . "\n";
+    $result .= WPFunctions::get()->__('MailPoet 2 data found:', 'mailpoet') . "\n";
 
     // User Lists
     $users_lists_count = \ORM::for_table($this->mp2_list_table)->count();
@@ -315,28 +316,28 @@ class MP2Migrator {
    */
   private function importSegments() {
     $imported_segments_count = 0;
-    if($this->importStopped()) {
+    if ($this->importStopped()) {
       $this->segments_mapping = $this->getImportedMapping('segments');
       return;
     }
     $this->log(__("Importing segments...", 'mailpoet'));
     do {
-      if($this->importStopped()) {
+      if ($this->importStopped()) {
         break;
       }
       $lists = $this->getLists(self::CHUNK_SIZE);
       $lists_count = count($lists);
 
-      if(is_array($lists)) {
-        foreach($lists as $list) {
+      if (is_array($lists)) {
+        foreach ($lists as $list) {
           $segment = $this->importSegment($list);
-          if(!empty($segment)) {
+          if (!empty($segment)) {
             $imported_segments_count++;
           }
         }
       }
       $this->progressbar->incrementCurrentCount($lists_count);
-    } while(($lists != null) && ($lists_count > 0));
+    } while (($lists != null) && ($lists_count > 0));
 
     $this->segments_mapping = $this->getImportedMapping('segments');
 
@@ -352,9 +353,8 @@ class MP2Migrator {
    */
   private function getLists($limit) {
     global $wpdb;
-    $lists = array();
 
-    $last_id = $this->settings->get('last_imported_list_id', 0);
+    $last_id = intval($this->settings->get('last_imported_list_id', 0));
     $table = $this->mp2_list_table;
     $sql = "
       SELECT l.list_id, l.name, l.description, l.is_enabled, l.created_at
@@ -376,7 +376,7 @@ class MP2Migrator {
    */
   private function importSegment($list_data) {
     $datetime = new \MailPoet\WP\DateTime();
-    if($list_data['is_enabled']) {
+    if ($list_data['is_enabled']) {
       $segment = Segment::createOrUpdate(array(
         'name' => $list_data['name'],
         'type' => 'default',
@@ -386,7 +386,7 @@ class MP2Migrator {
     } else {
       $segment = Segment::getWPSegment();
     }
-    if(!empty($segment)) {
+    if (!empty($segment)) {
       // Map the segment with its old ID
       $mapping = new MappingToExternalEntities();
       $mapping->create(array(
@@ -406,15 +406,15 @@ class MP2Migrator {
    */
   private function importCustomFields() {
     $imported_custom_fields_count = 0;
-    if($this->importStopped()) {
+    if ($this->importStopped()) {
       return;
     }
     $this->log(__("Importing custom fields...", 'mailpoet'));
     $custom_fields = $this->getCustomFields();
 
-    foreach($custom_fields as $custom_field) {
+    foreach ($custom_fields as $custom_field) {
       $result = $this->importCustomField($custom_field);
-      if(!empty($result)) {
+      if (!empty($result)) {
         $imported_custom_fields_count++;
       }
     }
@@ -468,7 +468,7 @@ class MP2Migrator {
    */
   private function mapCustomFieldType($mp2_type) {
     $type = '';
-    switch($mp2_type) {
+    switch ($mp2_type) {
       case 'input':
         $type = 'text';
         break;
@@ -486,23 +486,23 @@ class MP2Migrator {
    *
    * @param string $name Parameter name
    * @param array $params MP2 parameters
-   * @return string serialized MP3 custom field params
+   * @return array serialized MP3 custom field params
    */
   private function mapCustomFieldParams($name, $params) {
-    if(!isset($params['label'])) {
+    if (!isset($params['label'])) {
       $params['label'] = $name;
     }
-    if(isset($params['required'])) {
+    if (isset($params['required'])) {
       $params['required'] = (bool)$params['required'];
     }
-    if(isset($params['validate'])) {
+    if (isset($params['validate'])) {
       $params['validate'] = $this->mapCustomFieldValidateValue($params['validate']);
     }
-    if(isset($params['date_order'])) { // Convert the date_order field
-      switch($params['date_type']) {
+    if (isset($params['date_order'])) { // Convert the date_order field
+      switch ($params['date_type']) {
 
         case 'year_month':
-          if(preg_match('/y$/i', $params['date_order'])) {
+          if (preg_match('/y$/i', $params['date_order'])) {
             $params['date_format'] = 'MM/YYYY';
           } else {
             $params['date_format'] = 'YYYY/MM';
@@ -533,7 +533,7 @@ class MP2Migrator {
    */
   private function mapCustomFieldValidateValue($mp2_value) {
     $value = '';
-    switch($mp2_value) {
+    switch ($mp2_value) {
       case 'onlyLetterSp':
       case 'onlyLetterNumber':
         $value = 'alphanum';
@@ -554,22 +554,22 @@ class MP2Migrator {
    */
   private function importSubscribers() {
     $imported_subscribers_count = 0;
-    if($this->importStopped()) {
+    if ($this->importStopped()) {
       return;
     }
     $this->log(__("Importing subscribers...", 'mailpoet'));
     $this->wp_users_segment = Segment::getWPSegment();
     do {
-      if($this->importStopped()) {
+      if ($this->importStopped()) {
         break;
       }
       $users = $this->getUsers(self::CHUNK_SIZE);
       $users_count = count($users);
 
-      if(is_array($users)) {
-        foreach($users as $user) {
+      if (is_array($users)) {
+        foreach ($users as $user) {
           $subscriber = $this->importSubscriber($user);
-          if(!empty($subscriber)) {
+          if (!empty($subscriber)) {
             $imported_subscribers_count++;
             $this->importSubscriberSegments($subscriber, $user['user_id']);
             $this->importSubscriberCustomFields($subscriber, $user);
@@ -577,7 +577,7 @@ class MP2Migrator {
         }
       }
       $this->progressbar->incrementCurrentCount($users_count);
-    } while(($users != null) && ($users_count > 0));
+    } while (($users != null) && ($users_count > 0));
 
     $this->log(sprintf(_n("%d subscriber imported", "%d subscribers imported", $imported_subscribers_count, 'mailpoet'), $imported_subscribers_count));
   }
@@ -591,8 +591,7 @@ class MP2Migrator {
    */
   private function getUsers($limit) {
     global $wpdb;
-    $users = array();
-    $last_id = $this->settings->get('last_imported_user_id', 0);
+    $last_id = intval($this->settings->get('last_imported_user_id', 0));
     $table = $this->mp2_user_table;
     $sql = "
       SELECT u.*
@@ -626,7 +625,7 @@ class MP2Migrator {
       'confirmed_at' => !empty($user_data['confirmed_at']) ? $datetime->formatTime($user_data['confirmed_at'], \MailPoet\WP\DateTime::DEFAULT_DATE_TIME_FORMAT) : null,
     ));
     $this->settings->set('last_imported_user_id', $user_data['user_id']);
-    if(!empty($subscriber)) {
+    if (!empty($subscriber)) {
       // Map the subscriber with its old ID
       $mapping = new MappingToExternalEntities();
       $mapping->create(array(
@@ -648,7 +647,7 @@ class MP2Migrator {
   private function mapUserStatus($mp2_user_status) {
 
 
-    switch($mp2_user_status) {
+    switch ($mp2_user_status) {
       case 1:
         $status = 'subscribed';
         break;
@@ -658,7 +657,7 @@ class MP2Migrator {
       case 0:
       default:
         //if MP2 double-optin is disabled, we change "unconfirmed" status in MP2 to "confirmed" status in MP3.
-        if(!$this->double_optin_enabled) {
+        if (!$this->double_optin_enabled) {
           $status = 'subscribed';
         } else {
           $status = 'unconfirmed';
@@ -675,7 +674,7 @@ class MP2Migrator {
    */
   private function importSubscriberSegments($subscriber, $user_id) {
     $user_lists = $this->getUserLists($user_id);
-    foreach($user_lists as $user_list) {
+    foreach ($user_lists as $user_list) {
       $this->importSubscriberSegment($subscriber->id, $user_list);
     }
   }
@@ -689,7 +688,6 @@ class MP2Migrator {
    */
   private function getUserLists($user_id) {
     global $wpdb;
-    $user_lists = array();
 
     $table = $this->mp2_user_list_table;
     $sql = "
@@ -712,7 +710,7 @@ class MP2Migrator {
   private function importSubscriberSegment($subscriber_id, $user_list) {
     $subscriber_segment = null;
     $datetime = new \MailPoet\WP\DateTime();
-    if(isset($this->segments_mapping[$user_list['list_id']])) {
+    if (isset($this->segments_mapping[$user_list['list_id']])) {
       $segment_id = $this->segments_mapping[$user_list['list_id']];
       $status = (($segment_id == $this->wp_users_segment->id) || empty($user_list['unsub_date'])) ? 'subscribed' : 'unsubscribed'; // the users belonging to the wp_users segment are always subscribed
       $data = array(
@@ -736,7 +734,7 @@ class MP2Migrator {
    */
   private function importSubscriberCustomFields($subscriber, $user) {
     $imported_custom_fields = $this->getImportedCustomFields();
-    foreach($imported_custom_fields as $custom_field) {
+    foreach ($imported_custom_fields as $custom_field) {
       $custom_field_column = 'cf_' . $custom_field['id'];
       $this->importSubscriberCustomField($subscriber->id, $custom_field, $user[$custom_field_column]);
     }
@@ -769,7 +767,7 @@ class MP2Migrator {
    * @return SubscriberCustomField
    */
   private function importSubscriberCustomField($subscriber_id, $custom_field, $custom_field_value) {
-    if($custom_field['type'] == 'date') {
+    if ($custom_field['type'] == 'date') {
       $datetime = new \MailPoet\WP\DateTime();
       $value = $datetime->formatTime($custom_field_value, \MailPoet\WP\DateTime::DEFAULT_DATE_TIME_FORMAT); // Convert the date field
     } else {
@@ -794,7 +792,7 @@ class MP2Migrator {
   public function getImportedMapping($model) {
     $mappings = array();
     $mapping_relations = MappingToExternalEntities::where('type', $model)->findArray();
-    foreach($mapping_relations as $relation) {
+    foreach ($mapping_relations as $relation) {
       $mappings[$relation['old_id']] = $relation['new_id'];
     }
     return $mappings;
@@ -806,27 +804,27 @@ class MP2Migrator {
    */
   private function importForms() {
     $imported_forms_count = 0;
-    if($this->importStopped()) {
+    if ($this->importStopped()) {
       return;
     }
     $this->log(__("Importing forms...", 'mailpoet'));
     do {
-      if($this->importStopped()) {
+      if ($this->importStopped()) {
         break;
       }
       $forms = $this->getForms(self::CHUNK_SIZE);
       $forms_count = count($forms);
 
-      if(is_array($forms)) {
-        foreach($forms as $form) {
+      if (is_array($forms)) {
+        foreach ($forms as $form) {
           $new_form = $this->importForm($form);
-          if(!empty($new_form)) {
+          if (!empty($new_form)) {
             $imported_forms_count++;
           }
         }
       }
       $this->progressbar->incrementCurrentCount($forms_count);
-    } while(($forms != null) && ($forms_count > 0));
+    } while (($forms != null) && ($forms_count > 0));
 
     $this->log(sprintf(_n("%d form imported", "%d forms imported", $imported_forms_count, 'mailpoet'), $imported_forms_count));
   }
@@ -840,9 +838,8 @@ class MP2Migrator {
    */
   private function getForms($limit) {
     global $wpdb;
-    $forms = array();
 
-    $last_id = $this->settings->get('last_imported_form_id', 0);
+    $last_id = intval($this->settings->get('last_imported_form_id', 0));
     $table = $this->mp2_form_table;
     $sql = "
       SELECT f.*
@@ -876,12 +873,12 @@ class MP2Migrator {
     );
 
     $mp3_form_body = array();
-    foreach($body as $field) {
+    foreach ($body as $field) {
       $type = $this->mapCustomFieldType($field['type']);
-      if($type == 'segment') {
+      if ($type == 'segment') {
           $field_id = 'segments';
       } else {
-        switch($field['field']) {
+        switch ($field['field']) {
           case 'firstname':
             $field_id = 'first_name';
             break;
@@ -894,10 +891,10 @@ class MP2Migrator {
       }
       $field_id = preg_replace('/^cf_(\d+)$/', '$1', $field_id);
       $params = $this->mapCustomFieldParams($field['name'], $field['params']);
-      if(isset($params['text'])) {
+      if (isset($params['text'])) {
         $params['text'] = $this->replaceMP2Shortcodes(html_entity_decode($params['text']));
       }
-      if(isset($params['values'])) {
+      if (isset($params['values'])) {
         $params['values'] = $this->replaceListIds($params['values']);
       }
       $mp3_form_body[] = array(
@@ -927,8 +924,8 @@ class MP2Migrator {
    */
   private function getMappedSegmentIds($mp2_list_ids) {
     $mp3_segment_ids = array();
-    foreach($mp2_list_ids as $list_id) {
-      if(isset($this->segments_mapping[$list_id])) {
+    foreach ($mp2_list_ids as $list_id) {
+      if (isset($this->segments_mapping[$list_id])) {
         $mp3_segment_ids[] = $this->segments_mapping[$list_id];
       }
     }
@@ -954,7 +951,7 @@ class MP2Migrator {
    * @return string Replacement
    */
   private function replaceMP2ShortcodesCallback($matches) {
-    if(!empty($matches)) {
+    if (!empty($matches)) {
       $mp2_lists = explode(',', $matches[1]);
       $segments = $this->getMappedSegmentIds($mp2_lists);
       $segments_ids = implode(',', $segments);
@@ -970,21 +967,21 @@ class MP2Migrator {
    */
   private function replaceListIds($values) {
     $mp3_values = array();
-    foreach($values as $value) {
+    foreach ($values as $value) {
       $mp3_value = array();
-      foreach($value as $item => $item_value) {
-        if(($item == 'list_id') && isset($this->segments_mapping[$item_value])) {
+      foreach ($value as $item => $item_value) {
+        if (($item == 'list_id') && isset($this->segments_mapping[$item_value])) {
           $segment_id = $this->segments_mapping[$item_value];
           $mp3_value['id'] = $segment_id;
           $segment = Segment::findOne($segment_id);
-          if($segment) {
+          if ($segment) {
             $mp3_value['name'] = $segment->get('name');
           }
         } else {
           $mp3_value[$item] = $item_value;
         }
       }
-      if(!empty($mp3_value)) {
+      if (!empty($mp3_value)) {
         $mp3_values[] = $mp3_value;
       }
     }
@@ -996,7 +993,7 @@ class MP2Migrator {
    *
    */
   private function importSettings() {
-    $encoded_options = get_option('wysija');
+    $encoded_options = WPFunctions::get()->getOption('wysija');
     $options = unserialize(base64_decode($encoded_options));
 
     // Sender
@@ -1042,10 +1039,10 @@ class MP2Migrator {
     // Confirmation email
     $signup_confirmation = $this->settings->get('signup_confirmation');
     $signup_confirmation['enabled'] = isset($options['confirm_dbleoptin']) && ($options['confirm_dbleoptin'] == 0) ? 0 : 1;
-    if(isset($options['confirm_email_id'])) {
+    if (isset($options['confirm_email_id'])) {
       $confirm_email_id = $options['confirm_email_id'];
       $confirm_email = $this->getEmail($confirm_email_id);
-      if(!empty($confirm_email)) {
+      if (!empty($confirm_email)) {
         $signup_confirmation['from']['name'] = isset($confirm_email['from_name']) ? $confirm_email['from_name'] : '';
         $signup_confirmation['from']['address'] = isset($confirm_email['from_email']) ? $confirm_email['from_email'] : '';
         $signup_confirmation['reply_to']['name'] = isset($confirm_email['replyto_name']) ? $confirm_email['replyto_name'] : '';
@@ -1080,12 +1077,12 @@ class MP2Migrator {
     $this->settings->set('mta', $mta);
 
     // SMTP Provider
-    if($mta['method'] == 'SendGrid') {
+    if ($mta['method'] == 'SendGrid') {
       $this->settings->set('smtp_provider', 'SendGrid');
     }
 
     // Installation date
-    if(isset($options['installed_time'])) {
+    if (isset($options['installed_time'])) {
       $datetime = new \MailPoet\WP\DateTime();
       $installed_at = $datetime->formatTime($options['installed_time'], \MailPoet\WP\DateTime::DEFAULT_DATE_TIME_FORMAT);
       $this->settings->set('installed_at', $installed_at);
@@ -1123,7 +1120,7 @@ class MP2Migrator {
    * @return string Interval
    */
   private function mapFrequencyInterval($interval_str) {
-    switch($interval_str) {
+    switch ($interval_str) {
       case 'one_min':
         $interval = 1;
         break;
@@ -1154,10 +1151,10 @@ class MP2Migrator {
    * @return int Emails number
    */
   private function mapFrequencyEmails($emails_number, $interval_str) {
-    if(empty($emails_number)) {
+    if (empty($emails_number)) {
       $emails_number = 70;
     } else {
-      switch($interval_str) {
+      switch ($interval_str) {
         case 'thirty_min':
           $emails_number /= 2;
           break;
