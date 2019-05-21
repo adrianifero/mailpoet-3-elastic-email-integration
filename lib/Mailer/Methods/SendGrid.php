@@ -27,7 +27,7 @@ class SendGrid {
     $this->wp = new WPFunctions();
   }
 
-  function send($newsletter, $subscriber, $extra_params = array()) {
+  function send($newsletter, $subscriber, $extra_params = []) {
     $result = $this->wp->wpRemotePost(
       $this->url,
       $this->request($newsletter, $subscriber, $extra_params)
@@ -44,8 +44,8 @@ class SendGrid {
     return Mailer::formatMailerSendSuccessResult();
   }
 
-  function getBody($newsletter, $subscriber, $extra_params = array()) {
-    $body = array(
+  function getBody($newsletter, $subscriber, $extra_params = []) {
+    $body = [
       'to' => $subscriber,
       'from' => $this->sender['from_email'],
       'fromname' => $this->sender['from_name'],
@@ -53,8 +53,8 @@ class SendGrid {
       'subject' => $newsletter['subject'],
 	  'apikey' => $this->api_key,
       'isTransactional' => false
-    );
-    $headers = array();
+    ];
+    $headers = [];
     if (!empty($extra_params['unsubscribe_url'])) {
       $headers['List-Unsubscribe'] = '<' . $extra_params['unsubscribe_url'] . '>';
     }
@@ -74,16 +74,16 @@ class SendGrid {
     return 'Bearer ' . $this->api_key;
   }
 
-  function request($newsletter, $subscriber, $extra_params = array()) {
+  function request($newsletter, $subscriber, $extra_params = []) {
     $body = $this->getBody($newsletter, $subscriber, $extra_params);
-    return array(
+    return [
       'timeout' => 10,
       'httpversion' => '1.1',
       'method' => 'POST',
-      'headers' => array(
-        'Authorization' => $this->auth()
-      ),
-      'body' => http_build_query($body, null, '&')
-    );
+      'headers' => [
+        'Authorization' => $this->auth(),
+      ],
+      'body' => http_build_query($body, null, '&'),
+    ];
   }
 }
