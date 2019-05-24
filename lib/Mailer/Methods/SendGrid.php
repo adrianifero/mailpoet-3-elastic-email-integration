@@ -62,10 +62,10 @@ class SendGrid {
       $body['headers'] = json_encode($headers);
     }
     if (!empty($newsletter['body']['html'])) {
-      $body['html'] = $newsletter['body']['html'];
+      $body['bodyHtml'] = $newsletter['body']['html'];
     }
     if (!empty($newsletter['body']['text'])) {
-      $body['text'] = $newsletter['body']['text'];
+      $body['bodyText'] = $newsletter['body']['text'];
     }
     return $body;
   }
