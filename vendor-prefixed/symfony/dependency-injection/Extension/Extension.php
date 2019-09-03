@@ -23,7 +23,7 @@ use MailPoetVendor\Symfony\Component\DependencyInjection\Exception\InvalidArgume
  */
 abstract class Extension implements \MailPoetVendor\Symfony\Component\DependencyInjection\Extension\ExtensionInterface, \MailPoetVendor\Symfony\Component\DependencyInjection\Extension\ConfigurationExtensionInterface
 {
-    private $processedConfigs = array();
+    private $processedConfigs = [];
     /**
      * {@inheritdoc}
      */
@@ -93,7 +93,7 @@ abstract class Extension implements \MailPoetVendor\Symfony\Component\Dependency
         try {
             return $this->processedConfigs;
         } finally {
-            $this->processedConfigs = array();
+            $this->processedConfigs = [];
         }
     }
     /**

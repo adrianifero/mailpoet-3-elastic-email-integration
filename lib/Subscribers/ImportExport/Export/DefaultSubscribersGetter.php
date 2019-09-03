@@ -5,10 +5,12 @@ namespace MailPoet\Subscribers\ImportExport\Export;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
+use MailPoet\WP\Functions as WPFunctions;
 
 /**
  * Gets batches of subscribers from default segments.
  */
+
 class DefaultSubscribersGetter extends SubscribersGetter {
 
   /**
@@ -22,38 +24,38 @@ class DefaultSubscribersGetter extends SubscribersGetter {
   }
 
   protected function filter($subscribers) {
-    $subscribers =  $subscribers
+    $subscribers = $subscribers
       ->selectMany(
-        array(
-          'list_status' => SubscriberSegment::$_table . '.status'
-        )
+        [
+          'list_status' => SubscriberSegment::$_table . '.status',
+        ]
       )
       ->left_outer_join(
         SubscriberSegment::$_table,
-        array(
+        [
           Subscriber::$_table . '.id',
           '=',
-          SubscriberSegment::$_table . '.subscriber_id'
-        )
+          SubscriberSegment::$_table . '.subscriber_id',
+        ]
       )
       ->left_outer_join(
         Segment::$_table,
-        array(
+        [
           Segment::$_table . '.id',
           '=',
-          SubscriberSegment::$_table . '.segment_id'
-        )
+          SubscriberSegment::$_table . '.segment_id',
+        ]
       )
       ->groupBy(Segment::$_table . '.id');
 
-    if($this->get_subscribers_without_segment !== false) {
+    if ($this->get_subscribers_without_segment !== false) {
       // if there are subscribers who do not belong to any segment, use
       // a CASE function to group them under "Not In Segment"
       $subscribers = $subscribers
         ->selectExpr(
           'MAX(CASE WHEN ' . Segment::$_table . '.name IS NOT NULL ' .
           'THEN ' . Segment::$_table . '.name ' .
-          'ELSE "' . __('Not In Segment', 'mailpoet') . '" END) as segment_name'
+          'ELSE "' . WPFunctions::get()->__('Not In Segment', 'mailpoet') . '" END) as segment_name'
         )
         ->whereRaw(
           SubscriberSegment::$_table . '.segment_id IN (' .

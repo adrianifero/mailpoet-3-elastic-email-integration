@@ -21,7 +21,7 @@ trait TagTrait
      *
      * @return $this
      */
-    public final function tag($name, array $attributes = array())
+    public final function tag($name, array $attributes = [])
     {
         if (!\is_string($name) || '' === $name) {
             throw new \MailPoetVendor\Symfony\Component\DependencyInjection\Exception\InvalidArgumentException(\sprintf('The tag name for service "%s" must be a non-empty string.', $this->id));

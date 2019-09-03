@@ -20,13 +20,13 @@ use MailPoetVendor\Symfony\Component\DependencyInjection\Exception\RuntimeExcept
  */
 class ParameterBag implements \MailPoetVendor\Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface
 {
-    protected $parameters = array();
+    protected $parameters = [];
     protected $resolved = \false;
-    private $normalizedNames = array();
+    private $normalizedNames = [];
     /**
      * @param array $parameters An array of parameters
      */
-    public function __construct(array $parameters = array())
+    public function __construct(array $parameters = [])
     {
         $this->add($parameters);
     }
@@ -35,7 +35,7 @@ class ParameterBag implements \MailPoetVendor\Symfony\Component\DependencyInject
      */
     public function clear()
     {
-        $this->parameters = array();
+        $this->parameters = [];
     }
     /**
      * Adds parameters to the service container parameters.
@@ -65,7 +65,7 @@ class ParameterBag implements \MailPoetVendor\Symfony\Component\DependencyInject
             if (!$name) {
                 throw new \MailPoetVendor\Symfony\Component\DependencyInjection\Exception\ParameterNotFoundException($name);
             }
-            $alternatives = array();
+            $alternatives = [];
             foreach ($this->parameters as $key => $parameterValue) {
                 $lev = \levenshtein($name, $key);
                 if ($lev <= \strlen($name) / 3 || \false !== \strpos($key, $name)) {
@@ -124,7 +124,7 @@ class ParameterBag implements \MailPoetVendor\Symfony\Component\DependencyInject
         if ($this->resolved) {
             return;
         }
-        $parameters = array();
+        $parameters = [];
         foreach ($this->parameters as $key => $value) {
             try {
                 $value = $this->resolveValue($value);
@@ -149,10 +149,10 @@ class ParameterBag implements \MailPoetVendor\Symfony\Component\DependencyInject
      * @throws ParameterCircularReferenceException if a circular reference if detected
      * @throws RuntimeException                    when a given parameter has a type problem
      */
-    public function resolveValue($value, array $resolving = array())
+    public function resolveValue($value, array $resolving = [])
     {
         if (\is_array($value)) {
-            $args = array();
+            $args = [];
             foreach ($value as $k => $v) {
                 $args[\is_string($k) ? $this->resolveValue($k, $resolving) : $k] = $this->resolveValue($v, $resolving);
             }
@@ -175,7 +175,7 @@ class ParameterBag implements \MailPoetVendor\Symfony\Component\DependencyInject
      * @throws ParameterCircularReferenceException if a circular reference if detected
      * @throws RuntimeException                    when a given parameter has a type problem
      */
-    public function resolveString($value, array $resolving = array())
+    public function resolveString($value, array $resolving = [])
     {
         // we do this to deal with non string values (Boolean, integer, ...)
         // as the preg_replace_callback throw an exception when trying
@@ -223,7 +223,7 @@ class ParameterBag implements \MailPoetVendor\Symfony\Component\DependencyInject
             return \str_replace('%', '%%', $value);
         }
         if (\is_array($value)) {
-            $result = array();
+            $result = [];
             foreach ($value as $k => $v) {
                 $result[$k] = $this->escapeValue($v);
             }
@@ -240,7 +240,7 @@ class ParameterBag implements \MailPoetVendor\Symfony\Component\DependencyInject
             return \str_replace('%%', '%', $value);
         }
         if (\is_array($value)) {
-            $result = array();
+            $result = [];
             foreach ($value as $k => $v) {
                 $result[$k] = $this->unescapeValue($v);
             }

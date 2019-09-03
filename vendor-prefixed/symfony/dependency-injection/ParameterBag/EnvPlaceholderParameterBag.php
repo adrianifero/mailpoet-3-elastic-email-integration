@@ -17,8 +17,8 @@ use MailPoetVendor\Symfony\Component\DependencyInjection\Exception\RuntimeExcept
  */
 class EnvPlaceholderParameterBag extends \MailPoetVendor\Symfony\Component\DependencyInjection\ParameterBag\ParameterBag
 {
-    private $envPlaceholders = array();
-    private $providedTypes = array();
+    private $envPlaceholders = [];
+    private $providedTypes = [];
     /**
      * {@inheritdoc}
      */

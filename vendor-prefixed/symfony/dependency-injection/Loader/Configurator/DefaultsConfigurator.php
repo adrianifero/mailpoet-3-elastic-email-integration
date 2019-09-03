@@ -33,7 +33,7 @@ class DefaultsConfigurator extends \MailPoetVendor\Symfony\Component\DependencyI
      *
      * @throws InvalidArgumentException when an invalid tag name or attribute is provided
      */
-    public final function tag($name, array $attributes = array())
+    public final function tag($name, array $attributes = [])
     {
         if (!\is_string($name) || '' === $name) {
             throw new \MailPoetVendor\Symfony\Component\DependencyInjection\Exception\InvalidArgumentException('The tag name in "_defaults" must be a non-empty string.');

@@ -15,20 +15,20 @@ class StatsNotification extends Model {
   }
 
   /** @return StatsNotification */
-  static function createOrUpdate($data = array()) {
+  static function createOrUpdate($data = []) {
     $model = null;
 
-    if(isset($data['id']) && (int)$data['id'] > 0) {
+    if (isset($data['id']) && (int)$data['id'] > 0) {
       $model = static::findOne((int)$data['id']);
     }
 
-    if(!$model && isset($data['task_id']) && $data['newsletter_id']) {
+    if (!$model && isset($data['task_id']) && $data['newsletter_id']) {
       $model = self::where('newsletter_id', $data['newsletter_id'])
         ->where('task_id', $data['task_id'])
         ->findOne();
     }
 
-    if(!$model) {
+    if (!$model) {
       $model = static::create();
       $model->hydrate($data);
     } else {

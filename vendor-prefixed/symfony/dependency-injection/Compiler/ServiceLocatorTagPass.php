@@ -82,7 +82,7 @@ final class ServiceLocatorTagPass extends \MailPoetVendor\Symfony\Component\Depe
             // Locators are shared when they hold the exact same list of factories;
             // to have them specialized per consumer service, we use a cloning factory
             // to derivate customized instances from the prototype one.
-            $container->register($id .= '.' . $callerId, \MailPoetVendor\Symfony\Component\DependencyInjection\ServiceLocator::class)->setPublic(\false)->setFactory(array(new \MailPoetVendor\Symfony\Component\DependencyInjection\Reference($locatorId), 'withContext'))->addArgument($callerId)->addArgument(new \MailPoetVendor\Symfony\Component\DependencyInjection\Reference('service_container'));
+            $container->register($id .= '.' . $callerId, \MailPoetVendor\Symfony\Component\DependencyInjection\ServiceLocator::class)->setPublic(\false)->setFactory([new \MailPoetVendor\Symfony\Component\DependencyInjection\Reference($locatorId), 'withContext'])->addArgument($callerId)->addArgument(new \MailPoetVendor\Symfony\Component\DependencyInjection\Reference('service_container'));
         }
         return new \MailPoetVendor\Symfony\Component\DependencyInjection\Reference($id);
     }

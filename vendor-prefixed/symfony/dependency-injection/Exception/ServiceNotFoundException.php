@@ -21,7 +21,7 @@ class ServiceNotFoundException extends \MailPoetVendor\Symfony\Component\Depende
     private $id;
     private $sourceId;
     private $alternatives;
-    public function __construct($id, $sourceId = null, \Exception $previous = null, array $alternatives = array(), $msg = null)
+    public function __construct($id, $sourceId = null, \Exception $previous = null, array $alternatives = [], $msg = null)
     {
         if (null !== $msg) {
             // no-op

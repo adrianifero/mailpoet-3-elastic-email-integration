@@ -1,7 +1,7 @@
 <?php
 namespace MailPoet\Form\Block;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 class Submit extends Base {
 
@@ -10,7 +10,7 @@ class Submit extends Base {
 
     $html .= '<p class="mailpoet_paragraph"><input type="submit" class="mailpoet_submit" ';
 
-    $html .= 'value="'.static::getFieldLabel($block).'" ';
+    $html .= 'value="' . static::getFieldLabel($block) . '" ';
 
     $html .= 'data-automation-id="subscribe-submit-button" ';
 

@@ -9,10 +9,13 @@ use MailPoet\Models\SendingQueue;
 use function MailPoet\Util\array_column;
 use MailPoet\WP\Functions as WPFunctions;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 /**
  * A facade class containing all necessary models to work with a sending queue
+ * @property string|null $status
+ * @property int $task_id
+ * @property int $id
  */
 class Sending {
   const TASK_TYPE = 'sending';
@@ -22,7 +25,7 @@ class Sending {
   private $queue;
   private $task_subscribers;
 
-  private $queue_fields = array(
+  private $queue_fields = [
     'id',
     'task_id',
     'newsletter_id',
@@ -31,17 +34,17 @@ class Sending {
     'count_total',
     'count_processed',
     'count_to_process',
-    'meta'
-  );
+    'meta',
+  ];
 
-  private $common_fields = array(
+  private $common_fields = [
     'created_at',
     'updated_at',
-    'deleted_at'
-  );
+    'deleted_at',
+  ];
 
   private function __construct(ScheduledTask $task = null, SendingQueue $queue = null) {
-    if(is_null($task) && is_null($queue)) {
+    if (is_null($task) && is_null($queue)) {
       $task = ScheduledTask::create();
       $task->type = self::TASK_TYPE;
       $task->save();
@@ -52,7 +55,7 @@ class Sending {
       $queue->save();
     }
 
-    if($task->type !== self::TASK_TYPE) {
+    if ($task->type !== self::TASK_TYPE) {
       throw new \Exception('Only tasks of type "' . self::TASK_TYPE . '" are accepted by this class');
     }
 
@@ -65,18 +68,33 @@ class Sending {
     return new self($task, $queue);
   }
 
-  static function createFromTask(ScheduledTask $task) {
-    $queue = SendingQueue::where('task_id', $task->id)->findOne();
-    if(!$queue) {
-      return false;
+  static function createManyFromTasks($tasks) {
+    if (empty($tasks)) {
+      return [];
     }
 
-    return self::create($task, $queue);
+    $tasks_ids = array_map(function($task) {
+      return $task->id;
+    }, $tasks);
+
+    $queues = SendingQueue::whereIn('task_id', $tasks_ids)->findMany();
+    $queues_index = [];
+    foreach ($queues as $queue) {
+      $queues_index[$queue->task_id] = $queue;
+    }
+
+    $result = [];
+    foreach ($tasks as $task) {
+      if (!empty($queues_index[$task->id])) {
+        $result[] = self::create($task, $queues_index[$task->id]);
+      }
+    }
+    return $result;
   }
 
   static function createFromQueue(SendingQueue $queue) {
     $task = $queue->task()->findOne();
-    if(!$task) {
+    if (!$task) {
       return false;
     }
 
@@ -87,7 +105,7 @@ class Sending {
     $queue = SendingQueue::where('newsletter_id', $newsletter_id)
       ->orderByDesc('updated_at')
       ->findOne();
-    if(!$queue) {
+    if (!$queue) {
       return false;
     }
 
@@ -106,7 +124,7 @@ class Sending {
   public function getErrors() {
     $queue_errors = $this->queue->getErrors();
     $task_errors = $this->task->getErrors();
-    if(empty($queue_errors) && empty($task_errors)) {
+    if (empty($queue_errors) && empty($task_errors)) {
       return false;
     }
     return array_merge((array)$queue_errors, (array)$task_errors);
@@ -138,7 +156,7 @@ class Sending {
 
   public function getSubscribers($processed = null) {
     $subscribers = $this->task_subscribers->getSubscribers();
-    if(!is_null($processed)) {
+    if (!is_null($processed)) {
       $status = ($processed) ? ScheduledTaskSubscriber::STATUS_PROCESSED : ScheduledTaskSubscriber::STATUS_UNPROCESSED;
       $subscribers->where('processed', $status);
     }
@@ -179,7 +197,7 @@ class Sending {
   }
 
   public function hydrate(array $data) {
-    foreach($data as $k => $v) {
+    foreach ($data as $k => $v) {
       $this->__set($k, $v);
     }
   }
@@ -189,7 +207,7 @@ class Sending {
   }
 
   public function __isset($prop) {
-    if($this->isQueueProperty($prop)) {
+    if ($this->isQueueProperty($prop)) {
       return isset($this->queue->$prop);
     } else {
       return isset($this->task->$prop);
@@ -197,7 +215,7 @@ class Sending {
   }
 
   public function __get($prop) {
-    if($this->isQueueProperty($prop)) {
+    if ($this->isQueueProperty($prop)) {
       return $this->queue->$prop;
     } else {
       return $this->task->$prop;
@@ -205,10 +223,10 @@ class Sending {
   }
 
   public function __set($prop, $value) {
-    if($this->isCommonProperty($prop)) {
+    if ($this->isCommonProperty($prop)) {
       $this->queue->$prop = $value;
       $this->task->$prop = $value;
-    } elseif($this->isQueueProperty($prop)) {
+    } elseif ($this->isQueueProperty($prop)) {
       $this->queue->$prop = $value;
     } else {
       $this->task->$prop = $value;
@@ -217,7 +235,10 @@ class Sending {
 
   public function __call($name, $args) {
     $obj = method_exists($this->queue, $name) ? $this->queue : $this->task;
-    return call_user_func_array(array($obj, $name), $args);
+    $callback = [$obj, $name];
+    if (is_callable($callback)) {
+      return call_user_func_array($callback, $args);
+    }
   }
 
   private function isQueueProperty($prop) {
@@ -237,15 +258,10 @@ class Sending {
       ->where('tasks.status', ScheduledTask::STATUS_SCHEDULED)
       ->whereLte('tasks.scheduled_at', Carbon::createFromTimestamp($wp->currentTime('timestamp')))
       ->where('tasks.type', 'sending')
-      ->whereNotEqual('tasks.status', ScheduledTask::STATUS_PAUSED)
       ->orderByAsc('tasks.updated_at')
       ->limit($amount)
       ->findMany();
-    $result = array();
-    foreach($tasks as $task) {
-      $result[] = static::createFromTask($task);
-    }
-    return array_filter($result);
+    return static::createManyFromTasks($tasks);
   }
 
   static function getRunningQueues($amount = self::RESULT_BATCH_SIZE) {
@@ -256,10 +272,6 @@ class Sending {
       ->where('type', 'sending')
       ->limit($amount)
       ->findMany();
-    $result = array();
-    foreach($tasks as $task) {
-      $result[] = static::createFromTask($task);
-    }
-    return array_filter($result);
+    return static::createManyFromTasks($tasks);
   }
 }

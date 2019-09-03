@@ -3,8 +3,6 @@ namespace MailPoet\Mailer;
 
 use MailPoet\Settings\SettingsController;
 
-if(!defined('ABSPATH')) exit;
-
 class MailerLog {
   const SETTING_NAME = 'mta_log';
   const STATUS_PAUSED = 'paused';
@@ -12,24 +10,24 @@ class MailerLog {
   const RETRY_INTERVAL = 120; // seconds
 
   static function getMailerLog($mailer_log = false) {
-    if($mailer_log) return $mailer_log;
+    if ($mailer_log) return $mailer_log;
     $settings = new SettingsController();
     $mailer_log = $settings->get(self::SETTING_NAME);
-    if(!$mailer_log) {
+    if (!$mailer_log) {
       $mailer_log = self::createMailerLog();
     }
     return $mailer_log;
   }
 
   static function createMailerLog() {
-    $mailer_log = array(
+    $mailer_log = [
       'sent' => null,
       'started' => time(),
       'status' => null,
       'retry_attempt' => null,
       'retry_at' => null,
-      'error' => null
-    );
+      'error' => null,
+    ];
     $settings = new SettingsController();
     $settings->set(self::SETTING_NAME, $mailer_log);
     return $mailer_log;
@@ -47,14 +45,14 @@ class MailerLog {
 
   static function enforceExecutionRequirements($mailer_log = false) {
     $mailer_log = self::getMailerLog($mailer_log);
-    if($mailer_log['retry_attempt'] === self::RETRY_ATTEMPTS_LIMIT) {
+    if ($mailer_log['retry_attempt'] === self::RETRY_ATTEMPTS_LIMIT) {
       $mailer_log = self::pauseSending($mailer_log);
     }
-    if(self::isSendingPaused($mailer_log)) {
+    if (self::isSendingPaused($mailer_log)) {
       throw new \Exception(__('Sending has been paused.', 'mailpoet'));
     }
-    if(!is_null($mailer_log['retry_at'])) {
-      if(time() <= $mailer_log['retry_at']) {
+    if (!is_null($mailer_log['retry_at'])) {
+      if (time() <= $mailer_log['retry_at']) {
         throw new \Exception(__('Sending is waiting to be retried.', 'mailpoet'));
       } else {
         $mailer_log['retry_at'] = null;
@@ -62,7 +60,7 @@ class MailerLog {
       }
     }
     // ensure that sending frequency has not been reached
-    if(self::isSendingLimitReached($mailer_log)) {
+    if (self::isSendingLimitReached($mailer_log)) {
       throw new \Exception(__('Sending frequency limit has been reached.', 'mailpoet'));
     }
   }
@@ -111,18 +109,18 @@ class MailerLog {
     $mailer_log['retry_at'] = time() + self::RETRY_INTERVAL;
     $mailer_log = self::setError($mailer_log, $operation, $error_message, $error_code);
     self::updateMailerLog($mailer_log);
-    if($pause_sending) {
+    if ($pause_sending) {
       self::pauseSending($mailer_log);
     }
     self::enforceExecutionRequirements();
   }
 
   static function setError($mailer_log, $operation, $error_message, $error_code = null) {
-    $mailer_log['error'] = array(
+    $mailer_log['error'] = [
       'operation' => $operation,
-      'error_message' => $error_message
-    );
-    if($error_code) {
+      'error_message' => $error_message,
+    ];
+    if ($error_code) {
       $mailer_log['error']['error_code'] = $error_code;
     }
     return $mailer_log;
@@ -136,9 +134,9 @@ class MailerLog {
   static function incrementSentCount() {
     $mailer_log = self::getMailerLog();
     // do not increment count if sending limit is reached
-    if(self::isSendingLimitReached($mailer_log)) return;
+    if (self::isSendingLimitReached($mailer_log)) return;
     // clear previous retry count, errors, etc.
-    if($mailer_log['error']) {
+    if ($mailer_log['error']) {
       $mailer_log = self::clearSendingErrorLog($mailer_log);
     }
     (int)$mailer_log['sent']++;
@@ -155,11 +153,11 @@ class MailerLog {
   static function isSendingLimitReached($mailer_log = false) {
     $mailer_config = Mailer::getMailerConfig();
     // do not enforce sending limit for MailPoet's sending method
-    if($mailer_config['method'] === Mailer::METHOD_MAILPOET) return false;
+    if ($mailer_config['method'] === Mailer::METHOD_MAILPOET) return false;
     $mailer_log = self::getMailerLog($mailer_log);
     $elapsed_time = time() - (int)$mailer_log['started'];
-    if($mailer_log['sent'] >= $mailer_config['frequency_limit']) {
-      if($elapsed_time <= $mailer_config['frequency_interval']) return true;
+    if ($mailer_log['sent'] >= $mailer_config['frequency_limit']) {
+      if ($elapsed_time <= $mailer_config['frequency_interval']) return true;
       // reset mailer log as enough time has passed since the limit was reached
       self::resetMailerLog();
     }

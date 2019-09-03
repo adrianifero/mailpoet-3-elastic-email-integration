@@ -37,12 +37,12 @@ class FactoryReturnTypePass implements \MailPoetVendor\Symfony\Component\Depende
         if (!\method_exists(\ReflectionMethod::class, 'getReturnType')) {
             return;
         }
-        $resolveClassPassChanges = null !== $this->resolveClassPass ? $this->resolveClassPass->getChanges() : array();
+        $resolveClassPassChanges = null !== $this->resolveClassPass ? $this->resolveClassPass->getChanges() : [];
         foreach ($container->getDefinitions() as $id => $definition) {
             $this->updateDefinition($container, $id, $definition, $resolveClassPassChanges);
         }
     }
-    private function updateDefinition(\MailPoetVendor\Symfony\Component\DependencyInjection\ContainerBuilder $container, $id, \MailPoetVendor\Symfony\Component\DependencyInjection\Definition $definition, array $resolveClassPassChanges, array $previous = array())
+    private function updateDefinition(\MailPoetVendor\Symfony\Component\DependencyInjection\ContainerBuilder $container, $id, \MailPoetVendor\Symfony\Component\DependencyInjection\Definition $definition, array $resolveClassPassChanges, array $previous = [])
     {
         // circular reference
         if (isset($previous[$id])) {

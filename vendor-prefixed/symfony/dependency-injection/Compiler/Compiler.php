@@ -20,7 +20,7 @@ use MailPoetVendor\Symfony\Component\DependencyInjection\Exception\EnvParameterE
 class Compiler
 {
     private $passConfig;
-    private $log = array();
+    private $log = [];
     private $loggingFormatter;
     private $serviceReferenceGraph;
     public function __construct()
@@ -124,7 +124,7 @@ class Compiler
                 $pass->process($container);
             }
         } catch (\Exception $e) {
-            $usedEnvs = array();
+            $usedEnvs = [];
             $prev = $e;
             do {
                 $msg = $prev->getMessage();

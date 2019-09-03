@@ -1,13 +1,9 @@
 <?php
 namespace MailPoet\Newsletter\Editor;
 
-use MailPoet\Newsletter\Editor\PostContentManager;
-use MailPoet\Newsletter\Editor\MetaInformationManager;
-use MailPoet\Newsletter\Editor\StructureTransformer;
-use MailPoet\Newsletter\Editor\LayoutHelper;
+use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 use MailPoet\WP\Functions as WPFunctions;
-
-if(!defined('ABSPATH')) exit;
+use MailPoet\Config\Env;
 
 class PostTransformer {
 
@@ -16,24 +12,28 @@ class PostTransformer {
   private $image_position;
   private $wp;
 
+  /** @var WooCommerceHelper */
+  private $woocommerce_helper;
+
   function __construct($args) {
     $this->args = $args;
     $this->with_layout = isset($args['withLayout']) ? (bool)filter_var($args['withLayout'], FILTER_VALIDATE_BOOLEAN) : false;
     $this->image_position = 'left';
     $this->wp = new WPFunctions();
+    $this->woocommerce_helper = new WooCommerceHelper();
   }
 
   function getDivider() {
-    if(empty($this->with_layout)) {
+    if (empty($this->with_layout)) {
       return $this->args['divider'];
     }
-    return LayoutHelper::row(array(
-      LayoutHelper::col(array($this->args['divider']))
-    ));
+    return LayoutHelper::row([
+      LayoutHelper::col([$this->args['divider']]),
+    ]);
   }
 
   function transform($post) {
-    if(empty($this->with_layout)) {
+    if (empty($this->with_layout)) {
       return $this->getStructure($post);
     }
     return $this->getStructureWithLayout($post);
@@ -45,18 +45,25 @@ class PostTransformer {
     $featured_image = $this->getFeaturedImage($post);
     $featured_image_position = $this->args['featuredImagePosition'];
 
-    if($featured_image && $featured_image_position === 'belowTitle' && $this->args['displayType'] === 'excerpt') {
+    if (
+      $featured_image
+      && $featured_image_position === 'belowTitle'
+      && (
+        $this->args['displayType'] === 'excerpt'
+        || $this->isProduct($post)
+      )
+    ) {
       array_unshift($content, $title, $featured_image);
       return $content;
     }
 
-    if($content[0]['type'] === 'text') {
+    if ($content[0]['type'] === 'text') {
       $content[0]['text'] = $title['text'] . $content[0]['text'];
     } else {
       array_unshift($content, $title);
     }
 
-    if($featured_image && $this->args['displayType'] === 'excerpt') {
+    if ($featured_image && $this->args['displayType'] === 'excerpt') {
       array_unshift($content, $featured_image);
     }
 
@@ -71,49 +78,75 @@ class PostTransformer {
 
     $featured_image_position = $this->args['featuredImagePosition'];
 
-    if(!$featured_image || $featured_image_position === 'none' || $this->args['displayType'] !== 'excerpt') {
+    if (
+      !$featured_image
+      || $featured_image_position === 'none'
+      || (
+        $this->args['displayType'] !== 'excerpt'
+        && !$this->isProduct($post)
+      )
+    ) {
       array_unshift($content, $title);
 
-      return array(
-        LayoutHelper::row(array(
-          LayoutHelper::col($content)
-        ))
-      );
+      return [
+        LayoutHelper::row([
+          LayoutHelper::col($content),
+        ]),
+      ];
     }
+    $title_position = isset($this->args['titlePosition']) ? $this->args['titlePosition'] : '';
 
-    if($featured_image_position === 'aboveTitle' || $featured_image_position === 'belowTitle') {
+    if ($featured_image_position === 'aboveTitle' || $featured_image_position === 'belowTitle') {
       $featured_image_position = 'centered';
     }
 
-    if($featured_image_position === 'centered') {
-      array_unshift($content, $title, $featured_image);
-      return array(
-        LayoutHelper::row(array(
-          LayoutHelper::col($content)
-        ))
-      );
+    if ($featured_image_position === 'centered') {
+      if ($title_position === 'aboveExcerpt') {
+        array_unshift($content, $featured_image, $title);
+      } else {
+        array_unshift($content, $title, $featured_image);
+      }
+      return [
+        LayoutHelper::row([
+          LayoutHelper::col($content),
+        ]),
+      ];
     }
 
-    if($featured_image_position === 'alternate') {
+    if ($title_position === 'aboveExcerpt') {
+      array_unshift($content, $title);
+    }
+
+    if ($featured_image_position === 'alternate') {
       $featured_image_position = $this->nextImagePosition();
     }
 
     $content = ($featured_image_position === 'left')
-      ? array(
-        LayoutHelper::col(array($featured_image)),
-        LayoutHelper::col($content)
-      )
-      : array(
+      ? [
+        LayoutHelper::col([$featured_image]),
         LayoutHelper::col($content),
-        LayoutHelper::col(array($featured_image))
-      );
+      ]
+      : [
+        LayoutHelper::col($content),
+        LayoutHelper::col([$featured_image]),
+      ];
 
-    return array(
-      LayoutHelper::row(array(
-        LayoutHelper::col(array($title))
-      )),
-      LayoutHelper::row($content)
-    );
+    $result = [
+      LayoutHelper::row($content),
+    ];
+
+    if ($title_position !== 'aboveExcerpt') {
+      array_unshift(
+        $result,
+        LayoutHelper::row(
+          [
+            LayoutHelper::col([$title]),
+          ]
+        )
+      );
+    }
+
+    return $result;
   }
 
   private function nextImagePosition() {
@@ -132,9 +165,13 @@ class PostTransformer {
     $structure_transformer = new StructureTransformer();
     $content = $structure_transformer->transform($content, $this->args['imageFullWidth'] === true);
 
+    if ($this->isProduct($post)) {
+      $content = $this->addProductDataToContent($content, $post);
+    }
+
     $read_more_btn = $this->getReadMoreButton($post);
     $blocks_count = count($content);
-    if($read_more_btn['type'] === 'text' && $blocks_count > 0 && $content[$blocks_count - 1]['type'] === 'text') {
+    if ($read_more_btn['type'] === 'text' && $blocks_count > 0 && $content[$blocks_count - 1]['type'] === 'text') {
       $content[$blocks_count - 1]['text'] .= $read_more_btn['text'];
     } else {
       $content[] = $read_more_btn;
@@ -142,17 +179,36 @@ class PostTransformer {
     return $content;
   }
 
+  private function getImageInfo($id) {
+    /*
+     * In some cases wp_get_attachment_image_src ignore the second parameter
+     * and use global variable $content_width value instead.
+     * By overriding it ourselves when ensure a constant behaviour regardless
+     * of the user setup.
+     *
+     * https://mailpoet.atlassian.net/browse/MAILPOET-1365
+     */
+    global $content_width; // default is NULL
+
+    $content_width_copy = $content_width;
+    $content_width = Env::NEWSLETTER_CONTENT_WIDTH;
+    $image_info = $this->wp->wpGetAttachmentImageSrc($id, 'mailpoet_newsletter_max');
+    $content_width = $content_width_copy;
+
+    return $image_info;
+  }
+
   private function getFeaturedImage($post) {
     $post_id = $post->ID;
-    $post_title = $post->post_title;
+    $post_title = $this->sanitizeTitle($post->post_title);
     $image_full_width = (bool)filter_var($this->args['imageFullWidth'], FILTER_VALIDATE_BOOLEAN);
 
-    if(!has_post_thumbnail($post_id)) {
+    if (!has_post_thumbnail($post_id)) {
       return false;
     }
 
-    $thumbnail_id = get_post_thumbnail_id($post_id);
-    $image_info = $this->wp->getImageInfo($thumbnail_id);
+    $thumbnail_id = $this->wp->getPostThumbnailId($post_id);
+    $image_info = $this->getImageInfo($thumbnail_id);
 
     // get alt text
     $alt_text = trim(strip_tags(get_post_meta(
@@ -160,75 +216,117 @@ class PostTransformer {
       '_wp_attachment_image_alt',
       true
     )));
-    if(strlen($alt_text) === 0) {
+    if (strlen($alt_text) === 0) {
       // if the alt text is empty then use the post title
       $alt_text = trim(strip_tags($post_title));
     }
 
-    return array(
+    return [
       'type' => 'image',
-      'link' => get_permalink($post_id),
+      'link' => $this->wp->getPermalink($post_id),
       'src' => $image_info[0],
       'alt' => $alt_text,
       'fullWidth' => $image_full_width,
       'width' => $image_info[1],
       'height' => $image_info[2],
-      'styles' => array(
-        'block' => array(
+      'styles' => [
+        'block' => [
           'textAlign' => 'center',
-        ),
-      ),
-    );
+        ],
+      ],
+    ];
   }
 
   private function getReadMoreButton($post) {
-    if($this->args['readMoreType'] === 'button') {
+    if ($this->args['readMoreType'] === 'button') {
       $button = $this->args['readMoreButton'];
-      $button['url'] = get_permalink($post->ID);
+      $button['url'] = $this->wp->getPermalink($post->ID);
       return $button;
     }
 
     $read_more_text = sprintf(
       '<p><a href="%s">%s</a></p>',
-      get_permalink($post->ID),
+      $this->wp->getPermalink($post->ID),
       $this->args['readMoreText']
     );
 
-    return array(
+    return [
       'type' => 'text',
       'text' => $read_more_text,
-    );
+    ];
   }
 
   private function getTitle($post) {
-    $title = $post->post_title;
-    $top_padding = '20px';
+    $title = $this->sanitizeTitle($post->post_title);
 
-    if(filter_var($this->args['titleIsLink'], FILTER_VALIDATE_BOOLEAN)) {
-      $title = '<a href="' . get_permalink($post->ID) . '">' . $title . '</a>';
+    if (filter_var($this->args['titleIsLink'], FILTER_VALIDATE_BOOLEAN)) {
+      $title = '<a href="' . $this->wp->getPermalink($post->ID) . '">' . $title . '</a>';
     }
 
-    if(in_array($this->args['titleFormat'], array('h1', 'h2', 'h3'))) {
+    if (in_array($this->args['titleFormat'], ['h1', 'h2', 'h3'])) {
       $tag = $this->args['titleFormat'];
-    } elseif($this->args['titleFormat'] === 'ul') {
+    } elseif ($this->args['titleFormat'] === 'ul') {
       $tag = 'li';
-      $top_padding = '0';
     } else {
       $tag = 'h1';
     }
 
-    $alignment = (in_array($this->args['titleAlignment'], array('left', 'right', 'center'))) ? $this->args['titleAlignment'] : 'left';
+    $alignment = (in_array($this->args['titleAlignment'], ['left', 'right', 'center'])) ? $this->args['titleAlignment'] : 'left';
 
     $title = '<' . $tag . ' data-post-id="' . $post->ID . '" style="text-align: ' . $alignment . ';">' . $title . '</' . $tag . '>';
-    return array(
+    return [
       'type' => 'text',
       'text' => $title,
-      'styles' => [
-        'block' => [
-          'paddingTop' => $top_padding,
-        ],
-      ]
-    );
+    ];
+  }
+
+  private function getPrice($post) {
+    $price = null;
+    $product = null;
+    if ($this->woocommerce_helper->isWooCommerceActive()) {
+      $product = $this->woocommerce_helper->wcGetProduct($post->ID);
+    }
+    if ($product) {
+      $price = '<h2>' . strip_tags($product->get_price_html(), '<span><del>') . '</h2>';
+    }
+    return $price;
+  }
+
+  private function addProductDataToContent($content, $post) {
+    if (!isset($this->args['pricePosition']) || $this->args['pricePosition'] === 'hidden') {
+      return $content;
+    }
+    $price = $this->getPrice($post);
+    $blocks_count = count($content);
+    if ($blocks_count > 0 && $content[$blocks_count - 1]['type'] === 'text') {
+      if ($this->args['pricePosition'] === 'below') {
+        $content[$blocks_count - 1]['text'] = $content[$blocks_count - 1]['text'] . $price;
+      } else {
+        $content[$blocks_count - 1]['text'] = $price . $content[$blocks_count - 1]['text'];
+      }
+    } else {
+      $content[] = [
+        'type' => 'text',
+        'text' => $price,
+      ];
+    }
+    return $content;
+  }
+
+  private function isProduct($post) {
+    return $post->post_type === 'product';
+  }
+
+  /**
+   * Replaces double quote character with a unicode
+   * alternative to avoid problems when inlining CSS.
+   * [MAILPOET-1937]
+   *
+   * @param  string $title
+   * @return string
+   */
+  private function sanitizeTitle($title) {
+    return str_replace('"', '＂', $title);
   }
 
 }

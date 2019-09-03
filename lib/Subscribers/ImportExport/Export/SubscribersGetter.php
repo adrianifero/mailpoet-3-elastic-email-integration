@@ -27,7 +27,7 @@ abstract class SubscribersGetter {
 
   /**
    * Initialize the query by selecting fields and ignoring trashed subscribers.
-   * 
+   *
    * @return \ORM
    */
   protected function select() {
@@ -36,9 +36,9 @@ abstract class SubscribersGetter {
       'last_name',
       'email',
       'subscribed_ip',
-      array(
-        'global_status' => Subscriber::$_table . '.status'
-      )
+      [
+        'global_status' => Subscriber::$_table . '.status',
+      ]
     )
     ->filter('filterWithCustomFieldsForExport')
     ->groupBy(Subscriber::$_table . '.id')
@@ -47,7 +47,7 @@ abstract class SubscribersGetter {
 
   /**
    * Filters the subscribers query based on the segments, offset and batch size.
-   * 
+   *
    * @param  \ORM $subscribers
    * @return array
    */
@@ -57,7 +57,7 @@ abstract class SubscribersGetter {
    * Gets the next batch of subscribers or `false` if no more!
    */
   public function get() {
-    if($this->finished) {
+    if ($this->finished) {
       return false;
     }
 
@@ -66,7 +66,7 @@ abstract class SubscribersGetter {
 
     $this->offset += $this->batch_size;
 
-    if(count($subscribers) < $this->batch_size) {
+    if (count($subscribers) < $this->batch_size) {
       $this->finished = true;
     }
 

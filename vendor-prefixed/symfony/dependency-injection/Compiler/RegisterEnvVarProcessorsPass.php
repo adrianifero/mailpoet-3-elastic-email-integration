@@ -25,12 +25,12 @@ use MailPoetVendor\Symfony\Component\DependencyInjection\ServiceLocator;
  */
 class RegisterEnvVarProcessorsPass implements \MailPoetVendor\Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface
 {
-    private static $allowedTypes = array('array', 'bool', 'float', 'int', 'string');
+    private static $allowedTypes = ['array', 'bool', 'float', 'int', 'string'];
     public function process(\MailPoetVendor\Symfony\Component\DependencyInjection\ContainerBuilder $container)
     {
         $bag = $container->getParameterBag();
-        $types = array();
-        $processors = array();
+        $types = [];
+        $processors = [];
         foreach ($container->findTaggedServiceIds('container.env_var_processor') as $id => $tags) {
             if (!($r = $container->getReflectionClass($class = $container->getDefinition($id)->getClass()))) {
                 throw new \MailPoetVendor\Symfony\Component\DependencyInjection\Exception\InvalidArgumentException(\sprintf('Class "%s" used for service "%s" cannot be found.', $class, $id));
@@ -51,7 +51,7 @@ class RegisterEnvVarProcessorsPass implements \MailPoetVendor\Symfony\Component\
             $bag->setProvidedTypes($types);
         }
         if ($processors) {
-            $container->register('container.env_var_processors_locator', \MailPoetVendor\Symfony\Component\DependencyInjection\ServiceLocator::class)->setPublic(\true)->setArguments(array($processors));
+            $container->register('container.env_var_processors_locator', \MailPoetVendor\Symfony\Component\DependencyInjection\ServiceLocator::class)->setPublic(\true)->setArguments([$processors]);
         }
     }
     private static function validateProvidedTypes($types, $class)

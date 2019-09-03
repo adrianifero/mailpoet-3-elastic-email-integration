@@ -26,7 +26,7 @@ class ServiceReferenceGraph
     /**
      * @var ServiceReferenceGraphNode[]
      */
-    private $nodes = array();
+    private $nodes = [];
     /**
      * Checks if the graph has a specific node.
      *
@@ -71,7 +71,7 @@ class ServiceReferenceGraph
         foreach ($this->nodes as $node) {
             $node->clear();
         }
-        $this->nodes = array();
+        $this->nodes = [];
     }
     /**
      * Connects 2 nodes together in the Graph.
@@ -83,17 +83,19 @@ class ServiceReferenceGraph
      * @param string $reference
      * @param bool   $lazy
      * @param bool   $weak
+     * @param bool   $byConstructor
      */
     public function connect($sourceId, $sourceValue, $destId, $destValue = null, $reference = null)
     {
         $lazy = \func_num_args() >= 6 ? \func_get_arg(5) : \false;
         $weak = \func_num_args() >= 7 ? \func_get_arg(6) : \false;
+        $byConstructor = \func_num_args() >= 8 ? \func_get_arg(7) : \false;
         if (null === $sourceId || null === $destId) {
             return;
         }
         $sourceNode = $this->createNode($sourceId, $sourceValue);
         $destNode = $this->createNode($destId, $destValue);
-        $edge = new \MailPoetVendor\Symfony\Component\DependencyInjection\Compiler\ServiceReferenceGraphEdge($sourceNode, $destNode, $reference, $lazy, $weak);
+        $edge = new \MailPoetVendor\Symfony\Component\DependencyInjection\Compiler\ServiceReferenceGraphEdge($sourceNode, $destNode, $reference, $lazy, $weak, $byConstructor);
         $sourceNode->addOutEdge($edge);
         $destNode->addInEdge($edge);
     }

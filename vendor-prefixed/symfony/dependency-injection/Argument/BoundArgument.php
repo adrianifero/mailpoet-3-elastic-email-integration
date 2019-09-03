@@ -29,7 +29,7 @@ final class BoundArgument implements \MailPoetVendor\Symfony\Component\Dependenc
      */
     public function getValues()
     {
-        return array($this->value, $this->identifier, $this->used);
+        return [$this->value, $this->identifier, $this->used];
     }
     /**
      * {@inheritdoc}

@@ -3,10 +3,13 @@
 namespace MailPoet\Config;
 
 use MailPoet\Settings\SettingsController;
+use MailPoet\Statistics\Track\WooCommercePurchases;
 use MailPoet\Subscription\Comment;
 use MailPoet\Subscription\Form;
+use MailPoet\Subscription\Manage;
 use MailPoet\Subscription\Registration;
 use MailPoet\Segments\WooCommerce as WooCommerceSegment;
+use MailPoet\WooCommerce\Subscription as WooCommerceSubscription;
 use MailPoet\WP\Functions as WPFunctions;
 
 class Hooks {
@@ -17,6 +20,9 @@ class Hooks {
   /** @var Comment */
   private $subscription_comment;
 
+  /** @var Manage */
+  private $subscription_manage;
+
   /** @var Registration */
   private $subscription_registration;
 
@@ -26,31 +32,45 @@ class Hooks {
   /** @var WPFunctions */
   private $wp;
 
+  /** @var WooCommerceSubscription */
+  private $woocommerce_subscription;
+
   /** @var WooCommerceSegment */
   private $woocommerce_segment;
+
+  /** @var WooCommercePurchases */
+  private $woocommerce_purchases;
 
   function __construct(
     Form $subscription_form,
     Comment $subscription_comment,
+    Manage $subscription_manage,
     Registration $subscription_registration,
     SettingsController $settings,
     WPFunctions $wp,
-    WooCommerceSegment $woocommerce_segment
+    WooCommerceSubscription $woocommerce_subscription,
+    WooCommerceSegment $woocommerce_segment,
+    WooCommercePurchases $woocommerce_purchases
   ) {
     $this->subscription_form = $subscription_form;
     $this->subscription_comment = $subscription_comment;
+    $this->subscription_manage = $subscription_manage;
     $this->subscription_registration = $subscription_registration;
     $this->settings = $settings;
     $this->wp = $wp;
+    $this->woocommerce_subscription = $woocommerce_subscription;
     $this->woocommerce_segment = $woocommerce_segment;
+    $this->woocommerce_purchases = $woocommerce_purchases;
   }
 
   function init() {
     $this->setupWPUsers();
     $this->setupWooCommerceUsers();
+    $this->setupWooCommercePurchases();
     $this->setupImageSize();
     $this->setupListing();
     $this->setupSubscriptionEvents();
+    $this->setupWooCommerceSubscriptionEvents();
     $this->setupPostNotifications();
   }
 
@@ -112,8 +132,12 @@ class Hooks {
           'register_form',
           [$this->subscription_registration, 'extendForm']
         );
-        $this->wp->addAction(
-          'register_post',
+        // we need to process new users while they are registered.
+        // We used `register_post` before but that is too soon
+        //   because if registration fails during `registration_errors` we will keep the user as subscriber.
+        // So we are hooking to `registration_error` with a low priority.
+        $this->wp->addFilter(
+          'registration_errors',
           [$this->subscription_registration, 'onRegister'],
           60,
           3
@@ -124,11 +148,11 @@ class Hooks {
     // Manage subscription
     $this->wp->addAction(
       'admin_post_mailpoet_subscription_update',
-      '\MailPoet\Subscription\Manage::onSave'
+      [$this->subscription_manage, 'onSave']
     );
     $this->wp->addAction(
       'admin_post_nopriv_mailpoet_subscription_update',
-      '\MailPoet\Subscription\Manage::onSave'
+      [$this->subscription_manage, 'onSave']
     );
 
     // Subscription form
@@ -139,6 +163,24 @@ class Hooks {
     $this->wp->addAction(
       'admin_post_nopriv_mailpoet_subscription_form',
       [$this->subscription_form, 'onSubmit']
+    );
+  }
+
+  function setupWooCommerceSubscriptionEvents() {
+    $woocommerce = $this->settings->get('woocommerce', []);
+    // WooCommerce: subscribe on checkout
+    if (!empty($woocommerce['optin_on_checkout']['enabled'])) {
+      $this->wp->addAction(
+        'woocommerce_checkout_before_terms_and_conditions',
+        [$this->woocommerce_subscription, 'extendWooCommerceCheckoutForm']
+      );
+    }
+
+    $this->wp->addAction(
+      'woocommerce_checkout_update_order_meta',
+      [$this->woocommerce_subscription, 'subscribeOnCheckout'],
+      10, // this should execute after the WC sync call on the same hook
+      2
     );
   }
 
@@ -206,24 +248,42 @@ class Hooks {
     );
   }
 
+  function setupWooCommercePurchases() {
+    // use both 'processing' and 'completed' states since payment hook and 'processing' status
+    // may be skipped with some payment methods (cheque) or when state transitioned manually
+    $accepted_order_states = WPFunctions::get()->applyFilters(
+      'mailpoet_purchase_order_states',
+      ['processing', 'completed']
+    );
+
+    foreach ($accepted_order_states as $status) {
+      WPFunctions::get()->addAction(
+        'woocommerce_order_status_' . $status,
+        [$this->woocommerce_purchases, 'trackPurchase'],
+        10,
+        1
+      );
+    }
+  }
+
   function setupImageSize() {
     $this->wp->addFilter(
       'image_size_names_choose',
-      array($this, 'appendImageSize'),
+      [$this, 'appendImageSize'],
       10, 1
     );
   }
 
   function appendImageSize($sizes) {
-    return array_merge($sizes, array(
-      'mailpoet_newsletter_max' => WPFunctions::get()->__('MailPoet Newsletter', 'mailpoet')
-    ));
+    return array_merge($sizes, [
+      'mailpoet_newsletter_max' => WPFunctions::get()->__('MailPoet Newsletter', 'mailpoet'),
+    ]);
   }
 
   function setupListing() {
     $this->wp->addFilter(
       'set-screen-option',
-      array($this, 'setScreenOption'),
+      [$this, 'setScreenOption'],
       10, 3
     );
   }

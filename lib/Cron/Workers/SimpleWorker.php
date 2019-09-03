@@ -7,16 +7,17 @@ use MailPoet\Cron\CronHelper;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\WP\Functions as WPFunctions;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 abstract class SimpleWorker {
   public $timer;
   private $wp;
   const TASK_TYPE = null;
   const TASK_BATCH_SIZE = 5;
+  const AUTOMATIC_SCHEDULING = true;
 
   function __construct($timer = false) {
-    if(static::TASK_TYPE === null) {
+    if (static::TASK_TYPE === null) {
       throw new \Exception('Constant TASK_TYPE is not defined on subclass ' . get_class($this));
     }
     $this->timer = ($timer) ? $timer : microtime(true);
@@ -33,7 +34,7 @@ abstract class SimpleWorker {
   }
 
   function process() {
-    if(!$this->checkProcessingRequirements()) {
+    if (!$this->checkProcessingRequirements()) {
       return false;
     }
 
@@ -42,16 +43,26 @@ abstract class SimpleWorker {
     $scheduled_tasks = self::getScheduledTasks();
     $running_tasks = self::getRunningTasks();
 
-    if(!$scheduled_tasks && !$running_tasks) {
-      self::schedule();
+    if (!$scheduled_tasks && !$running_tasks) {
+      if (static::AUTOMATIC_SCHEDULING) {
+        self::schedule();
+      }
       return false;
     }
 
-    foreach($scheduled_tasks as $i => $task) {
-      $this->prepareTask($task);
-    }
-    foreach($running_tasks as $i => $task) {
-      $this->processTask($task);
+    $task = null;
+    try {
+      foreach ($scheduled_tasks as $i => $task) {
+        $this->prepareTask($task);
+      }
+      foreach ($running_tasks as $i => $task) {
+        $this->processTask($task);
+      }
+    } catch (\Exception $e) {
+      if ($task) {
+        $task->rescheduleProgressively();
+      }
+      throw $e;
     }
 
     return true;
@@ -62,7 +73,7 @@ abstract class SimpleWorker {
       ->whereNull('deleted_at')
       ->where('status', ScheduledTask::STATUS_SCHEDULED)
       ->findMany();
-    if($already_scheduled) {
+    if ($already_scheduled) {
       return false;
     }
     $task = ScheduledTask::create();
@@ -88,7 +99,7 @@ abstract class SimpleWorker {
     // abort if execution limit is reached
     CronHelper::enforceExecutionLimit($this->timer);
 
-    if($this->processTaskStrategy($task)) {
+    if ($this->processTaskStrategy($task)) {
       $this->complete($task);
       return true;
     }
@@ -109,6 +120,7 @@ abstract class SimpleWorker {
   function reschedule(ScheduledTask $task, $timeout) {
     $scheduled_at = Carbon::createFromTimestamp($this->wp->currentTime('timestamp'));
     $task->scheduled_at = $scheduled_at->addMinutes($timeout);
+    $task->status = ScheduledTask::STATUS_SCHEDULED;
     $task->save();
   }
 
@@ -116,11 +128,15 @@ abstract class SimpleWorker {
     $wp = new WPFunctions();
     $date = Carbon::createFromTimestamp($wp->currentTime('timestamp'));
     // Random day of the next week
-    $date->setISODate($date->format('o'), $date->format('W') + 1, mt_rand(1, 7));
+    $date->setISODate((int)$date->format('o'), ((int)$date->format('W')) + 1, mt_rand(1, 7));
     $date->startOfDay();
     return $date;
   }
 
+  /**
+   * @param bool $future
+   * @return ScheduledTask[]
+   */
   static function getScheduledTasks($future = false) {
     $dateWhere = ($future) ? 'whereGt' : 'whereLte';
     $wp = new WPFunctions();
@@ -146,10 +162,6 @@ abstract class SimpleWorker {
     $scheduled_tasks = self::getScheduledTasks();
     $running_tasks = self::getRunningTasks();
     return array_merge((array)$scheduled_tasks, (array)$running_tasks);
-  }
-
-  static function getFutureTasks() {
-    return self::getScheduledTasks(true);
   }
 
   static function getCompletedTasks() {

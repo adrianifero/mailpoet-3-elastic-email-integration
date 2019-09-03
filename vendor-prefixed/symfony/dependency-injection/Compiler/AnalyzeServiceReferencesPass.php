@@ -35,6 +35,7 @@ class AnalyzeServiceReferencesPass extends \MailPoetVendor\Symfony\Component\Dep
     private $hasProxyDumper;
     private $lazy;
     private $expressionLanguage;
+    private $byConstructor;
     /**
      * @param bool $onlyConstructorArguments Sets this Service Reference pass to ignore method calls
      */
@@ -59,6 +60,7 @@ class AnalyzeServiceReferencesPass extends \MailPoetVendor\Symfony\Component\Dep
         $this->graph = $container->getCompiler()->getServiceReferenceGraph();
         $this->graph->clear();
         $this->lazy = \false;
+        $this->byConstructor = \false;
         foreach ($container->getAliases() as $id => $alias) {
             $targetId = $this->getDefinitionId((string) $alias);
             $this->graph->connect($id, $alias, $targetId, $this->getDefinition($targetId), null);
@@ -75,13 +77,13 @@ class AnalyzeServiceReferencesPass extends \MailPoetVendor\Symfony\Component\Dep
             return $value;
         }
         if ($value instanceof \MailPoetVendor\Symfony\Component\ExpressionLanguage\Expression) {
-            $this->getExpressionLanguage()->compile((string) $value, array('this' => 'container'));
+            $this->getExpressionLanguage()->compile((string) $value, ['this' => 'container']);
             return $value;
         }
         if ($value instanceof \MailPoetVendor\Symfony\Component\DependencyInjection\Reference) {
             $targetId = $this->getDefinitionId((string) $value);
             $targetDefinition = $this->getDefinition($targetId);
-            $this->graph->connect($this->currentId, $this->currentDefinition, $targetId, $targetDefinition, $value, $this->lazy || $this->hasProxyDumper && $targetDefinition && $targetDefinition->isLazy(), \MailPoetVendor\Symfony\Component\DependencyInjection\ContainerInterface::IGNORE_ON_UNINITIALIZED_REFERENCE === $value->getInvalidBehavior());
+            $this->graph->connect($this->currentId, $this->currentDefinition, $targetId, $targetDefinition, $value, $this->lazy || $this->hasProxyDumper && $targetDefinition && $targetDefinition->isLazy(), \MailPoetVendor\Symfony\Component\DependencyInjection\ContainerInterface::IGNORE_ON_UNINITIALIZED_REFERENCE === $value->getInvalidBehavior(), $this->byConstructor);
             return $value;
         }
         if (!$value instanceof \MailPoetVendor\Symfony\Component\DependencyInjection\Definition) {
@@ -96,8 +98,11 @@ class AnalyzeServiceReferencesPass extends \MailPoetVendor\Symfony\Component\Dep
             return $value;
         }
         $this->lazy = \false;
+        $byConstructor = $this->byConstructor;
+        $this->byConstructor = \true;
         $this->processValue($value->getFactory());
         $this->processValue($value->getArguments());
+        $this->byConstructor = $byConstructor;
         if (!$this->onlyConstructorArguments) {
             $this->processValue($value->getProperties());
             $this->processValue($value->getMethodCalls());

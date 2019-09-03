@@ -22,7 +22,7 @@ use MailPoetVendor\Symfony\Component\DependencyInjection\Reference;
 class ResolveHotPathPass extends \MailPoetVendor\Symfony\Component\DependencyInjection\Compiler\AbstractRecursivePass
 {
     private $tagName;
-    private $resolvedIds = array();
+    private $resolvedIds = [];
     public function __construct($tagName = 'container.hot_path')
     {
         $this->tagName = $tagName;
@@ -36,7 +36,7 @@ class ResolveHotPathPass extends \MailPoetVendor\Symfony\Component\DependencyInj
             parent::process($container);
             $container->getDefinition('service_container')->clearTag($this->tagName);
         } finally {
-            $this->resolvedIds = array();
+            $this->resolvedIds = [];
         }
     }
     /**

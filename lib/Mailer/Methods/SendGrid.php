@@ -3,19 +3,23 @@
 namespace MailPoet\Mailer\Methods;
 
 use MailPoet\Mailer\Mailer;
+use MailPoet\Mailer\Methods\Common\BlacklistCheck;
 use MailPoet\Mailer\Methods\ErrorMappers\SendGridMapper;
 use MailPoet\WP\Functions as WPFunctions;
 
 if (!defined('ABSPATH')) exit;
 
 class SendGrid {
-  public $url = 'https://api.elasticemail.com/v2/email/send';
+  public $url = 'https://api.sendgrid.com/api/mail.send.json';
   public $api_key;
   public $sender;
   public $reply_to;
 
   /** @var SendGridMapper */
   private $error_mapper;
+
+  /** @var BlacklistCheck */
+  private $blacklist;
 
   private $wp;
 
@@ -25,9 +29,14 @@ class SendGrid {
     $this->reply_to = $reply_to;
     $this->error_mapper = $error_mapper;
     $this->wp = new WPFunctions();
+    $this->blacklist = new BlacklistCheck();
   }
 
   function send($newsletter, $subscriber, $extra_params = []) {
+    if ($this->blacklist->isBlacklisted($subscriber)) {
+      $error = $this->error_mapper->getBlacklistError($subscriber);
+      return Mailer::formatMailerErrorResult($error);
+    }
     $result = $this->wp->wpRemotePost(
       $this->url,
       $this->request($newsletter, $subscriber, $extra_params)
@@ -51,8 +60,6 @@ class SendGrid {
       'fromname' => $this->sender['from_name'],
       'replyto' => $this->reply_to['reply_to_email'],
       'subject' => $newsletter['subject'],
-	  'apikey' => $this->api_key,
-      'isTransactional' => false
     ];
     $headers = [];
     if (!empty($extra_params['unsubscribe_url'])) {
@@ -62,10 +69,10 @@ class SendGrid {
       $body['headers'] = json_encode($headers);
     }
     if (!empty($newsletter['body']['html'])) {
-      $body['bodyHtml'] = $newsletter['body']['html'];
+      $body['html'] = $newsletter['body']['html'];
     }
     if (!empty($newsletter['body']['text'])) {
-      $body['bodyText'] = $newsletter['body']['text'];
+      $body['text'] = $newsletter['body']['text'];
     }
     return $body;
   }

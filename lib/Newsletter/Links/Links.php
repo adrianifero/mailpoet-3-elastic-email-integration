@@ -25,29 +25,29 @@ class Links {
   }
 
   static function extract($content) {
-    $extracted_links = array();
+    $extracted_links = [];
     // extract link shortcodes
     $shortcodes = new Shortcodes();
     $shortcodes = $shortcodes->extract(
       $content,
-      $categories = array(Link::CATEGORY_NAME)
+      $categories = [Link::CATEGORY_NAME]
     );
-    if($shortcodes) {
+    if ($shortcodes) {
       $extracted_links = array_map(function($shortcode) {
-        return array(
+        return [
           'type' => Links::LINK_TYPE_SHORTCODE,
-          'link' => $shortcode
-        );
+          'link' => $shortcode,
+        ];
       }, $shortcodes);
     }
     // extract HTML anchor tags
     $DOM = DomParser::parseStr($content);
-    foreach($DOM->query('a') as $link) {
-      if(!$link->href) continue;
-      $extracted_links[] = array(
+    foreach ($DOM->query('a') as $link) {
+      if (!$link->href) continue;
+      $extracted_links[] = [
         'type' => self::LINK_TYPE_URL,
-        'link' => $link->href
-      );
+        'link' => $link->href,
+      ];
     }
     return array_unique($extracted_links, SORT_REGULAR);
   }
@@ -56,8 +56,8 @@ class Links {
     $links = NewsletterLink::whereEqual('newsletter_id', $newsletter_id)
       ->whereEqual('queue_id', $queue_id)
       ->findMany();
-    $saved_links = array();
-    foreach($links as $link) {
+    $saved_links = [];
+    foreach ($links as $link) {
       $saved_links[$link->url] = $link->asArray();
     }
     return $saved_links;
@@ -70,21 +70,21 @@ class Links {
       $link['processed_link'] = self::DATA_TAG_CLICK . '-' . $link['hash'];
       return $link;
     }, $saved_links);
-    foreach($extracted_links as $extracted_link) {
+    foreach ($extracted_links as $extracted_link) {
       $link = $extracted_link['link'];
       if (array_key_exists($link, $processed_links))
         continue;
       $hash = Security::generateHash();
       // Use URL as a key to map between extracted and processed links
       // regardless of their sequential position (useful for link skips etc.)
-      $processed_links[$link] = array(
+      $processed_links[$link] = [
         'type' => $extracted_link['type'],
         'hash' => $hash,
         'link' => $link,
         // replace link with a temporary data tag + hash
         // it will be further replaced with the proper track API URL during sending
-        'processed_link' => self::DATA_TAG_CLICK . '-' . $hash
-      );
+        'processed_link' => self::DATA_TAG_CLICK . '-' . $hash,
+      ];
     }
     return $processed_links;
   }
@@ -92,20 +92,20 @@ class Links {
   static function replace($content, $processed_links) {
     // replace HTML anchor tags
     $DOM = DomParser::parseStr($content);
-    foreach($DOM->query('a') as $link) {
+    foreach ($DOM->query('a') as $link) {
       $link_to_replace = $link->href;
       $replacement_link = (!empty($processed_links[$link_to_replace]['processed_link'])) ?
         $processed_links[$link_to_replace]['processed_link'] :
         null;
-      if(!$replacement_link) continue;
+      if (!$replacement_link) continue;
       $link->setAttribute('href', $replacement_link);
     }
     $content = $DOM->__toString();
     // replace link shortcodes and markdown links
-    foreach($processed_links as $processed_link) {
+    foreach ($processed_links as $processed_link) {
       $link_to_replace = $processed_link['link'];
       $replacement_link = $processed_link['processed_link'];
-      if($processed_link['type'] == self::LINK_TYPE_SHORTCODE) {
+      if ($processed_link['type'] == self::LINK_TYPE_SHORTCODE) {
         $content = str_replace($link_to_replace, $replacement_link, $content);
       }
       $content = preg_replace(
@@ -114,10 +114,10 @@ class Links {
         $content
       );
     }
-    return array(
+    return [
       $content,
-      array_values($processed_links)
-    );
+      array_values($processed_links),
+    ];
   }
 
   static function replaceSubscriberData(
@@ -129,9 +129,9 @@ class Links {
     // match data tags
     $subscriber = Subscriber::findOne($subscriber_id);
     preg_match_all(self::getLinkRegex(), $content, $matches);
-    foreach($matches[1] as $index => $match) {
+    foreach ($matches[1] as $index => $match) {
       $hash = null;
-      if(preg_match('/-/', $match)) {
+      if (preg_match('/-/', $match)) {
         list(, $hash) = explode('-', $match);
       }
       $data = self::createUrlDataObject(
@@ -155,10 +155,10 @@ class Links {
   }
 
   static function save(array $links, $newsletter_id, $queue_id) {
-    foreach($links as $link) {
+    foreach ($links as $link) {
       if (isset($link['id']))
         continue;
-      if(empty($link['hash']) || empty($link['link'])) continue;
+      if (empty($link['hash']) || empty($link['link'])) continue;
       $newsletter_link = NewsletterLink::create();
       $newsletter_link->newsletter_id = $newsletter_id;
       $newsletter_link->queue_id = $queue_id;
@@ -171,15 +171,15 @@ class Links {
   static function convertHashedLinksToShortcodesAndUrls($content, $queue_id, $convert_all = false) {
     preg_match_all(self::getLinkRegex(), $content, $links);
     $links = array_unique(Helpers::flattenArray($links));
-    foreach($links as $link) {
+    foreach ($links as $link) {
       $link_hash = explode('-', $link);
-      if(!isset($link_hash[1])) continue;
+      if (!isset($link_hash[1])) continue;
       $newsletter_link = NewsletterLink::where('hash', $link_hash[1])
         ->where('queue_id', $queue_id)
         ->findOne();
       // convert either only link shortcodes or all hashes links if "convert all"
       // option is specified
-      if($newsletter_link &&
+      if (($newsletter_link instanceof NewsletterLink) &&
         (preg_match('/\[link:/', $newsletter_link->url) || $convert_all)
       ) {
         $content = str_replace($link, $newsletter_link->url, $content);
@@ -199,19 +199,19 @@ class Links {
   static function createUrlDataObject(
     $subscriber_id, $subscriber_email, $queue_id, $link_hash, $preview
   ) {
-    return array(
+    return [
       $subscriber_id,
       Subscriber::generateToken($subscriber_email),
       $queue_id,
       $link_hash,
-      $preview
-    );
+      $preview,
+    ];
   }
 
   static function transformUrlDataObject($data) {
     reset($data);
-    if(!is_int(key($data))) return $data;
-    $transformed_data = array();
+    if (!is_int(key($data))) return $data;
+    $transformed_data = [];
     $transformed_data['subscriber_id'] = (!empty($data[0])) ? $data[0] : false;
     $transformed_data['subscriber_token'] = (!empty($data[1])) ? $data[1] : false;
     $transformed_data['queue_id'] = (!empty($data[2])) ? $data[2] : false;

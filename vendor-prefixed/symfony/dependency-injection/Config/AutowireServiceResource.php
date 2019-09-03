@@ -20,7 +20,7 @@ class AutowireServiceResource implements \MailPoetVendor\Symfony\Component\Confi
 {
     private $class;
     private $filePath;
-    private $autowiringMetadata = array();
+    private $autowiringMetadata = [];
     public function __construct($class, $path, array $autowiringMetadata)
     {
         $this->class = $class;
@@ -48,14 +48,20 @@ class AutowireServiceResource implements \MailPoetVendor\Symfony\Component\Confi
     {
         return 'service.autowire.' . $this->class;
     }
+    /**
+     * @internal
+     */
     public function serialize()
     {
-        return \serialize(array($this->class, $this->filePath, $this->autowiringMetadata));
+        return \serialize([$this->class, $this->filePath, $this->autowiringMetadata]);
     }
+    /**
+     * @internal
+     */
     public function unserialize($serialized)
     {
         if (\PHP_VERSION_ID >= 70000) {
-            list($this->class, $this->filePath, $this->autowiringMetadata) = \unserialize($serialized, array('allowed_classes' => \false));
+            list($this->class, $this->filePath, $this->autowiringMetadata) = \unserialize($serialized, ['allowed_classes' => \false]);
         } else {
             list($this->class, $this->filePath, $this->autowiringMetadata) = \unserialize($serialized);
         }

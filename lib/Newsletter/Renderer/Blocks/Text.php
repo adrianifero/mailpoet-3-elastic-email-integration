@@ -3,12 +3,12 @@ namespace MailPoet\Newsletter\Renderer\Blocks;
 
 use MailPoet\Newsletter\Editor\PostContentManager;
 use MailPoet\Newsletter\Renderer\StylesHelper;
+use MailPoet\Newsletter\Renderer\EscapeHelper as EHelper;
 use MailPoet\Util\pQuery\pQuery;
 
 class Text {
   static function render($element) {
     $html = $element['text'];
-    $padding_top = isset($element['styles']['block']['paddingTop']) ? $element['styles']['block']['paddingTop'] : '0';
     // replace &nbsp; with spaces
     $html = str_replace('&nbsp;', ' ', $html);
     $html = str_replace('\xc2\xa0', ' ', $html);
@@ -19,7 +19,7 @@ class Text {
     $html = self::removeLastLineBreak($html);
     $template = '
       <tr>
-        <td class="mailpoet_text mailpoet_padded_bottom mailpoet_padded_side" valign="top" style="word-break:break-word;word-wrap:break-word;padding-top:' . $padding_top .'">
+        <td class="mailpoet_text mailpoet_padded_vertical mailpoet_padded_side" valign="top" style="word-break:break-word;word-wrap:break-word;">
           ' . $html . '
         </td>
       </tr>';
@@ -30,19 +30,19 @@ class Text {
     $DOM_parser = new pQuery();
     $DOM = $DOM_parser->parseStr($html);
     $blockquotes = $DOM->query('blockquote');
-    foreach($blockquotes as $blockquote) {
-      $contents = array();
+    foreach ($blockquotes as $blockquote) {
+      $contents = [];
       $paragraphs = $blockquote->query('p, h1, h2, h3, h4', 0);
-      foreach($paragraphs as $index => $paragraph) {
-        if(preg_match('/h\d/', $paragraph->getTag())) {
+      foreach ($paragraphs as $index => $paragraph) {
+        if (preg_match('/h\d/', $paragraph->getTag())) {
           $contents[] = $paragraph->getOuterText();
         } else {
-          $contents[] = $paragraph->html();
+          $contents[] = str_replace('&', '&amp;', $paragraph->html());
         }
-          if($index + 1 < $paragraphs->count()) $contents[] = '<br />';
+          if ($index + 1 < $paragraphs->count()) $contents[] = '<br />';
           $paragraph->remove();
       }
-      if(empty($contents)) continue;
+      if (empty($contents)) continue;
       $blockquote->setTag('table');
       $blockquote->addClass('mailpoet_blockquote');
       $blockquote->width = '100%';
@@ -75,10 +75,10 @@ class Text {
     $DOM_parser = new pQuery();
     $DOM = $DOM_parser->parseStr($html);
     $paragraphs = $DOM->query('p');
-    if(!$paragraphs->count()) return $html;
-    foreach($paragraphs as $paragraph) {
+    if (!$paragraphs->count()) return $html;
+    foreach ($paragraphs as $paragraph) {
       // process empty paragraphs
-      if(!trim($paragraph->html())) {
+      if (!trim($paragraph->html())) {
           $next_element = ($paragraph->getNextSibling()) ?
             trim($paragraph->getNextSibling()->text()) :
             false;
@@ -90,7 +90,7 @@ class Text {
           false;
         // if previous or next paragraphs are empty OR previous paragraph
         // is a heading, insert a break line
-        if(!$next_element ||
+        if (!$next_element ||
             !$previous_element ||
             (preg_match('/h\d+/', $previous_element_tag))
         ) {
@@ -100,10 +100,10 @@ class Text {
         continue;
       }
       $style = $paragraph->style;
-      if(!preg_match('/text-align/i', $style)) {
+      if (!preg_match('/text-align/i', $style)) {
         $style = 'text-align: left;' . $style;
       }
-      $contents = $paragraph->html();
+      $contents = str_replace('&', '&amp;', $paragraph->html());
       $paragraph->setTag('table');
       $paragraph->style = 'border-spacing:0;mso-table-lspace:0;mso-table-rspace:0;';
       $paragraph->width = '100%';
@@ -117,7 +117,7 @@ class Text {
       $line_breaks = ($next_element && preg_match('/<li/i', $next_element->getOuterText())) ?
         '<br />' :
         $line_breaks;
-      if($paragraph->hasClass(PostContentManager::WP_POST_CLASS)) {
+      if ($paragraph->hasClass(PostContentManager::WP_POST_CLASS)) {
         $paragraph->removeClass(PostContentManager::WP_POST_CLASS);
         // if this element is followed by a paragraph, add double line breaks
         $line_breaks = ($next_element && preg_match('/<p/i', $next_element->getOuterText())) ?
@@ -126,10 +126,10 @@ class Text {
       }
       $paragraph->html('
         <tr>
-          <td class="mailpoet_paragraph" style="word-break:break-word;word-wrap:break-word;' . $style . '">
+          <td class="mailpoet_paragraph" style="word-break:break-word;word-wrap:break-word;' . EHelper::escapeHtmlStyleAttr($style) . '">
             ' . $contents . $line_breaks . '
           </td>
-         </tr>'
+        </tr>'
       );
     }
     return $DOM->__toString();
@@ -139,10 +139,10 @@ class Text {
     $DOM_parser = new pQuery();
     $DOM = $DOM_parser->parseStr($html);
     $lists = $DOM->query('ol, ul, li');
-    if(!$lists->count()) return $html;
-    foreach($lists as $list) {
-      if($list->tag === 'li') {
-        $list->setInnertext($list->html());
+    if (!$lists->count()) return $html;
+    foreach ($lists as $list) {
+      if ($list->tag === 'li') {
+        $list->setInnertext(str_replace('&', '&amp;', $list->html()));
         $list->class = 'mailpoet_paragraph';
       } else {
         $list->class = 'mailpoet_paragraph';
@@ -150,6 +150,7 @@ class Text {
       }
       $list->style = StylesHelper::applyTextAlignment($list->style);
       $list->style .= 'margin-bottom:10px;';
+      $list->style = EHelper::escapeHtmlStyleAttr($list->style);
     }
     return $DOM->__toString();
   }
@@ -158,10 +159,11 @@ class Text {
     $DOM_parser = new pQuery();
     $DOM = $DOM_parser->parseStr($html);
     $headings = $DOM->query('h1, h2, h3, h4');
-    if(!$headings->count()) return $html;
-    foreach($headings as $heading) {
+    if (!$headings->count()) return $html;
+    foreach ($headings as $heading) {
       $heading->style = StylesHelper::applyTextAlignment($heading->style);
       $heading->style .= 'padding:0;font-style:normal;font-weight:normal;';
+      $heading->style = EHelper::escapeHtmlStyleAttr($heading->style);
     }
     return $DOM->__toString();
   }
@@ -172,11 +174,11 @@ class Text {
 
   static function insertLineBreak($element) {
     $element->parent->insertChild(
-      array(
+      [
         'tag_name' => 'br',
         'self_close' => true,
-        'attributes' => array()
-      ),
+        'attributes' => [],
+      ],
       $element->index() + 1
     );
     return $element;

@@ -2,22 +2,28 @@
 namespace MailPoet\Models;
 
 use MailPoet\Util\Helpers;
+use function MailPoet\Util\array_column;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
+/**
+ * @property int $subscriber_id
+ * @property int $custom_field_id
+ * @property string $value
+ */
 class SubscriberCustomField extends Model {
   public static $_table = MP_SUBSCRIBER_CUSTOM_FIELD_TABLE;
 
-  static function createOrUpdate($data = array()) {
+  static function createOrUpdate($data = []) {
     $custom_field = CustomField::findOne($data['custom_field_id']);
-    if($custom_field === false) {
-      return false;
-    } else {
+    if ($custom_field instanceof CustomField) {
       $custom_field = $custom_field->asArray();
+    } else {
+      return false;
     }
 
-    if($custom_field['type'] === 'date') {
-      if(is_array($data['value'])) {
+    if ($custom_field['type'] === 'date') {
+      if (is_array($data['value'])) {
         $day = (
           isset($data['value']['day'])
           ? (int)$data['value']['day']
@@ -37,10 +43,10 @@ class SubscriberCustomField extends Model {
       }
     }
 
-    return parent::_createOrUpdate($data, array(
+    return parent::_createOrUpdate($data, [
       'custom_field_id' => $data['custom_field_id'],
-      'subscriber_id' => $data['subscriber_id']
-    ));
+      'subscriber_id' => $data['subscriber_id'],
+    ]);
   }
 
   static function createMultiple($values) {
@@ -58,27 +64,27 @@ class SubscriberCustomField extends Model {
   }
 
   static function updateMultiple($values) {
+    $subscriber_ids = array_unique(array_column($values, 1));
+    $query = sprintf(
+      "UPDATE `%s` SET value = (CASE %s ELSE value END) WHERE subscriber_id IN (%s)",
+      self::$_table,
+      str_repeat('WHEN custom_field_id = ? AND subscriber_id = ? THEN ? ', count($values)),
+      implode(',', $subscriber_ids)
+    );
     self::rawExecute(
-      'UPDATE `' . self::$_table . '` ' .
-      'SET value = ' .
-      '(CASE ' .
-      str_repeat(
-        'WHEN custom_field_id = ? AND subscriber_id = ? THEN ? ',
-        count($values)
-      ) .
-      'ELSE value END) ',
+      $query,
       Helpers::flattenArray($values)
     );
   }
 
   static function deleteSubscriberRelations($subscriber) {
-    if($subscriber === false) return false;
+    if ($subscriber === false) return false;
     $relations = self::where('subscriber_id', $subscriber->id);
     return $relations->deleteMany();
   }
 
   static function deleteManySubscriberRelations(array $subscriber_ids) {
-    if(empty($subscriber_ids)) return false;
+    if (empty($subscriber_ids)) return false;
     $relations = self::whereIn('subscriber_id', $subscriber_ids);
     return $relations->deleteMany();
   }

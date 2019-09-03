@@ -16,8 +16,8 @@ abstract class AbstractServiceConfigurator extends \MailPoetVendor\Symfony\Compo
 {
     protected $parent;
     protected $id;
-    private $defaultTags = array();
-    public function __construct(\MailPoetVendor\Symfony\Component\DependencyInjection\Loader\Configurator\ServicesConfigurator $parent, \MailPoetVendor\Symfony\Component\DependencyInjection\Definition $definition, $id = null, array $defaultTags = array())
+    private $defaultTags = [];
+    public function __construct(\MailPoetVendor\Symfony\Component\DependencyInjection\Loader\Configurator\ServicesConfigurator $parent, \MailPoetVendor\Symfony\Component\DependencyInjection\Definition $definition, $id = null, array $defaultTags = [])
     {
         $this->parent = $parent;
         $this->definition = $definition;
@@ -32,7 +32,7 @@ abstract class AbstractServiceConfigurator extends \MailPoetVendor\Symfony\Compo
                 $this->definition->addTag($name, $attributes);
             }
         }
-        $this->defaultTags = array();
+        $this->defaultTags = [];
     }
     /**
      * Registers a service.

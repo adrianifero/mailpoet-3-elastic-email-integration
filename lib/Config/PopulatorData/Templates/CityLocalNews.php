@@ -14,170 +14,170 @@ class CityLocalNews {
   }
 
   function get() {
-    return array(
+    return [
       'name' => WPFunctions::get()->__("City News", 'mailpoet'),
-      'categories' => json_encode(array('standard', 'all')),
+      'categories' => json_encode(['standard', 'all']),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),
       'body' => json_encode($this->getBody()),
-    );
+    ];
   }
 
   private function getThumbnail() {
-    return $this->template_image_url . '/thumbnail.jpg';
+    return $this->template_image_url . '/thumbnail.20190411-1500.jpg';
   }
 
   private function getBody() {
-    return array (
-      'content' => 
-      array (
+    return  [
+      'content' =>
+       [
         'type' => 'container',
         'columnLayout' => false,
         'orientation' => 'vertical',
-        'image' => 
-        array (
-          'src' => NULL,
+        'image' =>
+         [
+          'src' => null,
           'display' => 'scale',
-        ),
-        'styles' => 
-        array (
-          'block' => 
-          array (
+         ],
+        'styles' =>
+         [
+          'block' =>
+           [
             'backgroundColor' => 'transparent',
-          ),
-        ),
-        'blocks' => 
-        array (
-          0 => 
-          array (
+           ],
+         ],
+        'blocks' =>
+         [
+          0 =>
+           [
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
-            array (
-              'src' => NULL,
+            'image' =>
+             [
+              'src' => null,
               'display' => 'scale',
-            ),
-            'styles' => 
-            array (
-              'block' => 
-              array (
+             ],
+            'styles' =>
+             [
+              'block' =>
+               [
                 'backgroundColor' => '#252525',
-              ),
-            ),
-            'blocks' => 
-            array (
-              0 => 
-              array (
+               ],
+             ],
+            'blocks' =>
+             [
+              0 =>
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
-                array (
-                  'src' => NULL,
+                'image' =>
+                 [
+                  'src' => null,
                   'display' => 'scale',
-                ),
-                'styles' => 
-                array (
-                  'block' => 
-                  array (
+                 ],
+                'styles' =>
+                 [
+                  'block' =>
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => 
-                array (
-                  0 => 
-                  array (
+                   ],
+                 ],
+                'blocks' =>
+                 [
+                  0 =>
+                   [
                     'type' => 'spacer',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'backgroundColor' => 'transparent',
                         'height' => '30px',
-                      ),
-                    ),
-                  ),
-                  1 => 
-                  array (
+                       ],
+                     ],
+                   ],
+                  1 =>
+                   [
                     'type' => 'header',
                     'text' => '<p><span style="color: #999999;"><a href="[link:newsletter_view_in_browser_url]" style="color: #999999;">View online &gt;</a></span></p>',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'backgroundColor' => 'transparent',
-                      ),
-                      'text' => 
-                      array (
+                       ],
+                      'text' =>
+                       [
                         'fontColor' => '#222222',
                         'fontFamily' => 'Arial',
                         'fontSize' => '12px',
                         'textAlign' => 'right',
-                      ),
-                      'link' => 
-                      array (
+                       ],
+                      'link' =>
+                       [
                         'fontColor' => '#6cb7d4',
                         'textDecoration' => 'underline',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          1 => 
-          array (
+                       ],
+                     ],
+                   ],
+                 ],
+               ],
+             ],
+           ],
+          1 =>
+           [
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
-            array (
+            'image' =>
+             [
               'src' => $this->template_image_url . '/CityNews-Header.jpg',
               'display' => 'scale',
-            ),
-            'styles' => 
-            array (
-              'block' => 
-              array (
+             ],
+            'styles' =>
+             [
+              'block' =>
+               [
                 'backgroundColor' => '#000000',
-              ),
-            ),
-            'blocks' => 
-            array (
-              0 => 
-              array (
+               ],
+             ],
+            'blocks' =>
+             [
+              0 =>
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
-                array (
-                  'src' => NULL,
+                'image' =>
+                 [
+                  'src' => null,
                   'display' => 'scale',
-                ),
-                'styles' => 
-                array (
-                  'block' => 
-                  array (
+                 ],
+                'styles' =>
+                 [
+                  'block' =>
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => 
-                array (
-                  0 => 
-                  array (
+                   ],
+                 ],
+                'blocks' =>
+                 [
+                  0 =>
+                   [
                     'type' => 'spacer',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'backgroundColor' => 'transparent',
                         'height' => '70px',
-                      ),
-                    ),
-                  ),
-                  1 => 
-                  array (
+                       ],
+                     ],
+                   ],
+                  1 =>
+                   [
                     'type' => 'image',
                     'link' => '',
                     'src' => $this->template_image_url . '/CityNews-Logo.png',
@@ -185,28 +185,28 @@ class CityLocalNews {
                     'fullWidth' => false,
                     'width' => '150px',
                     'height' => '178px',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'textAlign' => 'center',
-                      ),
-                    ),
-                  ),
-                  2 => 
-                  array (
+                       ],
+                     ],
+                   ],
+                  2 =>
+                   [
                     'type' => 'text',
                     'text' => '<h1 style="text-align: center;"><span style="color: #ffffff;"><strong>[date:mtext] [date:y]</strong></span></h1>
     <p style="text-align: center;"><span style="color: #ffffff;">N E W S L E T T E R</span></p>',
-                  ),
-                  3 => 
-                  array (
+                   ],
+                  3 =>
+                   [
                     'type' => 'social',
                     'iconSet' => 'full-symbol-grey',
-                    'icons' => 
-                    array (
-                      0 => 
-                      array (
+                    'icons' =>
+                     [
+                      0 =>
+                       [
                         'type' => 'socialIcon',
                         'iconType' => 'facebook',
                         'link' => 'http://www.facebook.com',
@@ -214,9 +214,9 @@ class CityLocalNews {
                         'height' => '32px',
                         'width' => '32px',
                         'text' => 'Facebook',
-                      ),
-                      1 => 
-                      array (
+                       ],
+                      1 =>
+                       [
                         'type' => 'socialIcon',
                         'iconType' => 'twitter',
                         'link' => 'http://www.twitter.com',
@@ -224,9 +224,9 @@ class CityLocalNews {
                         'height' => '32px',
                         'width' => '32px',
                         'text' => 'Twitter',
-                      ),
-                      2 => 
-                      array (
+                       ],
+                      2 =>
+                       [
                         'type' => 'socialIcon',
                         'iconType' => 'email',
                         'link' => '',
@@ -234,9 +234,9 @@ class CityLocalNews {
                         'height' => '32px',
                         'width' => '32px',
                         'text' => 'Email',
-                      ),
-                      3 => 
-                      array (
+                       ],
+                      3 =>
+                       [
                         'type' => 'socialIcon',
                         'iconType' => 'youtube',
                         'link' => 'http://www.youtube.com',
@@ -244,161 +244,161 @@ class CityLocalNews {
                         'height' => '32px',
                         'width' => '32px',
                         'text' => 'Youtube',
-                      ),
-                    ),
-                  ),
-                  4 => 
-                  array (
+                       ],
+                     ],
+                   ],
+                  4 =>
+                   [
                     'type' => 'spacer',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'backgroundColor' => 'transparent',
                         'height' => '20px',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          2 => 
-          array (
+                       ],
+                     ],
+                   ],
+                 ],
+               ],
+             ],
+           ],
+          2 =>
+           [
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
-            array (
-              'src' => NULL,
+            'image' =>
+             [
+              'src' => null,
               'display' => 'scale',
-            ),
-            'styles' => 
-            array (
-              'block' => 
-              array (
+             ],
+            'styles' =>
+             [
+              'block' =>
+               [
                 'backgroundColor' => '#252525',
-              ),
-            ),
-            'blocks' => 
-            array (
-              0 => 
-              array (
+               ],
+             ],
+            'blocks' =>
+             [
+              0 =>
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
-                array (
-                  'src' => NULL,
+                'image' =>
+                 [
+                  'src' => null,
                   'display' => 'scale',
-                ),
-                'styles' => 
-                array (
-                  'block' => 
-                  array (
+                 ],
+                'styles' =>
+                 [
+                  'block' =>
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => 
-                array (
-                  0 => 
-                  array (
+                   ],
+                 ],
+                'blocks' =>
+                 [
+                  0 =>
+                   [
                     'type' => 'spacer',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'backgroundColor' => 'transparent',
                         'height' => '30px',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          3 => 
-          array (
+                       ],
+                     ],
+                   ],
+                 ],
+               ],
+             ],
+           ],
+          3 =>
+           [
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
-            array (
-              'src' => NULL,
+            'image' =>
+             [
+              'src' => null,
               'display' => 'scale',
-            ),
-            'styles' => 
-            array (
-              'block' => 
-              array (
+             ],
+            'styles' =>
+             [
+              'block' =>
+               [
                 'backgroundColor' => 'transparent',
-              ),
-            ),
-            'blocks' => 
-            array (
-              0 => 
-              array (
+               ],
+             ],
+            'blocks' =>
+             [
+              0 =>
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
-                array (
-                  'src' => NULL,
+                'image' =>
+                 [
+                  'src' => null,
                   'display' => 'scale',
-                ),
-                'styles' => 
-                array (
-                  'block' => 
-                  array (
+                 ],
+                'styles' =>
+                 [
+                  'block' =>
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => 
-                array (
-                  0 => 
-                  array (
+                   ],
+                 ],
+                'blocks' =>
+                 [
+                  0 =>
+                   [
                     'type' => 'spacer',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'backgroundColor' => 'transparent',
                         'height' => '22px',
-                      ),
-                    ),
-                  ),
-                  1 => 
-                  array (
+                       ],
+                     ],
+                   ],
+                  1 =>
+                   [
                     'type' => 'text',
                     'text' => '<p style="text-align: left;"><span style="color: #333333;"><strong><span></span></strong></span><span style="color: #999999;"><strong>TOP STORY</strong></span></p>
     <h2 style="text-align: left;"><span style="color: #333333;"><strong>Park opens to all within the community</strong></span></h2>
     <p><span style="color: #333333;">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus ac maximus justo. Phasellus ullamcorper, enim at eleifend malesuada, risus purus interdum arcu, sed porttitor erat diam a neque.&nbsp;</span></p>
     <p><span style="color: #333333;"></span></p>
     <p><strong><a href="http://mailpoet-sg.com">Read full article &gt;</a></strong></p>',
-                  ),
-                ),
-              ),
-              1 => 
-              array (
+                   ],
+                 ],
+               ],
+              1 =>
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
-                array (
-                  'src' => NULL,
+                'image' =>
+                 [
+                  'src' => null,
                   'display' => 'scale',
-                ),
-                'styles' => 
-                array (
-                  'block' => 
-                  array (
+                 ],
+                'styles' =>
+                 [
+                  'block' =>
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => 
-                array (
-                  0 => 
-                  array (
+                   ],
+                 ],
+                'blocks' =>
+                 [
+                  0 =>
+                   [
                     'type' => 'image',
                     'link' => '',
                     'src' => $this->template_image_url . '/CityNews-Images-1.jpg',
@@ -406,124 +406,124 @@ class CityLocalNews {
                     'fullWidth' => true,
                     'width' => '600px',
                     'height' => '600px',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'textAlign' => 'center',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          4 => 
-          array (
+                       ],
+                     ],
+                   ],
+                 ],
+               ],
+             ],
+           ],
+          4 =>
+           [
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
-            array (
-              'src' => NULL,
+            'image' =>
+             [
+              'src' => null,
               'display' => 'scale',
-            ),
-            'styles' => 
-            array (
-              'block' => 
-              array (
+             ],
+            'styles' =>
+             [
+              'block' =>
+               [
                 'backgroundColor' => '#252525',
-              ),
-            ),
-            'blocks' => 
-            array (
-              0 => 
-              array (
+               ],
+             ],
+            'blocks' =>
+             [
+              0 =>
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
-                array (
-                  'src' => NULL,
+                'image' =>
+                 [
+                  'src' => null,
                   'display' => 'scale',
-                ),
-                'styles' => 
-                array (
-                  'block' => 
-                  array (
+                 ],
+                'styles' =>
+                 [
+                  'block' =>
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => 
-                array (
-                  0 => 
-                  array (
+                   ],
+                 ],
+                'blocks' =>
+                 [
+                  0 =>
+                   [
                     'type' => 'spacer',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'backgroundColor' => 'transparent',
                         'height' => '30px',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          5 => 
-          array (
+                       ],
+                     ],
+                   ],
+                 ],
+               ],
+             ],
+           ],
+          5 =>
+           [
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
-            array (
-              'src' => NULL,
+            'image' =>
+             [
+              'src' => null,
               'display' => 'scale',
-            ),
-            'styles' => 
-            array (
-              'block' => 
-              array (
+             ],
+            'styles' =>
+             [
+              'block' =>
+               [
                 'backgroundColor' => 'transparent',
-              ),
-            ),
-            'blocks' => 
-            array (
-              0 => 
-              array (
+               ],
+             ],
+            'blocks' =>
+             [
+              0 =>
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
-                array (
-                  'src' => NULL,
+                'image' =>
+                 [
+                  'src' => null,
                   'display' => 'scale',
-                ),
-                'styles' => 
-                array (
-                  'block' => 
-                  array (
+                 ],
+                'styles' =>
+                 [
+                  'block' =>
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => 
-                array (
-                  0 => 
-                  array (
+                   ],
+                 ],
+                'blocks' =>
+                 [
+                  0 =>
+                   [
                     'type' => 'spacer',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'backgroundColor' => 'transparent',
                         'height' => '20px',
-                      ),
-                    ),
-                  ),
-                  1 => 
-                  array (
+                       ],
+                     ],
+                   ],
+                  1 =>
+                   [
                     'type' => 'image',
                     'link' => '',
                     'src' => $this->template_image_url . '/CityNews-ThinImages-1.jpg',
@@ -531,56 +531,56 @@ class CityLocalNews {
                     'fullWidth' => false,
                     'width' => '600px',
                     'height' => '300px',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'textAlign' => 'center',
-                      ),
-                    ),
-                  ),
-                  2 => 
-                  array (
+                       ],
+                     ],
+                   ],
+                  2 =>
+                   [
                     'type' => 'text',
                     'text' => '<p style="text-align: left;"><span style="color: #999999;"><strong>EVENTS</strong></span></p>
     <h3 style="text-align: left;"><span style="color: #333333;"><strong>Christmas Market opening soon</strong></span></h3>
     <p><strong><a href="http://mailpoet-sg.com">Read full article &gt;</a></strong></p>',
-                  ),
-                ),
-              ),
-              1 => 
-              array (
+                   ],
+                 ],
+               ],
+              1 =>
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
-                array (
-                  'src' => NULL,
+                'image' =>
+                 [
+                  'src' => null,
                   'display' => 'scale',
-                ),
-                'styles' => 
-                array (
-                  'block' => 
-                  array (
+                 ],
+                'styles' =>
+                 [
+                  'block' =>
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => 
-                array (
-                  0 => 
-                  array (
+                   ],
+                 ],
+                'blocks' =>
+                 [
+                  0 =>
+                   [
                     'type' => 'spacer',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'backgroundColor' => 'transparent',
                         'height' => '20px',
-                      ),
-                    ),
-                  ),
-                  1 => 
-                  array (
+                       ],
+                     ],
+                   ],
+                  1 =>
+                   [
                     'type' => 'image',
                     'link' => '',
                     'src' => $this->template_image_url . '/CityNews-ThinImages-2.jpg',
@@ -588,77 +588,77 @@ class CityLocalNews {
                     'fullWidth' => false,
                     'width' => '600px',
                     'height' => '300px',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'textAlign' => 'center',
-                      ),
-                    ),
-                  ),
-                  2 => 
-                  array (
+                       ],
+                     ],
+                   ],
+                  2 =>
+                   [
                     'type' => 'text',
                     'text' => '<p style="text-align: left;"><span style="color: #999999;"><strong>HEALTHCARE</strong></span></p>
     <h3 style="text-align: left;"><span style="color: #333333;"><strong>Hospitals brace for cuts to services</strong></span></h3>
     <p><strong><a href="http://mailpoet-sg.com">Read full article &gt;</a></strong></p>',
-                  ),
-                ),
-              ),
-            ),
-          ),
-          6 => 
-          array (
+                   ],
+                 ],
+               ],
+             ],
+           ],
+          6 =>
+           [
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
-            array (
-              'src' => NULL,
+            'image' =>
+             [
+              'src' => null,
               'display' => 'scale',
-            ),
-            'styles' => 
-            array (
-              'block' => 
-              array (
+             ],
+            'styles' =>
+             [
+              'block' =>
+               [
                 'backgroundColor' => 'transparent',
-              ),
-            ),
-            'blocks' => 
-            array (
-              0 => 
-              array (
+               ],
+             ],
+            'blocks' =>
+             [
+              0 =>
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
-                array (
-                  'src' => NULL,
+                'image' =>
+                 [
+                  'src' => null,
                   'display' => 'scale',
-                ),
-                'styles' => 
-                array (
-                  'block' => 
-                  array (
+                 ],
+                'styles' =>
+                 [
+                  'block' =>
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => 
-                array (
-                  0 => 
-                  array (
+                   ],
+                 ],
+                'blocks' =>
+                 [
+                  0 =>
+                   [
                     'type' => 'spacer',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'backgroundColor' => 'transparent',
                         'height' => '20px',
-                      ),
-                    ),
-                  ),
-                  1 => 
-                  array (
+                       ],
+                     ],
+                   ],
+                  1 =>
+                   [
                     'type' => 'image',
                     'link' => '',
                     'src' => $this->template_image_url . '/CityNews-ThinImages-3.jpg',
@@ -666,68 +666,68 @@ class CityLocalNews {
                     'fullWidth' => false,
                     'width' => '600px',
                     'height' => '300px',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'textAlign' => 'center',
-                      ),
-                    ),
-                  ),
-                  2 => 
-                  array (
+                       ],
+                     ],
+                   ],
+                  2 =>
+                   [
                     'type' => 'text',
                     'text' => '<p style="text-align: left;"><span style="color: #999999;"><strong>WEATHER</strong></span></p>
     <h3 style="text-align: left;"><span style="color: #333333;"><strong>Dry heat has a high chance to cause fires</strong></span></h3>
     <p><strong><a href="http://mailpoet-sg.com">Read full article &gt;</a></strong></p>',
-                  ),
-                  3 => 
-                  array (
+                   ],
+                  3 =>
+                   [
                     'type' => 'spacer',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'backgroundColor' => 'transparent',
                         'height' => '20px',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              1 => 
-              array (
+                       ],
+                     ],
+                   ],
+                 ],
+               ],
+              1 =>
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
-                array (
-                  'src' => NULL,
+                'image' =>
+                 [
+                  'src' => null,
                   'display' => 'scale',
-                ),
-                'styles' => 
-                array (
-                  'block' => 
-                  array (
+                 ],
+                'styles' =>
+                 [
+                  'block' =>
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => 
-                array (
-                  0 => 
-                  array (
+                   ],
+                 ],
+                'blocks' =>
+                 [
+                  0 =>
+                   [
                     'type' => 'spacer',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'backgroundColor' => 'transparent',
                         'height' => '20px',
-                      ),
-                    ),
-                  ),
-                  1 => 
-                  array (
+                       ],
+                     ],
+                   ],
+                  1 =>
+                   [
                     'type' => 'image',
                     'link' => '',
                     'src' => $this->template_image_url . '/CityNews-ThinImages-4.jpg',
@@ -735,131 +735,131 @@ class CityLocalNews {
                     'fullWidth' => false,
                     'width' => '600px',
                     'height' => '300px',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'textAlign' => 'center',
-                      ),
-                    ),
-                  ),
-                  2 => 
-                  array (
+                       ],
+                     ],
+                   ],
+                  2 =>
+                   [
                     'type' => 'text',
                     'text' => '<p style="text-align: left;"><span style="color: #999999;"><strong>ARTS</strong></span></p>
     <h3 style="text-align: left;"><span style="color: #333333;"><strong>Local theatre to stage dramatic new play</strong></span></h3>
     <p><strong><a href="http://mailpoet-sg.com">Read full article &gt;</a></strong></p>',
-                  ),
-                  3 => 
-                  array (
+                   ],
+                  3 =>
+                   [
                     'type' => 'spacer',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'backgroundColor' => 'transparent',
                         'height' => '20px',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          7 => 
-          array (
+                       ],
+                     ],
+                   ],
+                 ],
+               ],
+             ],
+           ],
+          7 =>
+           [
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
-            array (
-              'src' => NULL,
+            'image' =>
+             [
+              'src' => null,
               'display' => 'scale',
-            ),
-            'styles' => 
-            array (
-              'block' => 
-              array (
+             ],
+            'styles' =>
+             [
+              'block' =>
+               [
                 'backgroundColor' => '#252525',
-              ),
-            ),
-            'blocks' => 
-            array (
-              0 => 
-              array (
+               ],
+             ],
+            'blocks' =>
+             [
+              0 =>
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
-                array (
-                  'src' => NULL,
+                'image' =>
+                 [
+                  'src' => null,
                   'display' => 'scale',
-                ),
-                'styles' => 
-                array (
-                  'block' => 
-                  array (
+                 ],
+                'styles' =>
+                 [
+                  'block' =>
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => 
-                array (
-                  0 => 
-                  array (
+                   ],
+                 ],
+                'blocks' =>
+                 [
+                  0 =>
+                   [
                     'type' => 'spacer',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'backgroundColor' => 'transparent',
                         'height' => '40px',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          8 => 
-          array (
+                       ],
+                     ],
+                   ],
+                 ],
+               ],
+             ],
+           ],
+          8 =>
+           [
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
-            array (
-              'src' => NULL,
+            'image' =>
+             [
+              'src' => null,
               'display' => 'scale',
-            ),
-            'styles' => 
-            array (
-              'block' => 
-              array (
+             ],
+            'styles' =>
+             [
+              'block' =>
+               [
                 'backgroundColor' => '#252525',
-              ),
-            ),
-            'blocks' => 
-            array (
-              0 => 
-              array (
+               ],
+             ],
+            'blocks' =>
+             [
+              0 =>
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
-                array (
-                  'src' => NULL,
+                'image' =>
+                 [
+                  'src' => null,
                   'display' => 'scale',
-                ),
-                'styles' => 
-                array (
-                  'block' => 
-                  array (
+                 ],
+                'styles' =>
+                 [
+                  'block' =>
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => 
-                array (
-                  0 => 
-                  array (
+                   ],
+                 ],
+                'blocks' =>
+                 [
+                  0 =>
+                   [
                     'type' => 'image',
                     'link' => '',
                     'src' => $this->template_image_url . '/CityNews-Phone.png',
@@ -867,55 +867,55 @@ class CityLocalNews {
                     'fullWidth' => false,
                     'width' => '162px',
                     'height' => '679px',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'textAlign' => 'center',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              1 => 
-              array (
+                       ],
+                     ],
+                   ],
+                 ],
+               ],
+              1 =>
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
-                array (
-                  'src' => NULL,
+                'image' =>
+                 [
+                  'src' => null,
                   'display' => 'scale',
-                ),
-                'styles' => 
-                array (
-                  'block' => 
-                  array (
+                 ],
+                'styles' =>
+                 [
+                  'block' =>
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => 
-                array (
-                  0 => 
-                  array (
+                   ],
+                 ],
+                'blocks' =>
+                 [
+                  0 =>
+                   [
                     'type' => 'spacer',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'backgroundColor' => 'transparent',
                         'height' => '20px',
-                      ),
-                    ),
-                  ),
-                  1 => 
-                  array (
+                       ],
+                     ],
+                   ],
+                  1 =>
+                   [
                     'type' => 'text',
                     'text' => '<h3 style="text-align: left;"><span style="color: #ffffff;"><strong>Download the CityNews app</strong></span></h3>
     <p><span style="color: #d1d1d1;">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus ac maximus justo. Phasellus ullamcorper, enim at eleifend malesuada, risus purus interdum arcu, sed porttitor erat diam a neque.&nbsp;</span></p>',
-                  ),
-                  2 => 
-                  array (
+                   ],
+                  2 =>
+                   [
                     'type' => 'image',
                     'link' => '',
                     'src' => $this->template_image_url . '/CityNews-GoogleDownload.png',
@@ -923,16 +923,16 @@ class CityLocalNews {
                     'fullWidth' => false,
                     'width' => '150px',
                     'height' => '168px',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'textAlign' => 'left',
-                      ),
-                    ),
-                  ),
-                  3 => 
-                  array (
+                       ],
+                     ],
+                   ],
+                  3 =>
+                   [
                     'type' => 'image',
                     'link' => '',
                     'src' => $this->template_image_url . '/CityNews-AppleDownload.png',
@@ -940,85 +940,85 @@ class CityLocalNews {
                     'fullWidth' => false,
                     'width' => '150px',
                     'height' => '168px',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'textAlign' => 'left',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          9 => 
-          array (
+                       ],
+                     ],
+                   ],
+                 ],
+               ],
+             ],
+           ],
+          9 =>
+           [
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
-            array (
-              'src' => NULL,
+            'image' =>
+             [
+              'src' => null,
               'display' => 'scale',
-            ),
-            'styles' => 
-            array (
-              'block' => 
-              array (
+             ],
+            'styles' =>
+             [
+              'block' =>
+               [
                 'backgroundColor' => '#252525',
-              ),
-            ),
-            'blocks' => 
-            array (
-              0 => 
-              array (
+               ],
+             ],
+            'blocks' =>
+             [
+              0 =>
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
-                array (
-                  'src' => NULL,
+                'image' =>
+                 [
+                  'src' => null,
                   'display' => 'scale',
-                ),
-                'styles' => 
-                array (
-                  'block' => 
-                  array (
+                 ],
+                'styles' =>
+                 [
+                  'block' =>
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => 
-                array (
-                  0 => 
-                  array (
+                   ],
+                 ],
+                'blocks' =>
+                 [
+                  0 =>
+                   [
                     'type' => 'divider',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'backgroundColor' => 'transparent',
                         'padding' => '13px',
                         'borderStyle' => 'solid',
                         'borderWidth' => '1px',
                         'borderColor' => '#4b4b4b',
-                      ),
-                    ),
-                  ),
-                  1 => 
-                  array (
+                       ],
+                     ],
+                   ],
+                  1 =>
+                   [
                     'type' => 'spacer',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'backgroundColor' => 'transparent',
                         'height' => '20px',
-                      ),
-                    ),
-                  ),
-                  2 => 
-                  array (
+                       ],
+                     ],
+                   ],
+                  2 =>
+                   [
                     'type' => 'image',
                     'link' => '',
                     'src' => $this->template_image_url . '/CityNews-Logo.png',
@@ -1026,46 +1026,46 @@ class CityLocalNews {
                     'fullWidth' => false,
                     'width' => '122px',
                     'height' => '178px',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'textAlign' => 'center',
-                      ),
-                    ),
-                  ),
-                  3 => 
-                  array (
+                       ],
+                     ],
+                   ],
+                  3 =>
+                   [
                     'type' => 'footer',
                     'text' => '<p><span style="color: #999999;"><a href="[link:subscription_unsubscribe_url]" style="color: #999999;">Unsubscribe</a> | <a href="[link:subscription_manage_url]" style="color: #999999;">Manage subscription</a></span><br /><span style="color: #ffffff;">Add your postal address here!</span></p>',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'backgroundColor' => 'transparent',
-                      ),
-                      'text' => 
-                      array (
+                       ],
+                      'text' =>
+                       [
                         'fontColor' => '#222222',
                         'fontFamily' => 'Arial',
                         'fontSize' => '12px',
                         'textAlign' => 'center',
-                      ),
-                      'link' => 
-                      array (
+                       ],
+                      'link' =>
+                       [
                         'fontColor' => '#6cb7d4',
                         'textDecoration' => 'none',
-                      ),
-                    ),
-                  ),
-                  4 => 
-                  array (
+                       ],
+                     ],
+                   ],
+                  4 =>
+                   [
                     'type' => 'social',
                     'iconSet' => 'full-symbol-grey',
-                    'icons' => 
-                    array (
-                      0 => 
-                      array (
+                    'icons' =>
+                     [
+                      0 =>
+                       [
                         'type' => 'socialIcon',
                         'iconType' => 'facebook',
                         'link' => 'http://www.facebook.com',
@@ -1073,9 +1073,9 @@ class CityLocalNews {
                         'height' => '32px',
                         'width' => '32px',
                         'text' => 'Facebook',
-                      ),
-                      1 => 
-                      array (
+                       ],
+                      1 =>
+                       [
                         'type' => 'socialIcon',
                         'iconType' => 'twitter',
                         'link' => 'http://www.twitter.com',
@@ -1083,9 +1083,9 @@ class CityLocalNews {
                         'height' => '32px',
                         'width' => '32px',
                         'text' => 'Twitter',
-                      ),
-                      2 => 
-                      array (
+                       ],
+                      2 =>
+                       [
                         'type' => 'socialIcon',
                         'iconType' => 'email',
                         'link' => '',
@@ -1093,9 +1093,9 @@ class CityLocalNews {
                         'height' => '32px',
                         'width' => '32px',
                         'text' => 'Email',
-                      ),
-                      3 => 
-                      array (
+                       ],
+                      3 =>
+                       [
                         'type' => 'socialIcon',
                         'iconType' => 'youtube',
                         'link' => 'http://www.youtube.com',
@@ -1103,59 +1103,59 @@ class CityLocalNews {
                         'height' => '32px',
                         'width' => '32px',
                         'text' => 'Youtube',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-      'globalStyles' => 
-      array (
-        'text' => 
-        array (
+                       ],
+                     ],
+                   ],
+                 ],
+               ],
+             ],
+           ],
+         ],
+       ],
+      'globalStyles' =>
+       [
+        'text' =>
+         [
           'fontColor' => '#000000',
           'fontFamily' => 'Source Sans Pro',
           'fontSize' => '16px',
-        ),
-        'h1' => 
-        array (
+         ],
+        'h1' =>
+         [
           'fontColor' => '#111111',
           'fontFamily' => 'Merriweather Sans',
           'fontSize' => '26px',
-        ),
-        'h2' => 
-        array (
+         ],
+        'h2' =>
+         [
           'fontColor' => '#222222',
           'fontFamily' => 'Merriweather',
           'fontSize' => '24px',
-        ),
-        'h3' => 
-        array (
+         ],
+        'h3' =>
+         [
           'fontColor' => '#333333',
           'fontFamily' => 'Merriweather',
           'fontSize' => '20px',
-        ),
-        'link' => 
-        array (
+         ],
+        'link' =>
+         [
           'fontColor' => '#252525',
           'textDecoration' => 'underline',
-        ),
-        'wrapper' => 
-        array (
+         ],
+        'wrapper' =>
+         [
           'backgroundColor' => '#f8f8f8',
-        ),
-        'body' => 
-        array (
+         ],
+        'body' =>
+         [
           'backgroundColor' => '#252525',
-        ),
-      ),
-      'blockDefaults' => 
-      array (
-        'automatedLatestContent' => 
-        array (
+         ],
+       ],
+      'blockDefaults' =>
+       [
+        'automatedLatestContent' =>
+         [
           'amount' => '5',
           'withLayout' => false,
           'contentType' => 'post',
@@ -1172,15 +1172,15 @@ class CityLocalNews {
           'categoriesPrecededBy' => 'Categories:',
           'readMoreType' => 'button',
           'readMoreText' => 'Read more',
-          'readMoreButton' => 
-          array (
+          'readMoreButton' =>
+           [
             'text' => 'Read more',
             'url' => '[postLink]',
             'context' => 'automatedLatestContent.readMoreButton',
-            'styles' => 
-            array (
-              'block' => 
-              array (
+            'styles' =>
+             [
+              'block' =>
+               [
                 'backgroundColor' => '#2ea1cd',
                 'borderColor' => '#0074a2',
                 'borderWidth' => '1px',
@@ -1193,31 +1193,31 @@ class CityLocalNews {
                 'fontSize' => '18px',
                 'fontWeight' => 'normal',
                 'textAlign' => 'center',
-              ),
-            ),
-          ),
+               ],
+             ],
+           ],
           'sortBy' => 'newest',
           'showDivider' => true,
-          'divider' => 
-          array (
+          'divider' =>
+           [
             'context' => 'automatedLatestContent.divider',
-            'styles' => 
-            array (
-              'block' => 
-              array (
+            'styles' =>
+             [
+              'block' =>
+               [
                 'backgroundColor' => 'transparent',
                 'padding' => '13px',
                 'borderStyle' => 'solid',
                 'borderWidth' => '3px',
                 'borderColor' => '#aaaaaa',
-              ),
-            ),
-          ),
+               ],
+             ],
+           ],
           'backgroundColor' => '#ffffff',
           'backgroundColorAlternate' => '#eeeeee',
-        ),
-        'automatedLatestContentLayout' => 
-        array (
+         ],
+        'automatedLatestContentLayout' =>
+         [
           'amount' => '5',
           'withLayout' => true,
           'contentType' => 'post',
@@ -1234,15 +1234,15 @@ class CityLocalNews {
           'categoriesPrecededBy' => 'Categories:',
           'readMoreType' => 'button',
           'readMoreText' => 'Read more',
-          'readMoreButton' => 
-          array (
+          'readMoreButton' =>
+           [
             'text' => 'Read more',
             'url' => '[postLink]',
             'context' => 'automatedLatestContentLayout.readMoreButton',
-            'styles' => 
-            array (
-              'block' => 
-              array (
+            'styles' =>
+             [
+              'block' =>
+               [
                 'backgroundColor' => '#2ea1cd',
                 'borderColor' => '#0074a2',
                 'borderWidth' => '1px',
@@ -1255,37 +1255,37 @@ class CityLocalNews {
                 'fontSize' => '18px',
                 'fontWeight' => 'normal',
                 'textAlign' => 'center',
-              ),
-            ),
-          ),
+               ],
+             ],
+           ],
           'sortBy' => 'newest',
           'showDivider' => true,
-          'divider' => 
-          array (
+          'divider' =>
+           [
             'context' => 'automatedLatestContentLayout.divider',
-            'styles' => 
-            array (
-              'block' => 
-              array (
+            'styles' =>
+             [
+              'block' =>
+               [
                 'backgroundColor' => 'transparent',
                 'padding' => '13px',
                 'borderStyle' => 'solid',
                 'borderWidth' => '3px',
                 'borderColor' => '#aaaaaa',
-              ),
-            ),
-          ),
+               ],
+             ],
+           ],
           'backgroundColor' => '#ffffff',
           'backgroundColorAlternate' => '#eeeeee',
-        ),
-        'button' => 
-        array (
+         ],
+        'button' =>
+         [
           'text' => 'Read more',
           'url' => '[postLink]',
-          'styles' => 
-          array (
-            'block' => 
-            array (
+          'styles' =>
+           [
+            'block' =>
+             [
               'backgroundColor' => '#2ea1cd',
               'borderColor' => '#0074a2',
               'borderWidth' => '1px',
@@ -1298,51 +1298,51 @@ class CityLocalNews {
               'fontSize' => '18px',
               'fontWeight' => 'normal',
               'textAlign' => 'center',
-            ),
-          ),
+             ],
+           ],
           'type' => 'button',
-        ),
-        'divider' => 
-        array (
-          'styles' => 
-          array (
-            'block' => 
-            array (
+         ],
+        'divider' =>
+         [
+          'styles' =>
+           [
+            'block' =>
+             [
               'backgroundColor' => 'transparent',
               'padding' => '13px',
               'borderStyle' => 'solid',
               'borderWidth' => '1px',
               'borderColor' => '#4b4b4b',
-            ),
-          ),
+             ],
+           ],
           'type' => 'divider',
-        ),
-        'footer' => 
-        array (
+         ],
+        'footer' =>
+         [
           'text' => '<p><a href="[link:subscription_unsubscribe_url]">Unsubscribe</a> | <a href="[link:subscription_manage_url]">Manage subscription</a><br />Add your postal address here!</p>',
-          'styles' => 
-          array (
-            'block' => 
-            array (
+          'styles' =>
+           [
+            'block' =>
+             [
               'backgroundColor' => 'transparent',
-            ),
-            'text' => 
-            array (
+             ],
+            'text' =>
+             [
               'fontColor' => '#222222',
               'fontFamily' => 'Arial',
               'fontSize' => '12px',
               'textAlign' => 'center',
-            ),
-            'link' => 
-            array (
+             ],
+            'link' =>
+             [
               'fontColor' => '#6cb7d4',
               'textDecoration' => 'none',
-            ),
-          ),
+             ],
+           ],
           'type' => 'footer',
-        ),
-        'posts' => 
-        array (
+         ],
+        'posts' =>
+         [
           'amount' => '10',
           'withLayout' => true,
           'contentType' => 'post',
@@ -1360,15 +1360,15 @@ class CityLocalNews {
           'categoriesPrecededBy' => 'Categories:',
           'readMoreType' => 'link',
           'readMoreText' => 'Read more',
-          'readMoreButton' => 
-          array (
+          'readMoreButton' =>
+           [
             'text' => 'Read more',
             'url' => '[postLink]',
             'context' => 'posts.readMoreButton',
-            'styles' => 
-            array (
-              'block' => 
-              array (
+            'styles' =>
+             [
+              'block' =>
+               [
                 'backgroundColor' => '#2ea1cd',
                 'borderColor' => '#0074a2',
                 'borderWidth' => '1px',
@@ -1381,44 +1381,44 @@ class CityLocalNews {
                 'fontSize' => '18px',
                 'fontWeight' => 'normal',
                 'textAlign' => 'center',
-              ),
-            ),
+               ],
+             ],
             'type' => 'button',
-          ),
+           ],
           'sortBy' => 'newest',
           'showDivider' => true,
-          'divider' => 
-          array (
+          'divider' =>
+           [
             'context' => 'posts.divider',
-            'styles' => 
-            array (
-              'block' => 
-              array (
+            'styles' =>
+             [
+              'block' =>
+               [
                 'backgroundColor' => 'transparent',
                 'padding' => '13px',
                 'borderStyle' => 'solid',
                 'borderWidth' => '1px',
                 'borderColor' => '#4b4b4b',
-              ),
-            ),
+               ],
+             ],
             'type' => 'divider',
-          ),
+           ],
           'backgroundColor' => '#ffffff',
           'backgroundColorAlternate' => '#eeeeee',
           'type' => 'posts',
           'offset' => 0,
-          'terms' => 
-          array (
-          ),
+          'terms' =>
+           [
+           ],
           'search' => '',
-        ),
-        'social' => 
-        array (
+         ],
+        'social' =>
+         [
           'iconSet' => 'full-symbol-grey',
-          'icons' => 
-          array (
-            0 => 
-            array (
+          'icons' =>
+           [
+            0 =>
+             [
               'type' => 'socialIcon',
               'iconType' => 'facebook',
               'link' => 'http://www.facebook.com',
@@ -1426,9 +1426,9 @@ class CityLocalNews {
               'height' => '32px',
               'width' => '32px',
               'text' => 'Facebook',
-            ),
-            1 => 
-            array (
+             ],
+            1 =>
+             [
               'type' => 'socialIcon',
               'iconType' => 'twitter',
               'link' => 'http://www.twitter.com',
@@ -1436,9 +1436,9 @@ class CityLocalNews {
               'height' => '32px',
               'width' => '32px',
               'text' => 'Twitter',
-            ),
-            2 => 
-            array (
+             ],
+            2 =>
+             [
               'type' => 'socialIcon',
               'iconType' => 'email',
               'link' => '',
@@ -1446,9 +1446,9 @@ class CityLocalNews {
               'height' => '32px',
               'width' => '32px',
               'text' => 'Email',
-            ),
-            3 => 
-            array (
+             ],
+            3 =>
+             [
               'type' => 'socialIcon',
               'iconType' => 'youtube',
               'link' => 'http://www.youtube.com',
@@ -1456,48 +1456,48 @@ class CityLocalNews {
               'height' => '32px',
               'width' => '32px',
               'text' => 'Youtube',
-            ),
-          ),
+             ],
+           ],
           'type' => 'social',
-        ),
-        'spacer' => 
-        array (
-          'styles' => 
-          array (
-            'block' => 
-            array (
+         ],
+        'spacer' =>
+         [
+          'styles' =>
+           [
+            'block' =>
+             [
               'backgroundColor' => 'transparent',
               'height' => '40px',
-            ),
-          ),
+             ],
+           ],
           'type' => 'spacer',
-        ),
-        'header' => 
-        array (
-          'text' => 'Display problems?&nbsp;<a href="[link:newsletter_view_in_browser_url]">Open this email in your web browser.</a>',
-          'styles' => 
-          array (
-            'block' => 
-            array (
+         ],
+        'header' =>
+         [
+          'text' => '<a href="[link:newsletter_view_in_browser_url]">View this in your browser.</a>',
+          'styles' =>
+           [
+            'block' =>
+             [
               'backgroundColor' => 'transparent',
-            ),
-            'text' => 
-            array (
+             ],
+            'text' =>
+             [
               'fontColor' => '#222222',
               'fontFamily' => 'Arial',
               'fontSize' => '12px',
               'textAlign' => 'right',
-            ),
-            'link' => 
-            array (
+             ],
+            'link' =>
+             [
               'fontColor' => '#6cb7d4',
               'textDecoration' => 'underline',
-            ),
-          ),
+             ],
+           ],
           'type' => 'header',
-        ),
-      ),
-    );
+         ],
+       ],
+    ];
   }
 
 }

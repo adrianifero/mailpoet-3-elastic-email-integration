@@ -22,7 +22,7 @@ class ServiceClosureArgument implements \MailPoetVendor\Symfony\Component\Depend
     private $values;
     public function __construct(\MailPoetVendor\Symfony\Component\DependencyInjection\Reference $reference)
     {
-        $this->values = array($reference);
+        $this->values = [$reference];
     }
     /**
      * {@inheritdoc}
@@ -36,7 +36,7 @@ class ServiceClosureArgument implements \MailPoetVendor\Symfony\Component\Depend
      */
     public function setValues(array $values)
     {
-        if (array(0) !== \array_keys($values) || !($values[0] instanceof \MailPoetVendor\Symfony\Component\DependencyInjection\Reference || null === $values[0])) {
+        if ([0] !== \array_keys($values) || !($values[0] instanceof \MailPoetVendor\Symfony\Component\DependencyInjection\Reference || null === $values[0])) {
             throw new \MailPoetVendor\Symfony\Component\DependencyInjection\Exception\InvalidArgumentException('A ServiceClosureArgument must hold one and only one Reference.');
         }
         $this->values = $values;

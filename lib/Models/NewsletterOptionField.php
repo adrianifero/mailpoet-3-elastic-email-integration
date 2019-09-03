@@ -1,19 +1,20 @@
 <?php
 namespace MailPoet\Models;
+use MailPoet\WP\Functions as WPFunctions;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 class NewsletterOptionField extends Model {
   public static $_table = MP_NEWSLETTER_OPTION_FIELDS_TABLE;
 
   function __construct() {
     parent::__construct();
-    $this->addValidations('name', array(
-      'required' => __('Please specify a name.', 'mailpoet')
-    ));
-    $this->addValidations('newsletter_type', array(
-      'required' => __('Please specify a newsletter type.', 'mailpoet')
-    ));
+    $this->addValidations('name', [
+      'required' => WPFunctions::get()->__('Please specify a name.', 'mailpoet'),
+    ]);
+    $this->addValidations('newsletter_type', [
+      'required' => WPFunctions::get()->__('Please specify a newsletter type.', 'mailpoet'),
+    ]);
   }
 
   function newsletters() {
@@ -22,6 +23,6 @@ class NewsletterOptionField extends Model {
       __NAMESPACE__ . '\NewsletterOption',
       'option_field_id',
       'newsletter_id'
-    )->select_expr(MP_NEWSLETTER_OPTION_TABLE.'.value');
+    )->select_expr(MP_NEWSLETTER_OPTION_TABLE . '.value');
   }
 }

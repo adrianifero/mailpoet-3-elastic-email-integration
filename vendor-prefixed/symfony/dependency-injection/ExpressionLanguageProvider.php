@@ -29,7 +29,7 @@ class ExpressionLanguageProvider implements \MailPoetVendor\Symfony\Component\Ex
     }
     public function getFunctions()
     {
-        return array(new \MailPoetVendor\Symfony\Component\ExpressionLanguage\ExpressionFunction('service', $this->serviceCompiler ?: function ($arg) {
+        return [new \MailPoetVendor\Symfony\Component\ExpressionLanguage\ExpressionFunction('service', $this->serviceCompiler ?: function ($arg) {
             return \sprintf('$this->get(%s)', $arg);
         }, function (array $variables, $value) {
             return $variables['container']->get($value);
@@ -37,6 +37,6 @@ class ExpressionLanguageProvider implements \MailPoetVendor\Symfony\Component\Ex
             return \sprintf('$this->getParameter(%s)', $arg);
         }, function (array $variables, $value) {
             return $variables['container']->getParameter($value);
-        }));
+        })];
     }
 }

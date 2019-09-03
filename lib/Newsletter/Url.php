@@ -3,7 +3,6 @@ namespace MailPoet\Newsletter;
 
 use MailPoet\Router\Router;
 use MailPoet\Router\Endpoints\ViewInBrowser as ViewInBrowserEndpoint;
-use MailPoet\Models\Newsletter as NewsletterModel;
 use MailPoet\Models\Subscriber as SubscriberModel;
 
 class Url {
@@ -17,10 +16,10 @@ class Url {
     $queue = false,
     $preview = false
   ) {
-    if($subscriber instanceof SubscriberModel) {
+    if ($subscriber instanceof SubscriberModel) {
       $subscriber->token = SubscriberModel::generateToken($subscriber->email);
     }
-    switch($type) {
+    switch ($type) {
       case self::TYPE_ARCHIVE:
         // do not expose newsletter id when displaying archive newsletters
         $newsletter->id = null;
@@ -44,7 +43,7 @@ class Url {
   }
 
   static function createUrlDataObject($newsletter, $subscriber, $queue, $preview) {
-    return array(
+    return [
       (!empty($newsletter->id)) ?
         (int)$newsletter->id :
         0,
@@ -60,14 +59,14 @@ class Url {
       (!empty($queue->id)) ?
         (int)$queue->id :
         0,
-      (int)$preview
-    );
+      (int)$preview,
+    ];
   }
 
   static function transformUrlDataObject($data) {
     reset($data);
     if (!is_int(key($data))) return $data;
-    $transformed_data = array();
+    $transformed_data = [];
     $transformed_data['newsletter_id'] = (!empty($data[0])) ? $data[0] : false;
     $transformed_data['newsletter_hash'] = (!empty($data[1])) ? $data[1] : false;
     $transformed_data['subscriber_id'] = (!empty($data[2])) ? $data[2] : false;

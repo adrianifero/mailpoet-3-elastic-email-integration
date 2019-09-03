@@ -1,6 +1,10 @@
 <?php
 namespace MailPoet\Util;
+
 use csstidy;
+use MailPoet\Util\pQuery\DomNode;
+use MailPoet\Util\pQuery\pQuery;
+use MailPoet\Newsletter\Renderer\EscapeHelper as EHelper;
 
 /*
   Copyright 2013-2014, François-Marie de Jouvencel
@@ -28,25 +32,24 @@ use csstidy;
 */
 
 class CSS {
-  /*
-  * The core of the algorithm, takes a URL and returns the HTML found there with the CSS inlined.
-  * If you pass $contents then the original HTML is not downloaded and $contents is used instead.
-  * $url is mandatory as it is used to resolve the links to the stylesheets found in the HTML.
-  */
-  function inlineCSS($url, $contents=null) {
-    $html = \pQuery::parseStr($contents);
+  /**
+   * @param string $contents
+   * @return DomNode
+   */
+  function inlineCSS($contents) {
+    $html = pQuery::parseStr($contents);
 
-    if(!is_object($html)) {
-      return false;
+    if (!$html instanceof DomNode) {
+      throw new \InvalidArgumentException('Error parsing contents.');
     }
 
     $css_blocks = '';
 
     // Find all <style> blocks and cut styles from them (leaving media queries)
-    foreach($html->query('style') as $style) {
+    foreach ($html->query('style') as $style) {
       list($_css_to_parse, $_css_to_keep) = $this->splitMediaQueries($style->getInnerText());
       $css_blocks .= $_css_to_parse;
-      if(!empty($_css_to_keep)) {
+      if (!empty($_css_to_keep)) {
         $style->setInnerText($_css_to_keep);
       } else {
         $style->setOuterText('');
@@ -54,7 +57,7 @@ class CSS {
     }
 
     $raw_css = '';
-    if(!empty($css_blocks)) {
+    if (!empty($css_blocks)) {
       $raw_css .= $css_blocks;
     }
 
@@ -62,14 +65,18 @@ class CSS {
     // This is an array with, amongst other things, the keys 'properties', which hold the CSS properties
     // and the 'selector', which holds the CSS selector
     $rules = $this->parseCSS($raw_css);
+    $nodes_map = [];
 
     // We loop over each rule by increasing order of specificity, find the nodes matching the selector
     // and apply the CSS properties
     foreach ($rules as $rule) {
-      foreach($html->query($rule['selector']) as $node) {
+      if (!isset($nodes_map[$rule['selector']])) {
+        $nodes_map[$rule['selector']] = $html->query($rule['selector']);
+      }
+      foreach ($nodes_map[$rule['selector']] as $node) {
         // I'm leaving this for debug purposes, it has proved useful.
         /*
-        if($node->already_styled === 'yes')
+        if ($node->already_styled === 'yes')
         {
           echo "<PRE>";
           echo "Rule:\n";
@@ -92,7 +99,7 @@ class CSS {
 
         // I'm leaving this for debug purposes, it has proved useful.
         /*
-        if($rule['selector'] === 'table.table-recap td')
+        if ($rule['selector'] === 'table.table-recap td')
         {
           $node->already_styled = 'yes';
         }//*/
@@ -105,11 +112,11 @@ class CSS {
     // We need to start with a rule with lowest specificity
     $rules = array_reverse($rules);
     foreach ($rules as $rule) {
-      foreach($rule['properties'] as $key => $value) {
-        if(strpos($value, '!important') === false) {
+      foreach ($rule['properties'] as $key => $value) {
+        if (strpos($value, '!important') === false) {
           continue;
         }
-        foreach($html->query($rule['selector']) as $node) {
+        foreach ($nodes_map[$rule['selector']] as $node) {
           $style = $this->styleToArray($node->style);
           $style[$key] = $value;
           $node->style = $this->arrayToStyle($style);
@@ -119,8 +126,7 @@ class CSS {
       }
     }
 
-    // Let simple_html_dom give us back our HTML with inline CSS!
-    return (string)$html;
+    return $html;
   }
 
   function parseCSS($text) {
@@ -128,18 +134,18 @@ class CSS {
     $css->settings['compress_colors'] = false;
     $css->parse($text);
 
-    $rules    = array();
+    $rules    = [];
     $position   = 0;
 
-    foreach($css->css as $declarations) {
-      foreach($declarations as $selectors => $properties) {
-        foreach(explode(",", $selectors) as $selector) {
-          $rules[] = array(
+    foreach ($css->css as $declarations) {
+      foreach ($declarations as $selectors => $properties) {
+        foreach (explode(",", $selectors) as $selector) {
+          $rules[] = [
             'position'    => $position,
             'specificity'   => $this->calculateCSSSpecifity($selector),
             'selector'    => $selector,
-            'properties'  => $properties
-          );
+            'properties'  => $properties,
+          ];
         }
 
         $position += 1;
@@ -147,12 +153,12 @@ class CSS {
     }
 
     usort($rules, function($a, $b) {
-      if($a['specificity'] > $b['specificity']) {
+      if ($a['specificity'] > $b['specificity']) {
         return -1;
-      } else if($a['specificity'] < $b['specificity']) {
+      } else if ($a['specificity'] < $b['specificity']) {
         return 1;
       } else {
-        if($a['position'] > $b['position']) {
+        if ($a['position'] > $b['position']) {
           return -1;
         } else {
           return 1;
@@ -176,39 +182,39 @@ class CSS {
     $start = 0;
     $queries = '';
 
-    while(($start = strpos($css, "@media", $start)) !== false) {
+    while (($start = strpos($css, "@media", $start)) !== false) {
       // stack to manage brackets
-      $s = array();
+      $s = [];
 
       // get the first opening bracket
       $i = strpos($css, "{", $start);
 
       // if $i is false, then there is probably a css syntax error
-      if($i !== false) {
+      if ($i !== false) {
         // push bracket onto stack
         array_push($s, $css[$i]);
 
         // move past first bracket
         $i++;
 
-        while(!empty($s)) {
+        while (!empty($s)) {
           // if the character is an opening bracket, push it onto the stack, otherwise pop the stack
-          if($css[$i] == "{") {
+          if ($css[$i] == "{") {
             array_push($s, "{");
-          } else if($css[$i] == "}") {
+          } else if ($css[$i] == "}") {
             array_pop($s);
           }
 
           $i++;
         }
 
-        $queries .= substr($css, $start-1, $i+1-$start) . "\n";
-        $css = substr($css, 0, $start-1) . substr($css, $i);
+        $queries .= substr($css, $start - 1, $i + 1 - $start) . "\n";
+        $css = substr($css, 0, $start - 1) . substr($css, $i);
         $i = $start;
       }
     }
 
-    return array($css, $queries);
+    return [$css, $queries];
   }
 
   /**
@@ -224,7 +230,7 @@ class CSS {
 
   private function calculateCSSSpecifity($selector) {
       // cleanup selector
-    $selector = str_replace(array('>', '+'), array(' > ', ' + '), $selector);
+    $selector = str_replace(['>', '+'], [' > ', ' + '], $selector);
 
       // init var
     $specifity = 0;
@@ -235,10 +241,10 @@ class CSS {
       // loop chunks
     foreach ($chunks as $chunk) {
           // an ID is important, so give it a high specifity
-      if(strstr($chunk, '#') !== false) $specifity += 100;
+      if (strstr($chunk, '#') !== false) $specifity += 100;
 
           // classes are more important than a tag, but less important then an ID
-      elseif(strstr($chunk, '.')) $specifity += 10;
+      elseif (strstr($chunk, '.')) $specifity += 10;
 
           // anything else isn't that important
       else $specifity += 1;
@@ -253,15 +259,15 @@ class CSS {
   * into an array of properties (like: array("border" => "1px solid black", "color" => "red"))
   */
   private function styleToArray($str) {
-    $array = array();
+    $str = EHelper::unescapeHtmlStyleAttr($str);
+    $array = [];
 
-    if(trim($str) === '') return $array;
+    if (trim($str) === '') return $array;
 
-    foreach(explode(';', $str) as $kv) {
-      if($kv === '') {
+    foreach (explode(';', $str) as $kv) {
+      if ($kv === '') {
         continue;
       }
-
       list($selector, $rule) = explode(':', $kv, 2);
       $array[trim($selector)] = trim($rule);
     }
@@ -274,10 +280,10 @@ class CSS {
   * array("border" => "1px solid black", "color" => "red") yields "border: 1px solid black; color:red"
   */
   private function arrayToStyle($array) {
-    $parts = array();
-    foreach($array as $k => $v) {
+    $parts = [];
+    foreach ($array as $k => $v) {
       $parts[] = "$k:$v";
     }
-    return implode(';', $parts);
+    return EHelper::escapeHtmlStyleAttr(implode(';', $parts));
   }
 }

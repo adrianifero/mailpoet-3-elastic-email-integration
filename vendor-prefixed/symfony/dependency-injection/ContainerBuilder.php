@@ -51,24 +51,24 @@ class ContainerBuilder extends \MailPoetVendor\Symfony\Component\DependencyInjec
     /**
      * @var ExtensionInterface[]
      */
-    private $extensions = array();
+    private $extensions = [];
     /**
      * @var ExtensionInterface[]
      */
-    private $extensionsByNs = array();
+    private $extensionsByNs = [];
     /**
      * @var Definition[]
      */
-    private $definitions = array();
+    private $definitions = [];
     /**
      * @var Alias[]
      */
-    private $aliasDefinitions = array();
+    private $aliasDefinitions = [];
     /**
      * @var ResourceInterface[]
      */
-    private $resources = array();
-    private $extensionConfigs = array();
+    private $resources = [];
+    private $extensionConfigs = [];
     /**
      * @var Compiler
      */
@@ -85,26 +85,27 @@ class ContainerBuilder extends \MailPoetVendor\Symfony\Component\DependencyInjec
     /**
      * @var ExpressionFunctionProviderInterface[]
      */
-    private $expressionLanguageProviders = array();
+    private $expressionLanguageProviders = [];
     /**
      * @var string[] with tag names used by findTaggedServiceIds
      */
-    private $usedTags = array();
+    private $usedTags = [];
     /**
      * @var string[][] a map of env var names to their placeholders
      */
-    private $envPlaceholders = array();
+    private $envPlaceholders = [];
     /**
      * @var int[] a map of env vars to their resolution counter
      */
-    private $envCounters = array();
+    private $envCounters = [];
     /**
      * @var string[] the list of vendor directories
      */
     private $vendors;
-    private $autoconfiguredInstanceof = array();
-    private $removedIds = array();
-    private static $internalTypes = array('int' => \true, 'float' => \true, 'string' => \true, 'bool' => \true, 'resource' => \true, 'object' => \true, 'array' => \true, 'null' => \true, 'callable' => \true, 'iterable' => \true, 'mixed' => \true);
+    private $autoconfiguredInstanceof = [];
+    private $removedIds = [];
+    private $removedBindingIds = [];
+    private static $internalTypes = ['int' => \true, 'float' => \true, 'string' => \true, 'bool' => \true, 'resource' => \true, 'object' => \true, 'array' => \true, 'null' => \true, 'callable' => \true, 'iterable' => \true, 'mixed' => \true];
     public function __construct(\MailPoetVendor\Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface $parameterBag = null)
     {
         parent::__construct($parameterBag);
@@ -303,11 +304,11 @@ class ContainerBuilder extends \MailPoetVendor\Symfony\Component\DependencyInjec
         try {
             if (isset($this->classReflectors[$class])) {
                 $classReflector = $this->classReflectors[$class];
-            } elseif ($this->trackResources) {
+            } elseif (\class_exists(\MailPoetVendor\Symfony\Component\Config\Resource\ClassExistenceResource::class)) {
                 $resource = new \MailPoetVendor\Symfony\Component\Config\Resource\ClassExistenceResource($class, \false);
                 $classReflector = $resource->isFresh(0) ? \false : new \ReflectionClass($class);
             } else {
-                $classReflector = new \ReflectionClass($class);
+                $classReflector = \class_exists($class) ? new \ReflectionClass($class) : \false;
             }
         } catch (\ReflectionException $e) {
             if ($throw) {
@@ -377,7 +378,7 @@ class ContainerBuilder extends \MailPoetVendor\Symfony\Component\DependencyInjec
             throw new \MailPoetVendor\Symfony\Component\DependencyInjection\Exception\BadMethodCallException('Cannot load from an extension on a compiled container.');
         }
         if (\func_num_args() < 2) {
-            $values = array();
+            $values = [];
         }
         $namespace = $this->getExtension($extension)->getAlias();
         $this->extensionConfigs[$namespace][] = $values;
@@ -502,7 +503,7 @@ class ContainerBuilder extends \MailPoetVendor\Symfony\Component\DependencyInjec
         }
         if (null === $inlineServices) {
             $isConstructorArgument = \true;
-            $inlineServices = array();
+            $inlineServices = [];
         }
         try {
             if (\MailPoetVendor\Symfony\Component\DependencyInjection\ContainerInterface::IGNORE_ON_UNINITIALIZED_REFERENCE === $invalidBehavior) {
@@ -547,7 +548,7 @@ class ContainerBuilder extends \MailPoetVendor\Symfony\Component\DependencyInjec
      * the parameters passed to the container constructor to have precedence
      * over the loaded ones.
      *
-     *     $container = new ContainerBuilder(new ParameterBag(array('foo' => 'bar')));
+     *     $container = new ContainerBuilder(new ParameterBag(['foo' => 'bar']));
      *     $loader = new LoaderXXX($container);
      *     $loader->load('resource_name');
      *     $container->register('foo', 'stdClass');
@@ -573,7 +574,7 @@ class ContainerBuilder extends \MailPoetVendor\Symfony\Component\DependencyInjec
         }
         foreach ($this->extensions as $name => $extension) {
             if (!isset($this->extensionConfigs[$name])) {
-                $this->extensionConfigs[$name] = array();
+                $this->extensionConfigs[$name] = [];
             }
             $this->extensionConfigs[$name] = \array_merge($this->extensionConfigs[$name], $container->getExtensionConfig($name));
         }
@@ -581,7 +582,7 @@ class ContainerBuilder extends \MailPoetVendor\Symfony\Component\DependencyInjec
             $envPlaceholders = $container->getParameterBag()->getEnvPlaceholders();
             $this->getParameterBag()->mergeEnvPlaceholders($container->getParameterBag());
         } else {
-            $envPlaceholders = array();
+            $envPlaceholders = [];
         }
         foreach ($container->envCounters as $env => $count) {
             if (!$count && !isset($envPlaceholders[$env])) {
@@ -610,7 +611,7 @@ class ContainerBuilder extends \MailPoetVendor\Symfony\Component\DependencyInjec
     public function getExtensionConfig($name)
     {
         if (!isset($this->extensionConfigs[$name])) {
-            $this->extensionConfigs[$name] = array();
+            $this->extensionConfigs[$name] = [];
         }
         return $this->extensionConfigs[$name];
     }
@@ -623,7 +624,7 @@ class ContainerBuilder extends \MailPoetVendor\Symfony\Component\DependencyInjec
     public function prependExtensionConfig($name, array $config)
     {
         if (!isset($this->extensionConfigs[$name])) {
-            $this->extensionConfigs[$name] = array();
+            $this->extensionConfigs[$name] = [];
         }
         \array_unshift($this->extensionConfigs[$name], $config);
     }
@@ -675,7 +676,7 @@ class ContainerBuilder extends \MailPoetVendor\Symfony\Component\DependencyInjec
                 $this->getReflectionClass($definition->getClass());
             }
         }
-        $this->extensionConfigs = array();
+        $this->extensionConfigs = [];
         if ($bag instanceof \MailPoetVendor\Symfony\Component\DependencyInjection\ParameterBag\EnvPlaceholderParameterBag) {
             if ($resolveEnvPlaceholders) {
                 $this->parameterBag = new \MailPoetVendor\Symfony\Component\DependencyInjection\ParameterBag\ParameterBag($this->resolveEnvPlaceholders($bag->all(), \true));
@@ -721,7 +722,7 @@ class ContainerBuilder extends \MailPoetVendor\Symfony\Component\DependencyInjec
      */
     public function setAliases(array $aliases)
     {
-        $this->aliasDefinitions = array();
+        $this->aliasDefinitions = [];
         $this->addAliases($aliases);
     }
     /**
@@ -738,6 +739,9 @@ class ContainerBuilder extends \MailPoetVendor\Symfony\Component\DependencyInjec
     public function setAlias($alias, $id)
     {
         $alias = $this->normalizeId($alias);
+        if ('' === $alias || '\\' === \substr($alias, -1) || \strlen($alias) !== \strcspn($alias, "\0\r\n'")) {
+            throw new \MailPoetVendor\Symfony\Component\DependencyInjection\Exception\InvalidArgumentException(\sprintf('Invalid alias id: "%s"', $alias));
+        }
         if (\is_string($id)) {
             $id = new \MailPoetVendor\Symfony\Component\DependencyInjection\Alias($this->normalizeId($id));
         } elseif (!$id instanceof \MailPoetVendor\Symfony\Component\DependencyInjection\Alias) {
@@ -846,7 +850,7 @@ class ContainerBuilder extends \MailPoetVendor\Symfony\Component\DependencyInjec
      */
     public function setDefinitions(array $definitions)
     {
-        $this->definitions = array();
+        $this->definitions = [];
         $this->addDefinitions($definitions);
     }
     /**
@@ -874,6 +878,9 @@ class ContainerBuilder extends \MailPoetVendor\Symfony\Component\DependencyInjec
             throw new \MailPoetVendor\Symfony\Component\DependencyInjection\Exception\BadMethodCallException('Adding definition to a compiled container is not allowed');
         }
         $id = $this->normalizeId($id);
+        if ('' === $id || '\\' === \substr($id, -1) || \strlen($id) !== \strcspn($id, "\0\r\n'")) {
+            throw new \MailPoetVendor\Symfony\Component\DependencyInjection\Exception\InvalidArgumentException(\sprintf('Invalid service id: "%s"', $id));
+        }
         unset($this->aliasDefinitions[$id], $this->removedIds[$id]);
         return $this->definitions[$id] = $definition;
     }
@@ -919,7 +926,7 @@ class ContainerBuilder extends \MailPoetVendor\Symfony\Component\DependencyInjec
     public function findDefinition($id)
     {
         $id = $this->normalizeId($id);
-        $seen = array();
+        $seen = [];
         while (isset($this->aliasDefinitions[$id])) {
             $id = (string) $this->aliasDefinitions[$id];
             if (isset($seen[$id])) {
@@ -973,7 +980,7 @@ class ContainerBuilder extends \MailPoetVendor\Symfony\Component\DependencyInjec
         $arguments = $this->doResolveServices($parameterBag->unescapeValue($parameterBag->resolveValue($definition->getArguments())), $inlineServices, $isConstructorArgument);
         if (null !== ($factory = $definition->getFactory())) {
             if (\is_array($factory)) {
-                $factory = array($this->doResolveServices($parameterBag->resolveValue($factory[0]), $inlineServices, $isConstructorArgument), $factory[1]);
+                $factory = [$this->doResolveServices($parameterBag->resolveValue($factory[0]), $inlineServices, $isConstructorArgument), $factory[1]];
             } elseif (!\is_string($factory)) {
                 throw new \MailPoetVendor\Symfony\Component\DependencyInjection\Exception\RuntimeException(\sprintf('Cannot create service "%s" because of invalid factory', $id));
             }
@@ -994,7 +1001,7 @@ class ContainerBuilder extends \MailPoetVendor\Symfony\Component\DependencyInjec
             $service = null === $r->getConstructor() ? $r->newInstance() : $r->newInstanceArgs($arguments);
             // don't trigger deprecations for internal uses
             // @deprecated since version 3.3, to be removed in 4.0 along with the deprecated class
-            $deprecationWhitelist = array('event_dispatcher' => \MailPoetVendor\Symfony\Component\EventDispatcher\ContainerAwareEventDispatcher::class);
+            $deprecationWhitelist = ['event_dispatcher' => \MailPoetVendor\Symfony\Component\EventDispatcher\ContainerAwareEventDispatcher::class];
             if (!$definition->isDeprecated() && 0 < \strpos($r->getDocComment(), "\n * @deprecated ") && (!isset($deprecationWhitelist[$id]) || $deprecationWhitelist[$id] !== $class)) {
                 @\trigger_error(\sprintf('The "%s" service relies on the deprecated "%s" class. It should either be deprecated or its implementation upgraded.', $id, $r->name), \E_USER_DEPRECATED);
             }
@@ -1038,7 +1045,7 @@ class ContainerBuilder extends \MailPoetVendor\Symfony\Component\DependencyInjec
     {
         return $this->doResolveServices($value);
     }
-    private function doResolveServices($value, array &$inlineServices = array(), $isConstructorArgument = \false)
+    private function doResolveServices($value, array &$inlineServices = [], $isConstructorArgument = \false)
     {
         if (\is_array($value)) {
             foreach ($value as $k => $v) {
@@ -1088,7 +1095,7 @@ class ContainerBuilder extends \MailPoetVendor\Symfony\Component\DependencyInjec
         } elseif ($value instanceof \MailPoetVendor\Symfony\Component\DependencyInjection\Parameter) {
             $value = $this->getParameter((string) $value);
         } elseif ($value instanceof \MailPoetVendor\Symfony\Component\ExpressionLanguage\Expression) {
-            $value = $this->getExpressionLanguage()->evaluate($value, array('container' => $this));
+            $value = $this->getExpressionLanguage()->evaluate($value, ['container' => $this]);
         }
         return $value;
     }
@@ -1097,7 +1104,7 @@ class ContainerBuilder extends \MailPoetVendor\Symfony\Component\DependencyInjec
      *
      * Example:
      *
-     *     $container->register('foo')->addTag('my.tag', array('hello' => 'world'));
+     *     $container->register('foo')->addTag('my.tag', ['hello' => 'world']);
      *
      *     $serviceIds = $container->findTaggedServiceIds('my.tag');
      *     foreach ($serviceIds as $serviceId => $tags) {
@@ -1114,7 +1121,7 @@ class ContainerBuilder extends \MailPoetVendor\Symfony\Component\DependencyInjec
     public function findTaggedServiceIds($name, $throwOnAbstract = \false)
     {
         $this->usedTags[] = $name;
-        $tags = array();
+        $tags = [];
         foreach ($this->getDefinitions() as $id => $definition) {
             if ($definition->hasTag($name)) {
                 if ($throwOnAbstract && $definition->isAbstract()) {
@@ -1132,7 +1139,7 @@ class ContainerBuilder extends \MailPoetVendor\Symfony\Component\DependencyInjec
      */
     public function findTags()
     {
-        $tags = array();
+        $tags = [];
         foreach ($this->getDefinitions() as $id => $definition) {
             $tags = \array_merge(\array_keys($definition->getTags()), $tags);
         }
@@ -1202,7 +1209,7 @@ class ContainerBuilder extends \MailPoetVendor\Symfony\Component\DependencyInjec
             $value = $bag->resolveValue($value);
         }
         if (\is_array($value)) {
-            $result = array();
+            $result = [];
             foreach ($value as $k => $v) {
                 $result[\is_string($k) ? $this->resolveEnvPlaceholders($k, $format, $usedEnvs) : $k] = $this->resolveEnvPlaceholders($v, $format, $usedEnvs);
             }
@@ -1261,7 +1268,7 @@ class ContainerBuilder extends \MailPoetVendor\Symfony\Component\DependencyInjec
      */
     public function getNormalizedIds()
     {
-        $normalizedIds = array();
+        $normalizedIds = [];
         foreach ($this->normalizedIds as $k => $v) {
             if ($v !== (string) $k) {
                 $normalizedIds[$k] = $v;
@@ -1287,6 +1294,33 @@ class ContainerBuilder extends \MailPoetVendor\Symfony\Component\DependencyInjec
         return isset($this->definitions[$id]) || isset($this->aliasDefinitions[$id]) || isset($this->removedIds[$id]) ? $id : parent::normalizeId($id);
     }
     /**
+     * Gets removed binding ids.
+     *
+     * @return array
+     *
+     * @internal
+     */
+    public function getRemovedBindingIds()
+    {
+        return $this->removedBindingIds;
+    }
+    /**
+     * Adds a removed binding id.
+     *
+     * @param int $id
+     *
+     * @internal
+     */
+    public function addRemovedBindingIds($id)
+    {
+        if ($this->hasDefinition($id)) {
+            foreach ($this->getDefinition($id)->getBindings() as $key => $binding) {
+                list(, $bindingId) = $binding->getValues();
+                $this->removedBindingIds[(int) $bindingId] = \true;
+            }
+        }
+    }
+    /**
      * Returns the Service Conditionals.
      *
      * @param mixed $value An array of conditionals to return
@@ -1297,7 +1331,7 @@ class ContainerBuilder extends \MailPoetVendor\Symfony\Component\DependencyInjec
      */
     public static function getServiceConditionals($value)
     {
-        $services = array();
+        $services = [];
         if (\is_array($value)) {
             foreach ($value as $v) {
                 $services = \array_unique(\array_merge($services, self::getServiceConditionals($v)));
@@ -1318,7 +1352,7 @@ class ContainerBuilder extends \MailPoetVendor\Symfony\Component\DependencyInjec
      */
     public static function getInitializedConditionals($value)
     {
-        $services = array();
+        $services = [];
         if (\is_array($value)) {
             foreach ($value as $v) {
                 $services = \array_unique(\array_merge($services, self::getInitializedConditionals($v)));
@@ -1338,7 +1372,7 @@ class ContainerBuilder extends \MailPoetVendor\Symfony\Component\DependencyInjec
     public static function hash($value)
     {
         $hash = \substr(\base64_encode(\hash('sha256', \serialize($value), \true)), 0, 7);
-        return \str_replace(array('/', '+'), array('.', '_'), \strtolower($hash));
+        return \str_replace(['/', '+'], ['.', '_'], \strtolower($hash));
     }
     /**
      * {@inheritdoc}
@@ -1375,7 +1409,7 @@ class ContainerBuilder extends \MailPoetVendor\Symfony\Component\DependencyInjec
                 return;
             }
         }
-        \call_user_func_array(array($service, $call[0]), $this->doResolveServices($this->getParameterBag()->unescapeValue($this->getParameterBag()->resolveValue($call[1])), $inlineServices));
+        \call_user_func_array([$service, $call[0]], $this->doResolveServices($this->getParameterBag()->unescapeValue($this->getParameterBag()->resolveValue($call[1])), $inlineServices));
     }
     /**
      * Shares a given service in the container.

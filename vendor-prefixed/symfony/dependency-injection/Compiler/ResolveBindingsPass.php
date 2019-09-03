@@ -23,14 +23,15 @@ use MailPoetVendor\Symfony\Component\DependencyInjection\TypedReference;
  */
 class ResolveBindingsPass extends \MailPoetVendor\Symfony\Component\DependencyInjection\Compiler\AbstractRecursivePass
 {
-    private $usedBindings = array();
-    private $unusedBindings = array();
-    private $errorMessages = array();
+    private $usedBindings = [];
+    private $unusedBindings = [];
+    private $errorMessages = [];
     /**
      * {@inheritdoc}
      */
     public function process(\MailPoetVendor\Symfony\Component\DependencyInjection\ContainerBuilder $container)
     {
+        $this->usedBindings = $container->getRemovedBindingIds();
         try {
             parent::process($container);
             foreach ($this->unusedBindings as list($key, $serviceId)) {
@@ -44,9 +45,9 @@ class ResolveBindingsPass extends \MailPoetVendor\Symfony\Component\DependencyIn
                 throw new \MailPoetVendor\Symfony\Component\DependencyInjection\Exception\InvalidArgumentException($message);
             }
         } finally {
-            $this->usedBindings = array();
-            $this->unusedBindings = array();
-            $this->errorMessages = array();
+            $this->usedBindings = [];
+            $this->unusedBindings = [];
+            $this->errorMessages = [];
         }
     }
     /**
@@ -71,7 +72,7 @@ class ResolveBindingsPass extends \MailPoetVendor\Symfony\Component\DependencyIn
                 $this->usedBindings[$bindingId] = \true;
                 unset($this->unusedBindings[$bindingId]);
             } elseif (!isset($this->usedBindings[$bindingId])) {
-                $this->unusedBindings[$bindingId] = array($key, $this->currentId);
+                $this->unusedBindings[$bindingId] = [$key, $this->currentId];
             }
             if (isset($key[0]) && '$' === $key[0]) {
                 continue;
@@ -86,7 +87,7 @@ class ResolveBindingsPass extends \MailPoetVendor\Symfony\Component\DependencyIn
         $calls = $value->getMethodCalls();
         try {
             if ($constructor = $this->getConstructor($value, \false)) {
-                $calls[] = array($constructor, $value->getArguments());
+                $calls[] = [$constructor, $value->getArguments()];
             }
         } catch (\MailPoetVendor\Symfony\Component\DependencyInjection\Exception\RuntimeException $e) {
             $this->errorMessages[] = $e->getMessage();
@@ -98,7 +99,14 @@ class ResolveBindingsPass extends \MailPoetVendor\Symfony\Component\DependencyIn
             if ($method instanceof \ReflectionFunctionAbstract) {
                 $reflectionMethod = $method;
             } else {
-                $reflectionMethod = $this->getReflectionMethod($value, $method);
+                try {
+                    $reflectionMethod = $this->getReflectionMethod($value, $method);
+                } catch (\MailPoetVendor\Symfony\Component\DependencyInjection\Exception\RuntimeException $e) {
+                    if ($value->getFactory()) {
+                        continue;
+                    }
+                    throw $e;
+                }
             }
             foreach ($reflectionMethod->getParameters() as $key => $parameter) {
                 if (\array_key_exists($key, $arguments) && '' !== $arguments[$key]) {

@@ -5,7 +5,6 @@ namespace MailPoet\Cron\Workers\StatsNotifications;
 use Carbon\Carbon;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\ScheduledTask;
-use MailPoet\Models\Setting;
 use MailPoet\Models\StatsNotification;
 use MailPoet\Settings\SettingsController;
 
@@ -20,12 +19,17 @@ class Scheduler {
   /** @var SettingsController */
   private $settings;
 
+  private $supported_types = [
+    Newsletter::TYPE_NOTIFICATION_HISTORY,
+    Newsletter::TYPE_STANDARD,
+  ];
+
   function __construct(SettingsController $settings) {
     $this->settings = $settings;
   }
 
   function schedule(Newsletter $newsletter) {
-    if(!$this->shouldSchedule($newsletter)) {
+    if (!$this->shouldSchedule($newsletter)) {
       return false;
     }
 
@@ -42,13 +46,13 @@ class Scheduler {
   }
 
   private function shouldSchedule(Newsletter $newsletter) {
-    if($this->isDisabled()) {
+    if ($this->isDisabled()) {
       return false;
     }
-    if($this->isTaskScheduled($newsletter->id)) {
+    if ($this->isTaskScheduled($newsletter->id)) {
       return false;
     }
-    if(($newsletter->type !== Newsletter::TYPE_NOTIFICATION) && ($newsletter->type !== Newsletter::TYPE_STANDARD)) {
+    if (!in_array($newsletter->type, $this->supported_types)) {
       return false;
     }
     return true;
@@ -56,19 +60,19 @@ class Scheduler {
 
   private function isDisabled() {
     $settings = $this->settings->get(Worker::SETTINGS_KEY);
-    if(!is_array($settings)) {
+    if (!is_array($settings)) {
       return true;
     }
-    if(!isset($settings['enabled'])) {
+    if (!isset($settings['enabled'])) {
       return true;
     }
-    if(!isset($settings['address'])) {
+    if (!isset($settings['address'])) {
       return true;
     }
-    if(empty(trim($settings['address']))) {
+    if (empty(trim($settings['address']))) {
       return true;
     }
-    if(!(bool)$this->settings->get('tracking.enabled')) {
+    if (!(bool)$this->settings->get('tracking.enabled')) {
       return true;
     }
     return !(bool)$settings['enabled'];

@@ -25,8 +25,8 @@ class Env {
   static $lib_path;
   static $plugin_prefix;
   static $db_prefix;
-  static $db_source_name;
   static $db_host;
+  static $db_is_ipv6;
   static $db_socket;
   static $db_port;
   static $db_name;
@@ -42,6 +42,7 @@ class Env {
     self::$file = $file;
     self::$path = dirname(self::$file);
     self::$plugin_name = 'mailpoet';
+    self::$plugin_path = 'mailpoet/mailpoet.php';
     self::$base_url = WPFunctions::get()->pluginsUrl('', $file);
     self::$views_path = self::$path . '/views';
     self::$assets_path = self::$path . '/assets';
@@ -70,6 +71,7 @@ class Env {
     global $wpdb;
     self::$db_prefix = $wpdb->prefix . self::$plugin_prefix;
     self::$db_host = $host;
+    self::$db_is_ipv6 = $is_ipv6;
     self::$db_port = $port ?: 3306;
     self::$db_socket = $socket;
     self::$db_name = $db_name;
@@ -78,31 +80,7 @@ class Env {
     self::$db_charset = $wpdb->charset;
     self::$db_collation = $wpdb->collate;
     self::$db_charset_collate = $wpdb->get_charset_collate();
-    self::$db_source_name = self::dbSourceName(self::$db_host, self::$db_socket, self::$db_port, self::$db_charset, self::$db_name, $is_ipv6);
     self::$db_timezone_offset = self::getDbTimezoneOffset();
-  }
-
-  private static function dbSourceName($host, $socket, $port, $charset, $db_name, $is_ipv6) {
-    if ($is_ipv6) {
-      $host = "[$host]";
-    }
-    $source_name = [
-      'mysql:host=',
-      $host,
-      ';',
-      'port=',
-      $port,
-      ';',
-      'dbname=',
-      $db_name
-    ];
-    if (!empty($socket)) {
-      $source_name[] = ';unix_socket=' . $socket;
-    }
-    if (!empty($charset)) {
-      $source_name[] = ';charset=' . $charset;
-    }
-    return implode('', $source_name);
   }
 
   static function getDbTimezoneOffset($offset = false) {

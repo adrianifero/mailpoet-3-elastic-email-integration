@@ -10,7 +10,6 @@ use MailPoet\Util\ConflictResolver;
 use MailPoet\Util\Helpers;
 use MailPoet\Util\Notices\PermanentNotices;
 use MailPoet\WP\Notice as WPNotice;
-use MailPoetVendor\Psr\Container\ContainerInterface;
 use MailPoet\WP\Functions as WPFunctions;
 
 if (!defined('ABSPATH')) exit;
@@ -52,6 +51,18 @@ class Initializer {
   /** @var CronTrigger */
   private $cron_trigger;
 
+  /** @var PermanentNotices */
+  private $permanent_notices;
+
+  /** @var Shortcodes */
+  private $shortcodes;
+
+  /** @var DatabaseInitializer */
+  private $database_initializer;
+
+  /** @var Session */
+  private $session;
+
   const INITIALIZED = 'MAILPOET_INITIALIZED';
 
   function __construct(
@@ -64,7 +75,11 @@ class Initializer {
     Hooks $hooks,
     Changelog $changelog,
     Menu $menu,
-    CronTrigger $cron_trigger
+    CronTrigger $cron_trigger,
+    PermanentNotices $permanent_notices,
+    Shortcodes $shortcodes,
+    DatabaseInitializer $database_initializer,
+    Session $session
   ) {
       $this->renderer_factory = $renderer_factory;
       $this->access_control = $access_control;
@@ -76,6 +91,10 @@ class Initializer {
       $this->changelog = $changelog;
       $this->menu = $menu;
       $this->cron_trigger = $cron_trigger;
+      $this->permanent_notices = $permanent_notices;
+      $this->shortcodes = $shortcodes;
+      $this->database_initializer = $database_initializer;
+      $this->session = $session;
   }
 
   function init() {
@@ -91,53 +110,53 @@ class Initializer {
     $this->setupLocalizer();
 
     try {
-      $this->setupDB();
+      $this->database_initializer->initializeConnection();
     } catch (\Exception $e) {
       return WPNotice::displayError(Helpers::replaceLinkTags(
         WPFunctions::get()->__('Unable to connect to the database (the database is unable to open a file or folder), the connection is likely not configured correctly. Please read our [link] Knowledge Base article [/link] for steps how to resolve it.', 'mailpoet'),
-        '//beta.docs.mailpoet.com/article/200-solving-database-connection-issues',
-        array('target' => '_blank')
+        'https://kb.mailpoet.com/article/200-solving-database-connection-issues',
+        ['target' => '_blank']
       ));
     }
 
     // activation function
     WPFunctions::get()->registerActivationHook(
       Env::$file,
-      array(
+      [
         $this,
-        'runActivator'
-      )
+        'runActivator',
+      ]
     );
 
-    WPFunctions::get()->addAction('activated_plugin', array(
+    WPFunctions::get()->addAction('activated_plugin', [
       new PluginActivatedHook(new DeferredAdminNotices),
-      'action'
-    ), 10, 2);
+      'action',
+    ], 10, 2);
 
-    WPFunctions::get()->addAction('init', array(
+    WPFunctions::get()->addAction('init', [
       $this,
-      'preInitialize'
-    ), 0);
+      'preInitialize',
+    ], 0);
 
-    WPFunctions::get()->addAction('init', array(
+    WPFunctions::get()->addAction('init', [
       $this,
-      'initialize'
-    ));
+      'initialize',
+    ]);
 
-    WPFunctions::get()->addAction('admin_init', array(
+    WPFunctions::get()->addAction('admin_init', [
       $this,
-      'setupPrivacyPolicy'
-    ));
+      'setupPrivacyPolicy',
+    ]);
 
-    WPFunctions::get()->addAction('wp_loaded', array(
+    WPFunctions::get()->addAction('wp_loaded', [
       $this,
-      'postInitialize'
-    ));
+      'postInitialize',
+    ]);
 
-    WPFunctions::get()->addAction('admin_init', array(
+    WPFunctions::get()->addAction('admin_init', [
       new DeferredAdminNotices,
-      'printAndClean'
-    ));
+      'printAndClean',
+    ]);
   }
 
   function checkRequirements() {
@@ -149,15 +168,11 @@ class Initializer {
     return $this->activator->activate();
   }
 
-  function setupDB() {
-    $database = new Database();
-    $database->init();
-  }
-
   function preInitialize() {
     try {
       $this->renderer = $this->renderer_factory->getRenderer();
       $this->setupWidget();
+      $this->hooks->init();
     } catch (\Exception $e) {
       $this->handleFailedInitialization($e);
     }
@@ -169,6 +184,7 @@ class Initializer {
 
   function initialize() {
     try {
+      $this->setupSession();
       $this->maybeDbUpdate();
       $this->setupInstaller();
       $this->setupUpdater();
@@ -195,6 +211,10 @@ class Initializer {
     }
 
     define(self::INITIALIZED, true);
+  }
+
+  function setupSession() {
+    $this->session->init();
   }
 
   function maybeDbUpdate() {
@@ -242,8 +262,7 @@ class Initializer {
   }
 
   function setupShortcodes() {
-    $shortcodes = new Shortcodes();
-    $shortcodes->init();
+    $this->shortcodes->init();
   }
 
   function setupImages() {
@@ -265,7 +284,6 @@ class Initializer {
   function postInitialize() {
     if (!defined(self::INITIALIZED)) return;
     try {
-      $this->hooks->init();
       $this->api->init();
       $this->router->init();
       $this->setupUserLocale();
@@ -302,8 +320,7 @@ class Initializer {
   }
 
   function setupPermanentNotices() {
-    $notices = new PermanentNotices();
-    $notices->init();
+    $this->permanent_notices->init();
   }
 
   function handleFailedInitialization($exception) {

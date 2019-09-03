@@ -1,5 +1,4 @@
 <?php
-
 namespace MailPoet\WP;
 
 use MailPoet\WP\Functions as WPFunctions;
@@ -13,7 +12,7 @@ class DateTime {
   private $wp;
 
   function __construct(WPFunctions $wp = null) {
-    if($wp === null) {
+    if ($wp === null) {
       $wp = new WPFunctions();
     }
     $this->wp = $wp;
@@ -62,12 +61,12 @@ class DateTime {
     $time_step='+1 hour',
     $total_steps=24
   ) {
-    $steps = array();
+    $steps = [];
 
     $formatted_time = $start_time;
     $timestamp = strtotime($formatted_time);
 
-    for($step = 0; $step < $total_steps; $step += 1) {
+    for ($step = 0; $step < $total_steps; $step += 1) {
       $formatted_time = $this->formatTime($timestamp, self::DEFAULT_TIME_FORMAT);
       $label_time = $this->formatTime($timestamp);
       $steps[$formatted_time] = $label_time;

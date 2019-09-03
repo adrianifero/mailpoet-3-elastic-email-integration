@@ -4,6 +4,7 @@ namespace MailPoet\Util\Notices;
 
 use MailPoet\Settings\SettingsController;
 use MailPoet\Util\Helpers;
+use MailPoet\WP\Functions as WPFunctions;
 
 class AfterMigrationNotice {
 
@@ -25,16 +26,16 @@ class AfterMigrationNotice {
   }
 
   function init($should_display) {
-    if($should_display && $this->settings->get(self::OPTION_NAME, false)) {
+    if ($should_display && $this->settings->get(self::OPTION_NAME, false)) {
       return $this->display();
     }
   }
 
   private function display() {
     $message = Helpers::replaceLinkTags(
-      __('Congrats! You’re progressing well so far. Complete your upgrade thanks to this [link]checklist[/link].', 'mailpoet'),
-      'https://beta.docs.mailpoet.com/article/199-checklist-after-migrating-to-mailpoet3',
-      array('target' => '_blank')
+      WPFunctions::get()->__('Congrats! You’re progressing well so far. Complete your upgrade thanks to this [link]checklist[/link].', 'mailpoet'),
+      'https://kb.mailpoet.com/article/199-checklist-after-migrating-to-mailpoet3',
+      ['target' => '_blank']
     );
 
     $extra_classes = 'mailpoet-dismissible-notice is-dismissible';

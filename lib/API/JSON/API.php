@@ -3,10 +3,14 @@ namespace MailPoet\API\JSON;
 
 use MailPoet\Config\AccessControl;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Subscription\Captcha;
+use MailPoet\Tracy\ApiPanel\ApiPanel;
 use MailPoetVendor\Psr\Container\ContainerInterface;
 use MailPoet\Util\Helpers;
 use MailPoet\Util\Security;
 use MailPoet\WP\Functions as WPFunctions;
+use Tracy\Debugger;
+use Tracy\ILogger;
 
 if (!defined('ABSPATH')) exit;
 
@@ -16,11 +20,11 @@ class API {
   private $_request_method;
   private $_request_token;
   private $_request_endpoint_class;
-  private $_request_data = array();
-  private $_endpoint_namespaces = array();
-  private $_available_api_versions = array(
-      'v1'
-  );
+  private $_request_data = [];
+  private $_endpoint_namespaces = [];
+  private $_available_api_versions = [
+      'v1',
+  ];
   /** @var ContainerInterface */
   private $container;
 
@@ -58,28 +62,28 @@ class API {
      // admin security token and API version
     WPFunctions::get()->addAction(
       'admin_head',
-      array($this, 'setTokenAndAPIVersion')
+      [$this, 'setTokenAndAPIVersion']
     );
 
     // ajax (logged in users)
     WPFunctions::get()->addAction(
       'wp_ajax_mailpoet',
-      array($this, 'setupAjax')
+      [$this, 'setupAjax']
     );
 
     // ajax (logged out users)
     WPFunctions::get()->addAction(
       'wp_ajax_nopriv_mailpoet',
-      array($this, 'setupAjax')
+      [$this, 'setupAjax']
     );
   }
 
   function setupAjax() {
-    $this->wp->doAction('mailpoet_api_setup', array($this));
+    $this->wp->doAction('mailpoet_api_setup', [$this]);
     $this->setRequestData($_POST);
 
     $ignoreToken = (
-      $this->settings->get('re_captcha.enabled') &&
+      $this->settings->get('captcha.type') != Captcha::TYPE_DISABLED &&
       $this->_request_endpoint === 'subscribers' &&
       $this->_request_method === 'subscribe'
     );
@@ -95,7 +99,7 @@ class API {
   }
 
   function setRequestData($data) {
-    $this->_request_api_version = !empty($data['api_version']) ? $data['api_version']: false;
+    $this->_request_api_version = !empty($data['api_version']) ? $data['api_version'] : false;
 
     $this->_request_endpoint = isset($data['endpoint'])
       ? Helpers::underscoreToCamelCase(trim($data['endpoint']))
@@ -129,19 +133,19 @@ class API {
       }
       $this->_request_data = isset($data['data'])
         ? WPFunctions::get()->stripslashesDeep($data['data'])
-        : array();
+        : [];
 
       // remove reserved keywords from data
       if (is_array($this->_request_data) && !empty($this->_request_data)) {
         // filter out reserved keywords from data
-        $reserved_keywords = array(
+        $reserved_keywords = [
           'token',
           'endpoint',
           'method',
           'api_version',
           'mailpoet_method', // alias of 'method'
-          'mailpoet_redirect'
-        );
+          'mailpoet_redirect',
+        ];
         $this->_request_data = array_diff_key(
           $this->_request_data,
           array_flip($reserved_keywords)
@@ -163,6 +167,10 @@ class API {
         throw new \Exception(__('Invalid API endpoint method.', 'mailpoet'));
       }
 
+      if (class_exists(Debugger::class)) {
+        ApiPanel::init($endpoint, $this->_request_method, $this->_request_data);
+      }
+
       // check the accessibility of the requested endpoint's action
       // by default, an endpoint's action is considered "private"
       if (!$this->validatePermissions($this->_request_method, $endpoint->permissions)) {
@@ -173,6 +181,9 @@ class API {
       $response = $endpoint->{$this->_request_method}($this->_request_data);
       return $response;
     } catch (\Exception $e) {
+      if (class_exists(Debugger::class) && Debugger::$logDirectory) {
+        Debugger::log($e, ILogger::EXCEPTION);
+      }
       $error_message = $e->getMessage();
       $error_response = $this->createErrorResponse(Error::BAD_REQUEST, $error_message, Response::STATUS_BAD_REQUEST);
       return $error_response;
@@ -221,10 +232,10 @@ class API {
 
   function createErrorResponse($error_type, $error_message, $response_status) {
     $error_response = new ErrorResponse(
-      array(
-        $error_type => $error_message
-      ),
-      array(),
+      [
+        $error_type => $error_message,
+      ],
+      [],
       $response_status
     );
     return $error_response;

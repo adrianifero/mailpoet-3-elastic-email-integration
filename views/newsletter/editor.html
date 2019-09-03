@@ -154,6 +154,34 @@
     'newsletter/templates/blocks/posts/settingsSinglePost.hbs'
   ) %>
   <%= partial(
+  'newsletter_editor_template_products_block',
+  'newsletter/templates/blocks/products/block.hbs'
+  ) %>
+  <%= partial(
+  'newsletter_editor_template_products_widget',
+  'newsletter/templates/blocks/products/widget.hbs'
+  ) %>
+  <%= partial(
+  'newsletter_editor_template_products_settings',
+  'newsletter/templates/blocks/products/settings.hbs'
+  ) %>
+  <%= partial(
+  'newsletter_editor_template_products_settings_display_options',
+  'newsletter/templates/blocks/products/settingsDisplayOptions.hbs'
+  ) %>
+  <%= partial(
+  'newsletter_editor_template_products_settings_selection',
+  'newsletter/templates/blocks/products/settingsSelection.hbs'
+  ) %>
+  <%= partial(
+  'newsletter_editor_template_products_settings_selection_empty',
+  'newsletter/templates/blocks/products/settingsSelectionEmpty.hbs'
+  ) %>
+  <%= partial(
+  'newsletter_editor_template_products_settings_single_post',
+  'newsletter/templates/blocks/products/settingsSinglePost.hbs'
+  ) %>
+  <%= partial(
     'newsletter_editor_template_social_block',
     'newsletter/templates/blocks/social/block.hbs'
   ) %>
@@ -208,6 +236,10 @@
   <%= partial(
     'newsletter_editor_template_heading',
     'newsletter/templates/components/heading.hbs'
+  ) %>
+  <%= partial(
+    'newsletter_editor_template_history',
+    'newsletter/templates/components/history.hbs'
   ) %>
   <%= partial(
     'newsletter_editor_template_save',
@@ -285,7 +317,7 @@
             <select id="url-type-field" name="urltype">
               <option value="http://"><%= __('Link to a web page') %></option>
               <option value="[viewInBrowserUrl]"><%= __('Browser version') %></option>
-              <option value="[unsubscribeUrl]"><%= __('Unsubcribe page') %></option>
+              <option value="[unsubscribeUrl]"><%= __('Unsubscribe page') %></option>
               <option value="[manageSubscriptionUrl]"><%= __('Manage your subscription page') %></option>
             </select>
           </label>
@@ -337,21 +369,26 @@
 
 <% block translations %>
   <% set helpTooltipSendPreview = __("Didn't receive the test email? Read our [link]quick guide[/link] to sending issues. <br><br>A MailPoet logo will appear in the footer of all emails sent with the free version of MailPoet.")
-  |replaceLinkTags('http://beta.docs.mailpoet.com/article/146-my-newsletters-are-not-being-received', {'target' : '_blank'})
+  |replaceLinkTags('https://kb.mailpoet.com/article/146-my-newsletters-are-not-being-received', {'target' : '_blank'})
   |escape('js') %>
   <%= localize({
     'failedToFetchAvailablePosts': __('Failed to fetch available posts'),
     'failedToFetchRenderedPosts': __('Failed to fetch rendered posts'),
     'shortcodesWindowTitle': __('Select a shortcode'),
     'unsubscribeLinkMissing': __('All emails must include an "Unsubscribe" link. Add a footer widget to your email to continue.'),
-    'automatedLatestContentMissing': __('Please add an "Automated Latest Content" widget to the email from the right sidebar.'),
+    'automatedLatestContentMissing': _x('Please add an “Automatic Latest Content” widget to the email from the right sidebar.', '(Please reuse the current translation used for the string “Automatic Latest Content”) This Error message is displayed when a user tries to send a “Post Notification” email without any “Automatic Latest Content” widget inside'),
     'newsletterPreviewEmailMissing': __('Enter an email address to send the preview newsletter to.'),
     'newsletterPreviewSent': __('Your test email has been sent!'),
+    'newsletterPreviewErrorNotice': __('The email could not be sent due to a technical issue with %$1s'),
+    'newsletterPreviewErrorCheckConfiguration': __('Please check your sending method configuration, you may need to consult with your hosting company.'),
+    'newsletterPreviewErrorUseSendingService': __('The easy alternative is to <b>send emails with MailPoet Sending Service</b> instead, like thousands of other users do.'),
+    'newsletterPreviewErrorSignUpForSendingService': __('Sign up for free in minutes'),
+    'newsletterPreviewErrorCheckSettingsNotice': __('Check your [link]sending method settings[/link].'),
     'templateNameMissing': __('Please add a template name'),
     'helpTooltipSendPreview': helpTooltipSendPreview,
     'helpTooltipDesignerSubjectLine': __("You can add MailPoet shortcodes here. For example, you can add your subscribers' first names by using this shortcode: [subscriber:firstname | default:reader]. Simply copy and paste the shortcode into the field."),
     'helpTooltipDesignerPreheader': __("This optional text will appear in your subscribers' inboxes, beside the subject line. Write something enticing!"),
-    'helpTooltipDesignerFullWidth': __("This option eliminates padding around the image. It only works if the image is larger than the column size."),
+    'helpTooltipDesignerFullWidth': __("This option eliminates padding around the image."),
     'helpTooltipDesignerIdealWidth': __("Use images with widths of at least 1,000 pixels to ensure sharp display on high density screens, like mobile devices."),
     'templateSaved': __('Template has been saved.'),
     'templateSaveFailed': __('Template has not been saved, please try again'),
@@ -372,12 +409,16 @@
     'template': __('Template'),
     'designer': __('Designer'),
     'send': __('Send'),
+    'canUndo': _x('Undo', 'A button title when user can undo the change in editor', 'mailpoet'),
+    'canNotUndo': _x('No actions available to undo.', "A button title when user can't undo the change in editor", 'mailpoet'),
+    'canRedo': _x('Redo', 'A button title when user can redo the change in editor', 'mailpoet'),
+    'canNotRedo': _x('No actions available to redo.', "A button title when user can't redo the change in editor", 'mailpoet'),
   }) %>
 <% endblock %>
 
 <% block after_css %>
   <%= stylesheet(
-    'newsletter_editor.css'
+    'newsletterEditor.css'
   ) %>
 <% endblock %>
 
@@ -417,6 +458,9 @@
       ),
       heading: Handlebars.compile(
         jQuery('#newsletter_editor_template_heading').html()
+      ),
+      history: Handlebars.compile(
+        jQuery('#newsletter_editor_template_history').html()
       ),
 
       sidebar: Handlebars.compile(
@@ -594,6 +638,28 @@
         jQuery('#newsletter_editor_template_posts_settings_display_options').html()
       ),
 
+      productsBlock: Handlebars.compile(
+        jQuery('#newsletter_editor_template_products_block').html()
+      ),
+      productsInsertion: Handlebars.compile(
+        jQuery('#newsletter_editor_template_products_widget').html()
+      ),
+      productsBlockSettings: Handlebars.compile(
+        jQuery('#newsletter_editor_template_products_settings').html()
+      ),
+      postSelectionProductsBlockSettings: Handlebars.compile(
+        jQuery('#newsletter_editor_template_products_settings_selection').html()
+      ),
+      emptyPostProductsBlockSettings: Handlebars.compile(
+        jQuery('#newsletter_editor_template_products_settings_selection_empty').html()
+      ),
+      singlePostProductsBlockSettings: Handlebars.compile(
+        jQuery('#newsletter_editor_template_products_settings_single_post').html()
+      ),
+      displayOptionsProductsBlockSettings: Handlebars.compile(
+        jQuery('#newsletter_editor_template_products_settings_display_options').html()
+      ),
+
       textBlock: Handlebars.compile(
         jQuery('#newsletter_editor_template_text_block').html()
       ),
@@ -614,6 +680,14 @@
         headingSizes: [
           '10px', '12px', '14px', '16px', '18px', '20px', '22px', '24px',
           '26px', '30px', '36px', '40px'
+        ],
+        lineHeights: [
+          '1.0',
+          '1.2',
+          '1.4',
+          '1.6',
+          '1.8',
+          '2.0',
         ],
         fonts: {
           standard: [
@@ -1268,6 +1342,59 @@
           backgroundColor: '#ffffff',
           backgroundColorAlternate: '#eeeeee',
         },
+        products: {
+          amount: '10',
+          withLayout: true,
+          contentType: 'product',
+          postStatus: 'publish', // 'draft'|'pending'|'publish'
+          inclusionType: 'include', // 'include'|'exclude'
+          displayType: 'excerpt', // 'excerpt'|'full'|'titleOnly'
+          titleFormat: 'h1', // 'h1'|'h2'|'h3'
+          titleAlignment: 'left', // 'left'|'center'|'right'
+          titleIsLink: false, // false|true
+          imageFullWidth: false, // true|false
+          featuredImagePosition: 'alternate', // 'centered'|'left'|'right'|'alternate'|'none',
+          pricePosition: 'below', // 'hidden'|'above'|'below'
+          readMoreType: 'link', // 'link'|'button'
+          readMoreText: '<%= _x('Buy now', 'Text of a button which links to an ecommerce product page') | escape('js') %>',
+          readMoreButton: {
+            text: '<%= _x('Buy now', 'Text of a button which links to an ecommerce product page') | escape('js') %>',
+            url: '[postLink]',
+            context: 'posts.readMoreButton',
+            styles: {
+              block: {
+                backgroundColor: '#2ea1cd',
+                borderColor: '#0074a2',
+                borderWidth: '1px',
+                borderRadius: '5px',
+                borderStyle: 'solid',
+                width: '180px',
+                lineHeight: '40px',
+                fontColor: '#ffffff',
+                fontFamily: 'Verdana',
+                fontSize: '18px',
+                fontWeight: 'normal',
+                textAlign: 'center',
+              },
+            },
+          },
+          sortBy: 'newest', // 'newest'|'oldest',
+          showDivider: true, // true|false
+          divider: {
+            context: 'posts.divider',
+            styles: {
+              block: {
+                backgroundColor: 'transparent',
+                padding: '13px',
+                borderStyle: 'solid',
+                borderWidth: '3px',
+                borderColor: '#aaaaaa',
+              },
+            },
+          },
+          backgroundColor: '#ffffff',
+          backgroundColorAlternate: '#eeeeee',
+        },
         social: {
           iconSet: 'default',
           styles: {
@@ -1312,8 +1439,7 @@
           text: '<%= __('Edit this to insert text.') | escape('js') %>',
         },
         header: {
-          text: '<%= __('Display problems?') | escape('js') %>&nbsp;' +
-            '<a href="[link:newsletter_view_in_browser_url]"><%= __('Open this email in your web browser.') %></a>',
+          text: '<a href="[link:newsletter_view_in_browser_url]"><%= __('View this in your browser.') %></a>',
           styles: {
             block: {
               backgroundColor: 'transparent',
@@ -1347,10 +1473,11 @@
           "newsletter_editor/image-missing.svg"
         ) %>',
       },
-      dragDemoUrl: '<%= cdn_url('newsletter-editor/editor-drag-demo.20181121-1440.mp4') %>',
+      dragDemoUrl: '<%= cdn_url('newsletter-editor/editor-drag-demo.20190226-1505.mp4') %>',
       currentUserId: '<%= current_wp_user.wp_user_id %>',
-      dragDemoUrlSettings: '<%= settings["user_seen_editor_tutorial" ~ current_wp_user.wp_user_id] %>',
+      dragDemoUrlSettings: '<%= editor_tutorial_seen %>',
       installedAt: '<%= settings["installed_at"] %>',
+      mtaMethod: '<%= settings["mta"]["method"] %>',
     };
     wp.hooks.doAction('mailpoet_newsletters_editor_initialize', config);
 

@@ -52,7 +52,7 @@ class XmlFileLoader extends \MailPoetVendor\Symfony\Component\DependencyInjectio
         try {
             $this->parseDefinitions($xml, $path, $defaults);
         } finally {
-            $this->instanceof = array();
+            $this->instanceof = [];
         }
     }
     /**
@@ -113,11 +113,11 @@ class XmlFileLoader extends \MailPoetVendor\Symfony\Component\DependencyInjectio
             return;
         }
         $this->setCurrentDir(\dirname($file));
-        $this->instanceof = array();
+        $this->instanceof = [];
         $this->isLoadingInstanceof = \true;
         $instanceof = $xpath->query('//container:services/container:instanceof');
         foreach ($instanceof as $service) {
-            $this->setDefinition((string) $service->getAttribute('id'), $this->parseDefinition($service, $file, array()));
+            $this->setDefinition((string) $service->getAttribute('id'), $this->parseDefinition($service, $file, []));
         }
         $this->isLoadingInstanceof = \false;
         foreach ($services as $service) {
@@ -140,11 +140,11 @@ class XmlFileLoader extends \MailPoetVendor\Symfony\Component\DependencyInjectio
         $xpath = new \DOMXPath($xml);
         $xpath->registerNamespace('container', self::NS);
         if (null === ($defaultsNode = $xpath->query('//container:services/container:defaults')->item(0))) {
-            return array();
+            return [];
         }
-        $defaults = array('tags' => $this->getChildren($defaultsNode, 'tag'), 'bind' => \array_map(function ($v) {
+        $defaults = ['tags' => $this->getChildren($defaultsNode, 'tag'), 'bind' => \array_map(function ($v) {
             return new \MailPoetVendor\Symfony\Component\DependencyInjection\Argument\BoundArgument($v);
-        }, $this->getArgumentsAsPhp($defaultsNode, 'bind', $file)));
+        }, $this->getArgumentsAsPhp($defaultsNode, 'bind', $file))];
         foreach ($defaults['tags'] as $tag) {
             if ('' === $tag->getAttribute('name')) {
                 throw new \MailPoetVendor\Symfony\Component\DependencyInjection\Exception\InvalidArgumentException(\sprintf('The tag name for tag "<defaults>" in %s must be a non-empty string.', $file));
@@ -216,9 +216,9 @@ class XmlFileLoader extends \MailPoetVendor\Symfony\Component\DependencyInjectio
             if (isset($defaults['autoconfigure'])) {
                 $definition->setAutoconfigured($defaults['autoconfigure']);
             }
-            $definition->setChanges(array());
+            $definition->setChanges([]);
         }
-        foreach (array('class', 'public', 'shared', 'synthetic', 'lazy', 'abstract') as $key) {
+        foreach (['class', 'public', 'shared', 'synthetic', 'lazy', 'abstract'] as $key) {
             if ($value = $service->getAttribute($key)) {
                 $method = 'set' . $key;
                 $definition->{$method}(\MailPoetVendor\Symfony\Component\Config\Util\XmlUtils::phpize($value));
@@ -252,7 +252,7 @@ class XmlFileLoader extends \MailPoetVendor\Symfony\Component\DependencyInjectio
                 } else {
                     $class = $factory->hasAttribute('class') ? $factory->getAttribute('class') : null;
                 }
-                $definition->setFactory(array($class, $factory->getAttribute('method')));
+                $definition->setFactory([$class, $factory->getAttribute('method')]);
             }
         }
         if ($configurators = $this->getChildren($service, 'configurator')) {
@@ -265,7 +265,7 @@ class XmlFileLoader extends \MailPoetVendor\Symfony\Component\DependencyInjectio
                 } else {
                     $class = $configurator->getAttribute('class');
                 }
-                $definition->setConfigurator(array($class, $configurator->getAttribute('method')));
+                $definition->setConfigurator([$class, $configurator->getAttribute('method')]);
             }
         }
         foreach ($this->getChildren($service, 'call') as $call) {
@@ -276,7 +276,7 @@ class XmlFileLoader extends \MailPoetVendor\Symfony\Component\DependencyInjectio
             $tags = \array_merge($tags, $defaults['tags']);
         }
         foreach ($tags as $tag) {
-            $parameters = array();
+            $parameters = [];
             foreach ($tag->attributes as $name => $node) {
                 if ('name' === $name) {
                     continue;
@@ -322,9 +322,9 @@ class XmlFileLoader extends \MailPoetVendor\Symfony\Component\DependencyInjectio
     private function parseFileToDOM($file)
     {
         try {
-            $dom = \MailPoetVendor\Symfony\Component\Config\Util\XmlUtils::loadFile($file, array($this, 'validateSchema'));
+            $dom = \MailPoetVendor\Symfony\Component\Config\Util\XmlUtils::loadFile($file, [$this, 'validateSchema']);
         } catch (\InvalidArgumentException $e) {
-            throw new \MailPoetVendor\Symfony\Component\DependencyInjection\Exception\InvalidArgumentException(\sprintf('Unable to parse file "%s".', $file), $e->getCode(), $e);
+            throw new \MailPoetVendor\Symfony\Component\DependencyInjection\Exception\InvalidArgumentException(\sprintf('Unable to parse file "%s": %s', $file, $e->getMessage()), $e->getCode(), $e);
         }
         $this->validateExtensions($dom, $file);
         return $dom;
@@ -338,7 +338,7 @@ class XmlFileLoader extends \MailPoetVendor\Symfony\Component\DependencyInjectio
      */
     private function processAnonymousServices(\DOMDocument $xml, $file, $defaults)
     {
-        $definitions = array();
+        $definitions = [];
         $count = 0;
         $suffix = '~' . \MailPoetVendor\Symfony\Component\DependencyInjection\ContainerBuilder::hash($file);
         $xpath = new \DOMXPath($xml);
@@ -351,7 +351,7 @@ class XmlFileLoader extends \MailPoetVendor\Symfony\Component\DependencyInjectio
                     $id = \sprintf('%d_%s', ++$count, \preg_replace('/^.*\\\\/', '', $services[0]->getAttribute('class')) . $suffix);
                     $node->setAttribute('id', $id);
                     $node->setAttribute('service', $id);
-                    $definitions[$id] = array($services[0], $file, \false);
+                    $definitions[$id] = [$services[0], $file, \false];
                     $services[0]->setAttribute('id', $id);
                     // anonymous services are always private
                     // we could not use the constant false here, because of XML parsing
@@ -366,13 +366,13 @@ class XmlFileLoader extends \MailPoetVendor\Symfony\Component\DependencyInjectio
                 // give it a unique name
                 $id = \sprintf('%d_%s', ++$count, \preg_replace('/^.*\\\\/', '', $node->getAttribute('class')) . $suffix);
                 $node->setAttribute('id', $id);
-                $definitions[$id] = array($node, $file, \true);
+                $definitions[$id] = [$node, $file, \true];
             }
         }
         // resolve definitions
         \uksort($definitions, 'strnatcmp');
         foreach (\array_reverse($definitions) as $id => list($domElement, $file, $wild)) {
-            if (null !== ($definition = $this->parseDefinition($domElement, $file, $wild ? $defaults : array()))) {
+            if (null !== ($definition = $this->parseDefinition($domElement, $file, $wild ? $defaults : []))) {
                 $this->setDefinition($id, $definition);
             }
             if (\true === $wild) {
@@ -394,7 +394,7 @@ class XmlFileLoader extends \MailPoetVendor\Symfony\Component\DependencyInjectio
      */
     private function getArgumentsAsPhp(\DOMElement $node, $name, $file, $lowercase = \true, $isChildDefinition = \false)
     {
-        $arguments = array();
+        $arguments = [];
         foreach ($this->getChildren($node, $name) as $arg) {
             if ($arg->hasAttribute('name')) {
                 $arg->setAttribute('key', $arg->getAttribute('name'));
@@ -422,7 +422,7 @@ class XmlFileLoader extends \MailPoetVendor\Symfony\Component\DependencyInjectio
             }
             switch ($arg->getAttribute('type')) {
                 case 'service':
-                    if (!$arg->getAttribute('id')) {
+                    if ('' === $arg->getAttribute('id')) {
                         throw new \MailPoetVendor\Symfony\Component\DependencyInjection\Exception\InvalidArgumentException(\sprintf('Tag "<%s>" with type="service" has no or empty "id" attribute in "%s".', $name, $file));
                     }
                     if ($arg->hasAttribute('strict')) {
@@ -471,11 +471,11 @@ class XmlFileLoader extends \MailPoetVendor\Symfony\Component\DependencyInjectio
      * @param \DOMNode $node
      * @param mixed    $name
      *
-     * @return array
+     * @return \DOMElement[]
      */
     private function getChildren(\DOMNode $node, $name)
     {
-        $children = array();
+        $children = [];
         foreach ($node->childNodes as $child) {
             if ($child instanceof \DOMElement && $child->localName === $name && self::NS === $child->namespaceURI) {
                 $children[] = $child;
@@ -494,7 +494,7 @@ class XmlFileLoader extends \MailPoetVendor\Symfony\Component\DependencyInjectio
      */
     public function validateSchema(\DOMDocument $dom)
     {
-        $schemaLocations = array('http://symfony.com/schema/dic/services' => \str_replace('\\', '/', __DIR__ . '/schema/dic/services/services-1.0.xsd'));
+        $schemaLocations = ['http://symfony.com/schema/dic/services' => \str_replace('\\', '/', __DIR__ . '/schema/dic/services/services-1.0.xsd')];
         if ($element = $dom->documentElement->getAttributeNS('http://www.w3.org/2001/XMLSchema-instance', 'schemaLocation')) {
             $items = \preg_split('/\\s+/', $element);
             for ($i = 0, $nb = \count($items); $i < $nb; $i += 2) {
@@ -502,7 +502,8 @@ class XmlFileLoader extends \MailPoetVendor\Symfony\Component\DependencyInjectio
                     continue;
                 }
                 if (($extension = $this->container->getExtension($items[$i])) && \false !== $extension->getXsdValidationBasePath()) {
-                    $path = \str_replace($extension->getNamespace(), \str_replace('\\', '/', $extension->getXsdValidationBasePath()) . '/', $items[$i + 1]);
+                    $ns = $extension->getNamespace();
+                    $path = \str_replace([$ns, \str_replace('http://', 'https://', $ns)], \str_replace('\\', '/', $extension->getXsdValidationBasePath()) . '/', $items[$i + 1]);
                     if (!\is_file($path)) {
                         throw new \MailPoetVendor\Symfony\Component\DependencyInjection\Exception\RuntimeException(\sprintf('Extension "%s" references a non-existent XSD file "%s"', \get_class($extension), $path));
                     }
@@ -510,7 +511,7 @@ class XmlFileLoader extends \MailPoetVendor\Symfony\Component\DependencyInjectio
                 }
             }
         }
-        $tmpfiles = array();
+        $tmpfiles = [];
         $imports = '';
         foreach ($schemaLocations as $namespace => $location) {
             $parts = \explode('/', $location);
@@ -558,7 +559,7 @@ EOF;
     private function validateAlias(\DOMElement $alias, $file)
     {
         foreach ($alias->attributes as $name => $node) {
-            if (!\in_array($name, array('alias', 'id', 'public'))) {
+            if (!\in_array($name, ['alias', 'id', 'public'])) {
                 @\trigger_error(\sprintf('Using the attribute "%s" is deprecated for the service "%s" which is defined as an alias in "%s". Allowed attributes for service aliases are "alias", "id" and "public". The XmlFileLoader will raise an exception in Symfony 4.0, instead of silently ignoring unsupported attributes.', $name, $alias->getAttribute('id'), $file), \E_USER_DEPRECATED);
             }
         }
@@ -604,7 +605,7 @@ EOF;
             }
             $values = static::convertDomElementToArray($node);
             if (!\is_array($values)) {
-                $values = array();
+                $values = [];
             }
             $this->container->loadFromExtension($node->namespaceURI, $values);
         }

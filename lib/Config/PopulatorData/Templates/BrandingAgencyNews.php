@@ -14,224 +14,224 @@ class BrandingAgencyNews {
   }
 
   function get() {
-    return array(
+    return [
       'name' => WPFunctions::get()->__("Branding Agency News", 'mailpoet'),
-      'categories' => json_encode(array('standard', 'all')),
+      'categories' => json_encode(['standard', 'all']),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),
       'body' => json_encode($this->getBody()),
-    );
+    ];
   }
 
   private function getThumbnail() {
-    return $this->template_image_url . '/thumbnail.jpg';
+    return $this->template_image_url . '/thumbnail.20190411-1500.jpg';
   }
 
   private function getBody() {
-    return array (
-      'content' => 
-      array (
+    return  [
+      'content' =>
+       [
         'type' => 'container',
         'columnLayout' => false,
         'orientation' => 'vertical',
-        'image' => 
-        array (
-          'src' => NULL,
+        'image' =>
+         [
+          'src' => null,
           'display' => 'scale',
-        ),
-        'styles' => 
-        array (
-          'block' => 
-          array (
+         ],
+        'styles' =>
+         [
+          'block' =>
+           [
             'backgroundColor' => 'transparent',
-          ),
-        ),
-        'blocks' => 
-        array (
-          0 => 
-          array (
+           ],
+         ],
+        'blocks' =>
+         [
+          0 =>
+           [
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
-            array (
-              'src' => NULL,
+            'image' =>
+             [
+              'src' => null,
               'display' => 'scale',
-            ),
-            'styles' => 
-            array (
-              'block' => 
-              array (
+             ],
+            'styles' =>
+             [
+              'block' =>
+               [
                 'backgroundColor' => '#eeeeee',
-              ),
-            ),
-            'blocks' => 
-            array (
-              0 => 
-              array (
+               ],
+             ],
+            'blocks' =>
+             [
+              0 =>
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
-                array (
-                  'src' => NULL,
+                'image' =>
+                 [
+                  'src' => null,
                   'display' => 'scale',
-                ),
-                'styles' => 
-                array (
-                  'block' => 
-                  array (
+                 ],
+                'styles' =>
+                 [
+                  'block' =>
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => 
-                array (
-                  0 => 
-                  array (
+                   ],
+                 ],
+                'blocks' =>
+                 [
+                  0 =>
+                   [
                     'type' => 'spacer',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'backgroundColor' => 'transparent',
                         'height' => '20px',
-                      ),
-                    ),
-                  ),
-                  1 => 
-                  array (
+                       ],
+                     ],
+                   ],
+                  1 =>
+                   [
                     'type' => 'header',
-                    'text' => '<p><span style="color: #808080;"><a href="[link:newsletter_view_in_browser_url]" style="color: #808080;">Open this email in your web browser.</a></span></p>',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'text' => '<p><span style="color: #808080;"><a href="[link:newsletter_view_in_browser_url]" style="color: #808080;">View this in your browser.</a></span></p>',
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'backgroundColor' => 'transparent',
-                      ),
-                      'text' => 
-                      array (
+                       ],
+                      'text' =>
+                       [
                         'fontColor' => '#222222',
                         'fontFamily' => 'Merriweather Sans',
                         'fontSize' => '12px',
                         'textAlign' => 'left',
-                      ),
-                      'link' => 
-                      array (
+                       ],
+                      'link' =>
+                       [
                         'fontColor' => '#6cb7d4',
                         'textDecoration' => 'underline',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          1 => 
-          array (
+                       ],
+                     ],
+                   ],
+                 ],
+               ],
+             ],
+           ],
+          1 =>
+           [
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
-            array (
-              'src' => NULL,
+            'image' =>
+             [
+              'src' => null,
               'display' => 'scale',
-            ),
-            'styles' => 
-            array (
-              'block' => 
-              array (
+             ],
+            'styles' =>
+             [
+              'block' =>
+               [
                 'backgroundColor' => 'transparent',
-              ),
-            ),
-            'blocks' => 
-            array (
-              0 => 
-              array (
+               ],
+             ],
+            'blocks' =>
+             [
+              0 =>
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
-                array (
-                  'src' => NULL,
+                'image' =>
+                 [
+                  'src' => null,
                   'display' => 'scale',
-                ),
-                'styles' => 
-                array (
-                  'block' => 
-                  array (
+                 ],
+                'styles' =>
+                 [
+                  'block' =>
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => 
-                array (
-                  0 => 
-                  array (
+                   ],
+                 ],
+                'blocks' =>
+                 [
+                  0 =>
+                   [
                     'type' => 'spacer',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'backgroundColor' => 'transparent',
                         'height' => '20px',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          2 => 
-          array (
+                       ],
+                     ],
+                   ],
+                 ],
+               ],
+             ],
+           ],
+          2 =>
+           [
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
-            array (
-              'src' => NULL,
+            'image' =>
+             [
+              'src' => null,
               'display' => 'scale',
-            ),
-            'styles' => 
-            array (
-              'block' => 
-              array (
+             ],
+            'styles' =>
+             [
+              'block' =>
+               [
                 'backgroundColor' => 'transparent',
-              ),
-            ),
-            'blocks' => 
-            array (
-              0 => 
-              array (
+               ],
+             ],
+            'blocks' =>
+             [
+              0 =>
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
-                array (
-                  'src' => NULL,
+                'image' =>
+                 [
+                  'src' => null,
                   'display' => 'scale',
-                ),
-                'styles' => 
-                array (
-                  'block' => 
-                  array (
+                 ],
+                'styles' =>
+                 [
+                  'block' =>
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => 
-                array (
-                  0 => 
-                  array (
+                   ],
+                 ],
+                'blocks' =>
+                 [
+                  0 =>
+                   [
                     'type' => 'spacer',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'backgroundColor' => 'transparent',
                         'height' => '25px',
-                      ),
-                    ),
-                  ),
-                  1 => 
-                  array (
+                       ],
+                     ],
+                   ],
+                  1 =>
+                   [
                     'type' => 'image',
                     'link' => '',
                     'src' => $this->template_image_url . '/Branding-Logo.png',
@@ -239,55 +239,55 @@ class BrandingAgencyNews {
                     'fullWidth' => false,
                     'width' => '122px',
                     'height' => '117px',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'textAlign' => 'left',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              1 => 
-              array (
+                       ],
+                     ],
+                   ],
+                 ],
+               ],
+              1 =>
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
-                array (
-                  'src' => NULL,
+                'image' =>
+                 [
+                  'src' => null,
                   'display' => 'scale',
-                ),
-                'styles' => 
-                array (
-                  'block' => 
-                  array (
+                 ],
+                'styles' =>
+                 [
+                  'block' =>
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => 
-                array (
-                  0 => 
-                  array (
+                   ],
+                 ],
+                'blocks' =>
+                 [
+                  0 =>
+                   [
                     'type' => 'spacer',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'backgroundColor' => 'transparent',
                         'height' => '20px',
-                      ),
-                    ),
-                  ),
-                  1 => 
-                  array (
+                       ],
+                     ],
+                   ],
+                  1 =>
+                   [
                     'type' => 'social',
                     'iconSet' => 'full-symbol-black',
-                    'icons' => 
-                    array (
-                      0 => 
-                      array (
+                    'icons' =>
+                     [
+                      0 =>
+                       [
                         'type' => 'socialIcon',
                         'iconType' => 'facebook',
                         'link' => 'http://www.facebook.com',
@@ -295,9 +295,9 @@ class BrandingAgencyNews {
                         'height' => '32px',
                         'width' => '32px',
                         'text' => 'Facebook',
-                      ),
-                      1 => 
-                      array (
+                       ],
+                      1 =>
+                       [
                         'type' => 'socialIcon',
                         'iconType' => 'twitter',
                         'link' => 'http://www.twitter.com',
@@ -305,9 +305,9 @@ class BrandingAgencyNews {
                         'height' => '32px',
                         'width' => '32px',
                         'text' => 'Twitter',
-                      ),
-                      2 => 
-                      array (
+                       ],
+                      2 =>
+                       [
                         'type' => 'socialIcon',
                         'iconType' => 'instagram',
                         'link' => 'http://instagram.com',
@@ -315,83 +315,83 @@ class BrandingAgencyNews {
                         'height' => '32px',
                         'width' => '32px',
                         'text' => 'Instagram',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          3 => 
-          array (
+                       ],
+                     ],
+                   ],
+                 ],
+               ],
+             ],
+           ],
+          3 =>
+           [
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
-            array (
-              'src' => NULL,
+            'image' =>
+             [
+              'src' => null,
               'display' => 'scale',
-            ),
-            'styles' => 
-            array (
-              'block' => 
-              array (
+             ],
+            'styles' =>
+             [
+              'block' =>
+               [
                 'backgroundColor' => 'transparent',
-              ),
-            ),
-            'blocks' => 
-            array (
-              0 => 
-              array (
+               ],
+             ],
+            'blocks' =>
+             [
+              0 =>
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
-                array (
-                  'src' => NULL,
+                'image' =>
+                 [
+                  'src' => null,
                   'display' => 'scale',
-                ),
-                'styles' => 
-                array (
-                  'block' => 
-                  array (
+                 ],
+                'styles' =>
+                 [
+                  'block' =>
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => 
-                array (
-                  0 => 
-                  array (
+                   ],
+                 ],
+                'blocks' =>
+                 [
+                  0 =>
+                   [
                     'type' => 'spacer',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'backgroundColor' => 'transparent',
                         'height' => '20px',
-                      ),
-                    ),
-                  ),
-                  1 => 
-                  array (
+                       ],
+                     ],
+                   ],
+                  1 =>
+                   [
                     'type' => 'text',
                     'text' => '<p><span style="color: #bdbdbd;"><strong>B I G&nbsp; N E W S</strong></span></p>
     <h1>Branded is getting a refresh</h1>',
-                  ),
-                  2 => 
-                  array (
+                   ],
+                  2 =>
+                   [
                     'type' => 'spacer',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'backgroundColor' => 'transparent',
                         'height' => '20px',
-                      ),
-                    ),
-                  ),
-                  3 => 
-                  array (
+                       ],
+                     ],
+                   ],
+                  3 =>
+                   [
                     'type' => 'image',
                     'link' => '',
                     'src' => $this->template_image_url . '/Branding-Image01.jpg',
@@ -399,40 +399,40 @@ class BrandingAgencyNews {
                     'fullWidth' => true,
                     'width' => '1200px',
                     'height' => '700px',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'textAlign' => 'center',
-                      ),
-                    ),
-                  ),
-                  4 => 
-                  array (
+                       ],
+                     ],
+                   ],
+                  4 =>
+                   [
                     'type' => 'spacer',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'backgroundColor' => 'transparent',
                         'height' => '30px',
-                      ),
-                    ),
-                  ),
-                  5 => 
-                  array (
+                       ],
+                     ],
+                   ],
+                  5 =>
+                   [
                     'type' => 'text',
                     'text' => '<p><span style="color: #999999;"><strong></strong></span><span>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam eu quam risus. Quisque tempor sodales tortor. Cras enim orci, bibendum vitae sollicitudin porttitor, eleifend eu metus. Aliquam a fringilla libero. Vivamus turpis orci, viverra in vehicula vitae, imperdiet et ex. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.</span></p>',
-                  ),
-                  6 => 
-                  array (
+                   ],
+                  6 =>
+                   [
                     'type' => 'button',
                     'text' => '> Read more',
                     'url' => '',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'backgroundColor' => '#ffffff',
                         'borderColor' => '#ffffff',
                         'borderWidth' => '0px',
@@ -445,177 +445,177 @@ class BrandingAgencyNews {
                         'fontSize' => '14px',
                         'fontWeight' => 'bold',
                         'textAlign' => 'left',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          4 => 
-          array (
+                       ],
+                     ],
+                   ],
+                 ],
+               ],
+             ],
+           ],
+          4 =>
+           [
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
-            array (
-              'src' => NULL,
+            'image' =>
+             [
+              'src' => null,
               'display' => 'scale',
-            ),
-            'styles' => 
-            array (
-              'block' => 
-              array (
+             ],
+            'styles' =>
+             [
+              'block' =>
+               [
                 'backgroundColor' => 'transparent',
-              ),
-            ),
-            'blocks' => 
-            array (
-              0 => 
-              array (
+               ],
+             ],
+            'blocks' =>
+             [
+              0 =>
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
-                array (
-                  'src' => NULL,
+                'image' =>
+                 [
+                  'src' => null,
                   'display' => 'scale',
-                ),
-                'styles' => 
-                array (
-                  'block' => 
-                  array (
+                 ],
+                'styles' =>
+                 [
+                  'block' =>
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => 
-                array (
-                  0 => 
-                  array (
+                   ],
+                 ],
+                'blocks' =>
+                 [
+                  0 =>
+                   [
                     'type' => 'divider',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'backgroundColor' => 'transparent',
                         'padding' => '13px',
                         'borderStyle' => 'solid',
                         'borderWidth' => '2px',
                         'borderColor' => '#dfdfdf',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          5 => 
-          array (
+                       ],
+                     ],
+                   ],
+                 ],
+               ],
+             ],
+           ],
+          5 =>
+           [
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
-            array (
-              'src' => NULL,
+            'image' =>
+             [
+              'src' => null,
               'display' => 'scale',
-            ),
-            'styles' => 
-            array (
-              'block' => 
-              array (
+             ],
+            'styles' =>
+             [
+              'block' =>
+               [
                 'backgroundColor' => 'transparent',
-              ),
-            ),
-            'blocks' => 
-            array (
-              0 => 
-              array (
+               ],
+             ],
+            'blocks' =>
+             [
+              0 =>
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
-                array (
-                  'src' => NULL,
+                'image' =>
+                 [
+                  'src' => null,
                   'display' => 'scale',
-                ),
-                'styles' => 
-                array (
-                  'block' => 
-                  array (
+                 ],
+                'styles' =>
+                 [
+                  'block' =>
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => 
-                array (
-                  0 => 
-                  array (
+                   ],
+                 ],
+                'blocks' =>
+                 [
+                  0 =>
+                   [
                     'type' => 'spacer',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'backgroundColor' => 'transparent',
                         'height' => '20px',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          6 => 
-          array (
+                       ],
+                     ],
+                   ],
+                 ],
+               ],
+             ],
+           ],
+          6 =>
+           [
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
-            array (
-              'src' => NULL,
+            'image' =>
+             [
+              'src' => null,
               'display' => 'scale',
-            ),
-            'styles' => 
-            array (
-              'block' => 
-              array (
+             ],
+            'styles' =>
+             [
+              'block' =>
+               [
                 'backgroundColor' => 'transparent',
-              ),
-            ),
-            'blocks' => 
-            array (
-              0 => 
-              array (
+               ],
+             ],
+            'blocks' =>
+             [
+              0 =>
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
-                array (
-                  'src' => NULL,
+                'image' =>
+                 [
+                  'src' => null,
                   'display' => 'scale',
-                ),
-                'styles' => 
-                array (
-                  'block' => 
-                  array (
+                 ],
+                'styles' =>
+                 [
+                  'block' =>
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => 
-                array (
-                  0 => 
-                  array (
+                   ],
+                 ],
+                'blocks' =>
+                 [
+                  0 =>
+                   [
                     'type' => 'text',
                     'text' => '<h3>Design starts with a pencil and paper</h3>
     <p><span>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam eu quam risus. Quisque tempor sodales tortor.</span></p>',
-                  ),
-                  1 => 
-                  array (
+                   ],
+                  1 =>
+                   [
                     'type' => 'button',
                     'text' => '> Read more',
                     'url' => '',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'backgroundColor' => '#ffffff',
                         'borderColor' => '#ffffff',
                         'borderWidth' => '0px',
@@ -628,32 +628,32 @@ class BrandingAgencyNews {
                         'fontSize' => '14px',
                         'fontWeight' => 'bold',
                         'textAlign' => 'left',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              1 => 
-              array (
+                       ],
+                     ],
+                   ],
+                 ],
+               ],
+              1 =>
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
-                array (
-                  'src' => NULL,
+                'image' =>
+                 [
+                  'src' => null,
                   'display' => 'scale',
-                ),
-                'styles' => 
-                array (
-                  'block' => 
-                  array (
+                 ],
+                'styles' =>
+                 [
+                  'block' =>
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => 
-                array (
-                  0 => 
-                  array (
+                   ],
+                 ],
+                'blocks' =>
+                 [
+                  0 =>
+                   [
                     'type' => 'image',
                     'link' => '',
                     'src' => $this->template_image_url . '/Branding-Image02.jpg',
@@ -661,125 +661,125 @@ class BrandingAgencyNews {
                     'fullWidth' => false,
                     'width' => '540px',
                     'height' => '700px',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'textAlign' => 'center',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          7 => 
-          array (
+                       ],
+                     ],
+                   ],
+                 ],
+               ],
+             ],
+           ],
+          7 =>
+           [
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
-            array (
-              'src' => NULL,
+            'image' =>
+             [
+              'src' => null,
               'display' => 'scale',
-            ),
-            'styles' => 
-            array (
-              'block' => 
-              array (
+             ],
+            'styles' =>
+             [
+              'block' =>
+               [
                 'backgroundColor' => 'transparent',
-              ),
-            ),
-            'blocks' => 
-            array (
-              0 => 
-              array (
+               ],
+             ],
+            'blocks' =>
+             [
+              0 =>
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
-                array (
-                  'src' => NULL,
+                'image' =>
+                 [
+                  'src' => null,
                   'display' => 'scale',
-                ),
-                'styles' => 
-                array (
-                  'block' => 
-                  array (
+                 ],
+                'styles' =>
+                 [
+                  'block' =>
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => 
-                array (
-                  0 => 
-                  array (
+                   ],
+                 ],
+                'blocks' =>
+                 [
+                  0 =>
+                   [
                     'type' => 'spacer',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'backgroundColor' => 'transparent',
                         'height' => '20px',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          8 => 
-          array (
+                       ],
+                     ],
+                   ],
+                 ],
+               ],
+             ],
+           ],
+          8 =>
+           [
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
-            array (
-              'src' => NULL,
+            'image' =>
+             [
+              'src' => null,
               'display' => 'scale',
-            ),
-            'styles' => 
-            array (
-              'block' => 
-              array (
+             ],
+            'styles' =>
+             [
+              'block' =>
+               [
                 'backgroundColor' => 'transparent',
-              ),
-            ),
-            'blocks' => 
-            array (
-              0 => 
-              array (
+               ],
+             ],
+            'blocks' =>
+             [
+              0 =>
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
-                array (
-                  'src' => NULL,
+                'image' =>
+                 [
+                  'src' => null,
                   'display' => 'scale',
-                ),
-                'styles' => 
-                array (
-                  'block' => 
-                  array (
+                 ],
+                'styles' =>
+                 [
+                  'block' =>
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => 
-                array (
-                  0 => 
-                  array (
+                   ],
+                 ],
+                'blocks' =>
+                 [
+                  0 =>
+                   [
                     'type' => 'text',
                     'text' => '<h3>How television has impacted branding</h3>
     <p><span>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam eu quam risus. Quisque tempor sodales tortor.</span></p>',
-                  ),
-                  1 => 
-                  array (
+                   ],
+                  1 =>
+                   [
                     'type' => 'button',
                     'text' => '> Read more',
                     'url' => '',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'backgroundColor' => '#ffffff',
                         'borderColor' => '#ffffff',
                         'borderWidth' => '0px',
@@ -792,32 +792,32 @@ class BrandingAgencyNews {
                         'fontSize' => '14px',
                         'fontWeight' => 'bold',
                         'textAlign' => 'left',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              1 => 
-              array (
+                       ],
+                     ],
+                   ],
+                 ],
+               ],
+              1 =>
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
-                array (
-                  'src' => NULL,
+                'image' =>
+                 [
+                  'src' => null,
                   'display' => 'scale',
-                ),
-                'styles' => 
-                array (
-                  'block' => 
-                  array (
+                 ],
+                'styles' =>
+                 [
+                  'block' =>
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => 
-                array (
-                  0 => 
-                  array (
+                   ],
+                 ],
+                'blocks' =>
+                 [
+                  0 =>
+                   [
                     'type' => 'image',
                     'link' => '',
                     'src' => $this->template_image_url . '/Branding-Image03.jpg',
@@ -825,191 +825,191 @@ class BrandingAgencyNews {
                     'fullWidth' => false,
                     'width' => '1200px',
                     'height' => '700px',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'textAlign' => 'center',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          9 => 
-          array (
+                       ],
+                     ],
+                   ],
+                 ],
+               ],
+             ],
+           ],
+          9 =>
+           [
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
-            array (
-              'src' => NULL,
+            'image' =>
+             [
+              'src' => null,
               'display' => 'scale',
-            ),
-            'styles' => 
-            array (
-              'block' => 
-              array (
+             ],
+            'styles' =>
+             [
+              'block' =>
+               [
                 'backgroundColor' => 'transparent',
-              ),
-            ),
-            'blocks' => 
-            array (
-              0 => 
-              array (
+               ],
+             ],
+            'blocks' =>
+             [
+              0 =>
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
-                array (
-                  'src' => NULL,
+                'image' =>
+                 [
+                  'src' => null,
                   'display' => 'scale',
-                ),
-                'styles' => 
-                array (
-                  'block' => 
-                  array (
+                 ],
+                'styles' =>
+                 [
+                  'block' =>
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => 
-                array (
-                  0 => 
-                  array (
+                   ],
+                 ],
+                'blocks' =>
+                 [
+                  0 =>
+                   [
                     'type' => 'spacer',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'backgroundColor' => 'transparent',
                         'height' => '20px',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          10 => 
-          array (
+                       ],
+                     ],
+                   ],
+                 ],
+               ],
+             ],
+           ],
+          10 =>
+           [
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
-            array (
-              'src' => NULL,
+            'image' =>
+             [
+              'src' => null,
               'display' => 'scale',
-            ),
-            'styles' => 
-            array (
-              'block' => 
-              array (
+             ],
+            'styles' =>
+             [
+              'block' =>
+               [
                 'backgroundColor' => '#eeeeee',
-              ),
-            ),
-            'blocks' => 
-            array (
-              0 => 
-              array (
+               ],
+             ],
+            'blocks' =>
+             [
+              0 =>
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
-                array (
-                  'src' => NULL,
+                'image' =>
+                 [
+                  'src' => null,
                   'display' => 'scale',
-                ),
-                'styles' => 
-                array (
-                  'block' => 
-                  array (
+                 ],
+                'styles' =>
+                 [
+                  'block' =>
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => 
-                array (
-                  0 => 
-                  array (
+                   ],
+                 ],
+                'blocks' =>
+                 [
+                  0 =>
+                   [
                     'type' => 'spacer',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'backgroundColor' => 'transparent',
                         'height' => '50px',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          11 => 
-          array (
+                       ],
+                     ],
+                   ],
+                 ],
+               ],
+             ],
+           ],
+          11 =>
+           [
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
-            array (
-              'src' => NULL,
+            'image' =>
+             [
+              'src' => null,
               'display' => 'scale',
-            ),
-            'styles' => 
-            array (
-              'block' => 
-              array (
+             ],
+            'styles' =>
+             [
+              'block' =>
+               [
                 'backgroundColor' => 'transparent',
-              ),
-            ),
-            'blocks' => 
-            array (
-              0 => 
-              array (
+               ],
+             ],
+            'blocks' =>
+             [
+              0 =>
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
-                array (
-                  'src' => NULL,
+                'image' =>
+                 [
+                  'src' => null,
                   'display' => 'scale',
-                ),
-                'styles' => 
-                array (
-                  'block' => 
-                  array (
+                 ],
+                'styles' =>
+                 [
+                  'block' =>
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => 
-                array (
-                  0 => 
-                  array (
+                   ],
+                 ],
+                'blocks' =>
+                 [
+                  0 =>
+                   [
                     'type' => 'spacer',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'backgroundColor' => 'transparent',
                         'height' => '35px',
-                      ),
-                    ),
-                  ),
-                  1 => 
-                  array (
+                       ],
+                     ],
+                   ],
+                  1 =>
+                   [
                     'type' => 'text',
                     'text' => '<h3 style="text-align: center;">Some of our recent branding</h3>
     <p style="text-align: center;">Looking for some work from us? Get in touch and we\'ll see what we can do.</p>',
-                  ),
-                  2 => 
-                  array (
+                   ],
+                  2 =>
+                   [
                     'type' => 'button',
                     'text' => 'Get in touch here >',
                     'url' => '',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'backgroundColor' => '#ffffff',
                         'borderColor' => '#ffffff',
                         'borderWidth' => '0px',
@@ -1022,65 +1022,65 @@ class BrandingAgencyNews {
                         'fontSize' => '14px',
                         'fontWeight' => 'bold',
                         'textAlign' => 'center',
-                      ),
-                    ),
-                  ),
-                  3 => 
-                  array (
+                       ],
+                     ],
+                   ],
+                  3 =>
+                   [
                     'type' => 'spacer',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'backgroundColor' => 'transparent',
                         'height' => '20px',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          12 => 
-          array (
+                       ],
+                     ],
+                   ],
+                 ],
+               ],
+             ],
+           ],
+          12 =>
+           [
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
-            array (
-              'src' => NULL,
+            'image' =>
+             [
+              'src' => null,
               'display' => 'scale',
-            ),
-            'styles' => 
-            array (
-              'block' => 
-              array (
+             ],
+            'styles' =>
+             [
+              'block' =>
+               [
                 'backgroundColor' => 'transparent',
-              ),
-            ),
-            'blocks' => 
-            array (
-              0 => 
-              array (
+               ],
+             ],
+            'blocks' =>
+             [
+              0 =>
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
-                array (
-                  'src' => NULL,
+                'image' =>
+                 [
+                  'src' => null,
                   'display' => 'scale',
-                ),
-                'styles' => 
-                array (
-                  'block' => 
-                  array (
+                 ],
+                'styles' =>
+                 [
+                  'block' =>
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => 
-                array (
-                  0 => 
-                  array (
+                   ],
+                 ],
+                'blocks' =>
+                 [
+                  0 =>
+                   [
                     'type' => 'image',
                     'link' => '',
                     'src' => $this->template_image_url . '/greens-food-suppliers.png',
@@ -1088,37 +1088,37 @@ class BrandingAgencyNews {
                     'fullWidth' => false,
                     'width' => '900px',
                     'height' => '418px',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'textAlign' => 'center',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              1 => 
-              array (
+                       ],
+                     ],
+                   ],
+                 ],
+               ],
+              1 =>
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
-                array (
-                  'src' => NULL,
+                'image' =>
+                 [
+                  'src' => null,
                   'display' => 'scale',
-                ),
-                'styles' => 
-                array (
-                  'block' => 
-                  array (
+                 ],
+                'styles' =>
+                 [
+                  'block' =>
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => 
-                array (
-                  0 => 
-                  array (
+                   ],
+                 ],
+                'blocks' =>
+                 [
+                  0 =>
+                   [
                     'type' => 'image',
                     'link' => '',
                     'src' => $this->template_image_url . '/james-and-sons.png',
@@ -1126,49 +1126,49 @@ class BrandingAgencyNews {
                     'fullWidth' => false,
                     'width' => '156px',
                     'height' => '692px',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'textAlign' => 'center',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              2 => 
-              array (
+                       ],
+                     ],
+                   ],
+                 ],
+               ],
+              2 =>
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
-                array (
-                  'src' => NULL,
+                'image' =>
+                 [
+                  'src' => null,
                   'display' => 'scale',
-                ),
-                'styles' => 
-                array (
-                  'block' => 
-                  array (
+                 ],
+                'styles' =>
+                 [
+                  'block' =>
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => 
-                array (
-                  0 => 
-                  array (
+                   ],
+                 ],
+                'blocks' =>
+                 [
+                  0 =>
+                   [
                     'type' => 'spacer',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'backgroundColor' => 'transparent',
                         'height' => '20px',
-                      ),
-                    ),
-                  ),
-                  1 => 
-                  array (
+                       ],
+                     ],
+                   ],
+                  1 =>
+                   [
                     'type' => 'image',
                     'link' => '',
                     'src' => $this->template_image_url . '/fast-banana.png',
@@ -1176,58 +1176,58 @@ class BrandingAgencyNews {
                     'fullWidth' => false,
                     'width' => '900px',
                     'height' => '325px',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'textAlign' => 'center',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          13 => 
-          array (
+                       ],
+                     ],
+                   ],
+                 ],
+               ],
+             ],
+           ],
+          13 =>
+           [
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
-            array (
-              'src' => NULL,
+            'image' =>
+             [
+              'src' => null,
               'display' => 'scale',
-            ),
-            'styles' => 
-            array (
-              'block' => 
-              array (
+             ],
+            'styles' =>
+             [
+              'block' =>
+               [
                 'backgroundColor' => 'transparent',
-              ),
-            ),
-            'blocks' => 
-            array (
-              0 => 
-              array (
+               ],
+             ],
+            'blocks' =>
+             [
+              0 =>
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
-                array (
-                  'src' => NULL,
+                'image' =>
+                 [
+                  'src' => null,
                   'display' => 'scale',
-                ),
-                'styles' => 
-                array (
-                  'block' => 
-                  array (
+                 ],
+                'styles' =>
+                 [
+                  'block' =>
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => 
-                array (
-                  0 => 
-                  array (
+                   ],
+                 ],
+                'blocks' =>
+                 [
+                  0 =>
+                   [
                     'type' => 'image',
                     'link' => '',
                     'src' => $this->template_image_url . '/space-cube.png',
@@ -1235,49 +1235,49 @@ class BrandingAgencyNews {
                     'fullWidth' => false,
                     'width' => '900px',
                     'height' => '487px',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'textAlign' => 'center',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              1 => 
-              array (
+                       ],
+                     ],
+                   ],
+                 ],
+               ],
+              1 =>
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
-                array (
-                  'src' => NULL,
+                'image' =>
+                 [
+                  'src' => null,
                   'display' => 'scale',
-                ),
-                'styles' => 
-                array (
-                  'block' => 
-                  array (
+                 ],
+                'styles' =>
+                 [
+                  'block' =>
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => 
-                array (
-                  0 => 
-                  array (
+                   ],
+                 ],
+                'blocks' =>
+                 [
+                  0 =>
+                   [
                     'type' => 'spacer',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'backgroundColor' => 'transparent',
                         'height' => '20px',
-                      ),
-                    ),
-                  ),
-                  1 => 
-                  array (
+                       ],
+                     ],
+                   ],
+                  1 =>
+                   [
                     'type' => 'image',
                     'link' => '',
                     'src' => $this->template_image_url . '/the-dance-studio.png',
@@ -1285,49 +1285,49 @@ class BrandingAgencyNews {
                     'fullWidth' => false,
                     'width' => '900px',
                     'height' => '365px',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'textAlign' => 'center',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              2 => 
-              array (
+                       ],
+                     ],
+                   ],
+                 ],
+               ],
+              2 =>
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
-                array (
-                  'src' => NULL,
+                'image' =>
+                 [
+                  'src' => null,
                   'display' => 'scale',
-                ),
-                'styles' => 
-                array (
-                  'block' => 
-                  array (
+                 ],
+                'styles' =>
+                 [
+                  'block' =>
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => 
-                array (
-                  0 => 
-                  array (
+                   ],
+                 ],
+                'blocks' =>
+                 [
+                  0 =>
+                   [
                     'type' => 'spacer',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'backgroundColor' => 'transparent',
                         'height' => '25px',
-                      ),
-                    ),
-                  ),
-                  1 => 
-                  array (
+                       ],
+                     ],
+                   ],
+                  1 =>
+                   [
                     'type' => 'image',
                     'link' => '',
                     'src' => $this->template_image_url . '/yoga-baby.png',
@@ -1335,124 +1335,124 @@ class BrandingAgencyNews {
                     'fullWidth' => false,
                     'width' => '900px',
                     'height' => '248px',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'textAlign' => 'center',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          14 => 
-          array (
+                       ],
+                     ],
+                   ],
+                 ],
+               ],
+             ],
+           ],
+          14 =>
+           [
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
-            array (
-              'src' => NULL,
+            'image' =>
+             [
+              'src' => null,
               'display' => 'scale',
-            ),
-            'styles' => 
-            array (
-              'block' => 
-              array (
+             ],
+            'styles' =>
+             [
+              'block' =>
+               [
                 'backgroundColor' => 'transparent',
-              ),
-            ),
-            'blocks' => 
-            array (
-              0 => 
-              array (
+               ],
+             ],
+            'blocks' =>
+             [
+              0 =>
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
-                array (
-                  'src' => NULL,
+                'image' =>
+                 [
+                  'src' => null,
                   'display' => 'scale',
-                ),
-                'styles' => 
-                array (
-                  'block' => 
-                  array (
+                 ],
+                'styles' =>
+                 [
+                  'block' =>
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => 
-                array (
-                  0 => 
-                  array (
+                   ],
+                 ],
+                'blocks' =>
+                 [
+                  0 =>
+                   [
                     'type' => 'spacer',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'backgroundColor' => 'transparent',
                         'height' => '20px',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          15 => 
-          array (
+                       ],
+                     ],
+                   ],
+                 ],
+               ],
+             ],
+           ],
+          15 =>
+           [
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
-            array (
-              'src' => NULL,
+            'image' =>
+             [
+              'src' => null,
               'display' => 'scale',
-            ),
-            'styles' => 
-            array (
-              'block' => 
-              array (
+             ],
+            'styles' =>
+             [
+              'block' =>
+               [
                 'backgroundColor' => 'transparent',
-              ),
-            ),
-            'blocks' => 
-            array (
-              0 => 
-              array (
+               ],
+             ],
+            'blocks' =>
+             [
+              0 =>
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
-                array (
-                  'src' => NULL,
+                'image' =>
+                 [
+                  'src' => null,
                   'display' => 'scale',
-                ),
-                'styles' => 
-                array (
-                  'block' => 
-                  array (
+                 ],
+                'styles' =>
+                 [
+                  'block' =>
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => 
-                array (
-                  0 => 
-                  array (
+                   ],
+                 ],
+                'blocks' =>
+                 [
+                  0 =>
+                   [
                     'type' => 'spacer',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'backgroundColor' => 'transparent',
                         'height' => '25px',
-                      ),
-                    ),
-                  ),
-                  1 => 
-                  array (
+                       ],
+                     ],
+                   ],
+                  1 =>
+                   [
                     'type' => 'image',
                     'link' => '',
                     'src' => $this->template_image_url . '/beauty-box.png',
@@ -1460,37 +1460,37 @@ class BrandingAgencyNews {
                     'fullWidth' => false,
                     'width' => '900px',
                     'height' => '304px',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'textAlign' => 'center',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              1 => 
-              array (
+                       ],
+                     ],
+                   ],
+                 ],
+               ],
+              1 =>
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
-                array (
-                  'src' => NULL,
+                'image' =>
+                 [
+                  'src' => null,
                   'display' => 'scale',
-                ),
-                'styles' => 
-                array (
-                  'block' => 
-                  array (
+                 ],
+                'styles' =>
+                 [
+                  'block' =>
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => 
-                array (
-                  0 => 
-                  array (
+                   ],
+                 ],
+                'blocks' =>
+                 [
+                  0 =>
+                   [
                     'type' => 'image',
                     'link' => '',
                     'src' => $this->template_image_url . '/cheshire-county-hygiene-services.png',
@@ -1498,49 +1498,49 @@ class BrandingAgencyNews {
                     'fullWidth' => false,
                     'width' => '900px',
                     'height' => '393px',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'textAlign' => 'center',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              2 => 
-              array (
+                       ],
+                     ],
+                   ],
+                 ],
+               ],
+              2 =>
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
-                array (
-                  'src' => NULL,
+                'image' =>
+                 [
+                  'src' => null,
                   'display' => 'scale',
-                ),
-                'styles' => 
-                array (
-                  'block' => 
-                  array (
+                 ],
+                'styles' =>
+                 [
+                  'block' =>
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => 
-                array (
-                  0 => 
-                  array (
+                   ],
+                 ],
+                'blocks' =>
+                 [
+                  0 =>
+                   [
                     'type' => 'spacer',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'backgroundColor' => 'transparent',
                         'height' => '25px',
-                      ),
-                    ),
-                  ),
-                  1 => 
-                  array (
+                       ],
+                     ],
+                   ],
+                  1 =>
+                   [
                     'type' => 'image',
                     'link' => '',
                     'src' => $this->template_image_url . '/crofts-accountants.png',
@@ -1548,124 +1548,124 @@ class BrandingAgencyNews {
                     'fullWidth' => false,
                     'width' => '900px',
                     'height' => '229px',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'textAlign' => 'center',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          16 => 
-          array (
+                       ],
+                     ],
+                   ],
+                 ],
+               ],
+             ],
+           ],
+          16 =>
+           [
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
-            array (
-              'src' => NULL,
+            'image' =>
+             [
+              'src' => null,
               'display' => 'scale',
-            ),
-            'styles' => 
-            array (
-              'block' => 
-              array (
+             ],
+            'styles' =>
+             [
+              'block' =>
+               [
                 'backgroundColor' => 'transparent',
-              ),
-            ),
-            'blocks' => 
-            array (
-              0 => 
-              array (
+               ],
+             ],
+            'blocks' =>
+             [
+              0 =>
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
-                array (
-                  'src' => NULL,
+                'image' =>
+                 [
+                  'src' => null,
                   'display' => 'scale',
-                ),
-                'styles' => 
-                array (
-                  'block' => 
-                  array (
+                 ],
+                'styles' =>
+                 [
+                  'block' =>
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => 
-                array (
-                  0 => 
-                  array (
+                   ],
+                 ],
+                'blocks' =>
+                 [
+                  0 =>
+                   [
                     'type' => 'spacer',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'backgroundColor' => 'transparent',
                         'height' => '20px',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          17 => 
-          array (
+                       ],
+                     ],
+                   ],
+                 ],
+               ],
+             ],
+           ],
+          17 =>
+           [
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
-            array (
-              'src' => NULL,
+            'image' =>
+             [
+              'src' => null,
               'display' => 'scale',
-            ),
-            'styles' => 
-            array (
-              'block' => 
-              array (
+             ],
+            'styles' =>
+             [
+              'block' =>
+               [
                 'backgroundColor' => '#eeeeee',
-              ),
-            ),
-            'blocks' => 
-            array (
-              0 => 
-              array (
+               ],
+             ],
+            'blocks' =>
+             [
+              0 =>
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
-                array (
-                  'src' => NULL,
+                'image' =>
+                 [
+                  'src' => null,
                   'display' => 'scale',
-                ),
-                'styles' => 
-                array (
-                  'block' => 
-                  array (
+                 ],
+                'styles' =>
+                 [
+                  'block' =>
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => 
-                array (
-                  0 => 
-                  array (
+                   ],
+                 ],
+                'blocks' =>
+                 [
+                  0 =>
+                   [
                     'type' => 'spacer',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'backgroundColor' => 'transparent',
                         'height' => '44px',
-                      ),
-                    ),
-                  ),
-                  1 => 
-                  array (
+                       ],
+                     ],
+                   ],
+                  1 =>
+                   [
                     'type' => 'image',
                     'link' => '',
                     'src' => $this->template_image_url . '/Branding-Logo.png',
@@ -1673,100 +1673,100 @@ class BrandingAgencyNews {
                     'fullWidth' => false,
                     'width' => '120px',
                     'height' => '117px',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'textAlign' => 'center',
-                      ),
-                    ),
-                  ),
-                  2 => 
-                  array (
+                       ],
+                     ],
+                   ],
+                  2 =>
+                   [
                     'type' => 'footer',
                     'text' => '<p><a href="[link:subscription_unsubscribe_url]">Unsubscribe</a> | <a href="[link:subscription_manage_url]">Manage subscription</a><br /><span style="color: #808080;">Add your postal address here!</span></p>',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'backgroundColor' => 'transparent',
-                      ),
-                      'text' => 
-                      array (
+                       ],
+                      'text' =>
+                       [
                         'fontColor' => '#222222',
                         'fontFamily' => 'Merriweather Sans',
                         'fontSize' => '12px',
                         'textAlign' => 'center',
-                      ),
-                      'link' => 
-                      array (
+                       ],
+                      'link' =>
+                       [
                         'fontColor' => '#222222',
                         'textDecoration' => 'underline',
-                      ),
-                    ),
-                  ),
-                  3 => 
-                  array (
+                       ],
+                     ],
+                   ],
+                  3 =>
+                   [
                     'type' => 'spacer',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'backgroundColor' => 'transparent',
                         'height' => '20px',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-      'globalStyles' => 
-      array (
-        'text' => 
-        array (
+                       ],
+                     ],
+                   ],
+                 ],
+               ],
+             ],
+           ],
+         ],
+       ],
+      'globalStyles' =>
+       [
+        'text' =>
+         [
           'fontColor' => '#000000',
           'fontFamily' => 'Merriweather Sans',
           'fontSize' => '14px',
-        ),
-        'h1' => 
-        array (
+         ],
+        'h1' =>
+         [
           'fontColor' => '#111111',
           'fontFamily' => 'Merriweather',
           'fontSize' => '36px',
-        ),
-        'h2' => 
-        array (
+         ],
+        'h2' =>
+         [
           'fontColor' => '#222222',
           'fontFamily' => 'Merriweather',
           'fontSize' => '30px',
-        ),
-        'h3' => 
-        array (
+         ],
+        'h3' =>
+         [
           'fontColor' => '#333333',
           'fontFamily' => 'Merriweather',
           'fontSize' => '24px',
-        ),
-        'link' => 
-        array (
+         ],
+        'link' =>
+         [
           'fontColor' => '#21759B',
           'textDecoration' => 'underline',
-        ),
-        'wrapper' => 
-        array (
+         ],
+        'wrapper' =>
+         [
           'backgroundColor' => '#ffffff',
-        ),
-        'body' => 
-        array (
+         ],
+        'body' =>
+         [
           'backgroundColor' => '#eeeeee',
-        ),
-      ),
-      'blockDefaults' => 
-      array (
-        'automatedLatestContent' => 
-        array (
+         ],
+       ],
+      'blockDefaults' =>
+       [
+        'automatedLatestContent' =>
+         [
           'amount' => '5',
           'withLayout' => false,
           'contentType' => 'post',
@@ -1783,15 +1783,15 @@ class BrandingAgencyNews {
           'categoriesPrecededBy' => 'Categories:',
           'readMoreType' => 'button',
           'readMoreText' => 'Read more',
-          'readMoreButton' => 
-          array (
+          'readMoreButton' =>
+           [
             'text' => 'Read more',
             'url' => '[postLink]',
             'context' => 'automatedLatestContent.readMoreButton',
-            'styles' => 
-            array (
-              'block' => 
-              array (
+            'styles' =>
+             [
+              'block' =>
+               [
                 'backgroundColor' => '#2ea1cd',
                 'borderColor' => '#0074a2',
                 'borderWidth' => '1px',
@@ -1804,31 +1804,31 @@ class BrandingAgencyNews {
                 'fontSize' => '18px',
                 'fontWeight' => 'normal',
                 'textAlign' => 'center',
-              ),
-            ),
-          ),
+               ],
+             ],
+           ],
           'sortBy' => 'newest',
           'showDivider' => true,
-          'divider' => 
-          array (
+          'divider' =>
+           [
             'context' => 'automatedLatestContent.divider',
-            'styles' => 
-            array (
-              'block' => 
-              array (
+            'styles' =>
+             [
+              'block' =>
+               [
                 'backgroundColor' => 'transparent',
                 'padding' => '13px',
                 'borderStyle' => 'solid',
                 'borderWidth' => '3px',
                 'borderColor' => '#aaaaaa',
-              ),
-            ),
-          ),
+               ],
+             ],
+           ],
           'backgroundColor' => '#ffffff',
           'backgroundColorAlternate' => '#eeeeee',
-        ),
-        'automatedLatestContentLayout' => 
-        array (
+         ],
+        'automatedLatestContentLayout' =>
+         [
           'amount' => '5',
           'withLayout' => true,
           'contentType' => 'post',
@@ -1845,15 +1845,15 @@ class BrandingAgencyNews {
           'categoriesPrecededBy' => 'Categories:',
           'readMoreType' => 'button',
           'readMoreText' => 'Read more',
-          'readMoreButton' => 
-          array (
+          'readMoreButton' =>
+           [
             'text' => 'Read more',
             'url' => '[postLink]',
             'context' => 'automatedLatestContentLayout.readMoreButton',
-            'styles' => 
-            array (
-              'block' => 
-              array (
+            'styles' =>
+             [
+              'block' =>
+               [
                 'backgroundColor' => '#2ea1cd',
                 'borderColor' => '#0074a2',
                 'borderWidth' => '1px',
@@ -1866,37 +1866,37 @@ class BrandingAgencyNews {
                 'fontSize' => '18px',
                 'fontWeight' => 'normal',
                 'textAlign' => 'center',
-              ),
-            ),
-          ),
+               ],
+             ],
+           ],
           'sortBy' => 'newest',
           'showDivider' => true,
-          'divider' => 
-          array (
+          'divider' =>
+           [
             'context' => 'automatedLatestContentLayout.divider',
-            'styles' => 
-            array (
-              'block' => 
-              array (
+            'styles' =>
+             [
+              'block' =>
+               [
                 'backgroundColor' => 'transparent',
                 'padding' => '13px',
                 'borderStyle' => 'solid',
                 'borderWidth' => '3px',
                 'borderColor' => '#aaaaaa',
-              ),
-            ),
-          ),
+               ],
+             ],
+           ],
           'backgroundColor' => '#ffffff',
           'backgroundColorAlternate' => '#eeeeee',
-        ),
-        'button' => 
-        array (
+         ],
+        'button' =>
+         [
           'text' => 'Get in touch here >',
           'url' => '',
-          'styles' => 
-          array (
-            'block' => 
-            array (
+          'styles' =>
+           [
+            'block' =>
+             [
               'backgroundColor' => '#ffffff',
               'borderColor' => '#ffffff',
               'borderWidth' => '0px',
@@ -1909,51 +1909,51 @@ class BrandingAgencyNews {
               'fontSize' => '14px',
               'fontWeight' => 'bold',
               'textAlign' => 'center',
-            ),
-          ),
+             ],
+           ],
           'type' => 'button',
-        ),
-        'divider' => 
-        array (
-          'styles' => 
-          array (
-            'block' => 
-            array (
+         ],
+        'divider' =>
+         [
+          'styles' =>
+           [
+            'block' =>
+             [
               'backgroundColor' => 'transparent',
               'padding' => '13px',
               'borderStyle' => 'solid',
               'borderWidth' => '2px',
               'borderColor' => '#dfdfdf',
-            ),
-          ),
+             ],
+           ],
           'type' => 'divider',
-        ),
-        'footer' => 
-        array (
+         ],
+        'footer' =>
+         [
           'text' => '<p><a href="[link:subscription_unsubscribe_url]">Unsubscribe</a> | <a href="[link:subscription_manage_url]">Manage subscription</a><br />Add your postal address here!</p>',
-          'styles' => 
-          array (
-            'block' => 
-            array (
+          'styles' =>
+           [
+            'block' =>
+             [
               'backgroundColor' => 'transparent',
-            ),
-            'text' => 
-            array (
+             ],
+            'text' =>
+             [
               'fontColor' => '#222222',
               'fontFamily' => 'Merriweather Sans',
               'fontSize' => '12px',
               'textAlign' => 'center',
-            ),
-            'link' => 
-            array (
+             ],
+            'link' =>
+             [
               'fontColor' => '#222222',
               'textDecoration' => 'underline',
-            ),
-          ),
+             ],
+           ],
           'type' => 'footer',
-        ),
-        'posts' => 
-        array (
+         ],
+        'posts' =>
+         [
           'amount' => '10',
           'withLayout' => true,
           'contentType' => 'post',
@@ -1971,15 +1971,15 @@ class BrandingAgencyNews {
           'categoriesPrecededBy' => 'Categories:',
           'readMoreType' => 'link',
           'readMoreText' => 'Read more',
-          'readMoreButton' => 
-          array (
+          'readMoreButton' =>
+           [
             'text' => 'Read more',
             'url' => '[postLink]',
             'context' => 'posts.readMoreButton',
-            'styles' => 
-            array (
-              'block' => 
-              array (
+            'styles' =>
+             [
+              'block' =>
+               [
                 'backgroundColor' => '#2ea1cd',
                 'borderColor' => '#0074a2',
                 'borderWidth' => '1px',
@@ -1992,36 +1992,36 @@ class BrandingAgencyNews {
                 'fontSize' => '18px',
                 'fontWeight' => 'normal',
                 'textAlign' => 'center',
-              ),
-            ),
-          ),
+               ],
+             ],
+           ],
           'sortBy' => 'newest',
           'showDivider' => true,
-          'divider' => 
-          array (
+          'divider' =>
+           [
             'context' => 'posts.divider',
-            'styles' => 
-            array (
-              'block' => 
-              array (
+            'styles' =>
+             [
+              'block' =>
+               [
                 'backgroundColor' => 'transparent',
                 'padding' => '13px',
                 'borderStyle' => 'solid',
                 'borderWidth' => '3px',
                 'borderColor' => '#aaaaaa',
-              ),
-            ),
-          ),
+               ],
+             ],
+           ],
           'backgroundColor' => '#ffffff',
           'backgroundColorAlternate' => '#eeeeee',
-        ),
-        'social' => 
-        array (
+         ],
+        'social' =>
+         [
           'iconSet' => 'full-symbol-black',
-          'icons' => 
-          array (
-            0 => 
-            array (
+          'icons' =>
+           [
+            0 =>
+             [
               'type' => 'socialIcon',
               'iconType' => 'facebook',
               'link' => 'http://www.facebook.com',
@@ -2029,9 +2029,9 @@ class BrandingAgencyNews {
               'height' => '32px',
               'width' => '32px',
               'text' => 'Facebook',
-            ),
-            1 => 
-            array (
+             ],
+            1 =>
+             [
               'type' => 'socialIcon',
               'iconType' => 'twitter',
               'link' => 'http://www.twitter.com',
@@ -2039,9 +2039,9 @@ class BrandingAgencyNews {
               'height' => '32px',
               'width' => '32px',
               'text' => 'Twitter',
-            ),
-            2 => 
-            array (
+             ],
+            2 =>
+             [
               'type' => 'socialIcon',
               'iconType' => 'instagram',
               'link' => 'http://instagram.com',
@@ -2049,48 +2049,48 @@ class BrandingAgencyNews {
               'height' => '32px',
               'width' => '32px',
               'text' => 'Instagram',
-            ),
-          ),
+             ],
+           ],
           'type' => 'social',
-        ),
-        'spacer' => 
-        array (
-          'styles' => 
-          array (
-            'block' => 
-            array (
+         ],
+        'spacer' =>
+         [
+          'styles' =>
+           [
+            'block' =>
+             [
               'backgroundColor' => 'transparent',
               'height' => '20px',
-            ),
-          ),
+             ],
+           ],
           'type' => 'spacer',
-        ),
-        'header' => 
-        array (
-          'text' => 'Display problems?&nbsp;<a href="[link:newsletter_view_in_browser_url]">Open this email in your web browser.</a>',
-          'styles' => 
-          array (
-            'block' => 
-            array (
+         ],
+        'header' =>
+         [
+          'text' => '<a href="[link:newsletter_view_in_browser_url]">View this in your browser.</a>',
+          'styles' =>
+           [
+            'block' =>
+             [
               'backgroundColor' => 'transparent',
-            ),
-            'text' => 
-            array (
+             ],
+            'text' =>
+             [
               'fontColor' => '#222222',
               'fontFamily' => 'Merriweather Sans',
               'fontSize' => '12px',
               'textAlign' => 'left',
-            ),
-            'link' => 
-            array (
+             ],
+            'link' =>
+             [
               'fontColor' => '#6cb7d4',
               'textDecoration' => 'underline',
-            ),
-          ),
+             ],
+           ],
           'type' => 'header',
-        ),
-      ),
-    );
+         ],
+       ],
+    ];
   }
 
 }

@@ -28,7 +28,7 @@ class EnvVarProcessor implements \MailPoetVendor\Symfony\Component\DependencyInj
      */
     public static function getProvidedTypes()
     {
-        return array('base64' => 'string', 'bool' => 'bool', 'const' => 'bool|int|float|string|array', 'file' => 'string', 'float' => 'float', 'int' => 'int', 'json' => 'array', 'resolve' => 'string', 'string' => 'string');
+        return ['base64' => 'string', 'bool' => 'bool', 'const' => 'bool|int|float|string|array', 'file' => 'string', 'float' => 'float', 'int' => 'int', 'json' => 'array', 'resolve' => 'string', 'string' => 'string'];
     }
     /**
      * {@inheritdoc}

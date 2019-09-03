@@ -14,25 +14,24 @@ class Throttling {
     $subscription_limit_base = $wp->applyFilters('mailpoet_subscription_limit_base', MINUTE_IN_SECONDS);
 
     $subscriber_ip = Helpers::getIP();
-    $wp = new WPFunctions;
 
-    if($subscription_limit_enabled && !$wp->isUserLoggedIn()) {
-      if(!empty($subscriber_ip)) {
+    if ($subscription_limit_enabled && !$wp->isUserLoggedIn()) {
+      if (!empty($subscriber_ip)) {
         $subscription_count = SubscriberIP::where('ip', $subscriber_ip)
           ->whereRaw(
             '(`created_at` >= NOW() - INTERVAL ? SECOND)',
-            array((int)$subscription_limit_window)
+            [(int)$subscription_limit_window]
           )->count();
 
-        if($subscription_count > 0) {
+        if ($subscription_count > 0) {
           $timeout = $subscription_limit_base * pow(2, $subscription_count - 1);
           $existing_user = SubscriberIP::where('ip', $subscriber_ip)
             ->whereRaw(
               '(`created_at` >= NOW() - INTERVAL ? SECOND)',
-              array((int)$timeout)
+              [(int)$timeout]
             )->findOne();
 
-          if(!empty($existing_user)) {
+          if (!empty($existing_user)) {
             return $timeout;
           }
         }
@@ -43,15 +42,30 @@ class Throttling {
     $ip->ip = $subscriber_ip;
     $ip->save();
 
-    self::purge($subscription_limit_window);
+    self::purge();
 
     return false;
   }
 
-  static function purge($interval) {
+  static function purge() {
+    $wp = new WPFunctions;
+    $interval = $wp->applyFilters('mailpoet_subscription_purge_window', MONTH_IN_SECONDS);
     return SubscriberIP::whereRaw(
       '(`created_at` < NOW() - INTERVAL ? SECOND)',
-      array($interval)
+      [$interval]
     )->deleteMany();
+  }
+
+  static function secondsToTimeString($seconds) {
+    $wp = new WPFunctions;
+    $hrs = floor($seconds / 3600);
+    $min = floor($seconds % 3600 / 60);
+    $sec = $seconds % 3600 % 60;
+    $result = [
+      'hours' => $hrs ? sprintf($wp->__('%d hours', 'mailpoet'), $hrs) : '',
+      'minutes' => $min ? sprintf($wp->__('%d minutes', 'mailpoet'), $min) : '',
+      'seconds' => $sec ? sprintf($wp->__('%d seconds', 'mailpoet'), $sec) : '',
+    ];
+    return join(' ', array_filter($result));
   }
 }

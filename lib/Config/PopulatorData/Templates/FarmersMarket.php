@@ -14,158 +14,158 @@ class FarmersMarket {
   }
 
   function get() {
-    return array(
+    return [
       'name' => WPFunctions::get()->__("Farmers Market", 'mailpoet'),
-      'categories' => json_encode(array('standard', 'all')),
+      'categories' => json_encode(['standard', 'all']),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),
       'body' => json_encode($this->getBody()),
-    );
+    ];
   }
 
   private function getThumbnail() {
-    return $this->template_image_url . '/thumbnail.jpg';
+    return $this->template_image_url . '/thumbnail.20190411-1500.jpg';
   }
 
   private function getBody() {
-    return array (
-      'content' => 
-      array (
+    return  [
+      'content' =>
+       [
         'type' => 'container',
         'columnLayout' => false,
         'orientation' => 'vertical',
-        'image' => 
-        array (
-          'src' => NULL,
+        'image' =>
+         [
+          'src' => null,
           'display' => 'scale',
-        ),
-        'styles' => 
-        array (
-          'block' => 
-          array (
+         ],
+        'styles' =>
+         [
+          'block' =>
+           [
             'backgroundColor' => 'transparent',
-          ),
-        ),
-        'blocks' => 
-        array (
-          0 => 
-          array (
+           ],
+         ],
+        'blocks' =>
+         [
+          0 =>
+           [
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
-            array (
-              'src' => NULL,
+            'image' =>
+             [
+              'src' => null,
               'display' => 'scale',
-            ),
-            'styles' => 
-            array (
-              'block' => 
-              array (
+             ],
+            'styles' =>
+             [
+              'block' =>
+               [
                 'backgroundColor' => '#ffffff',
-              ),
-            ),
-            'blocks' => 
-            array (
-              0 => 
-              array (
+               ],
+             ],
+            'blocks' =>
+             [
+              0 =>
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
-                array (
-                  'src' => NULL,
+                'image' =>
+                 [
+                  'src' => null,
                   'display' => 'scale',
-                ),
-                'styles' => 
-                array (
-                  'block' => 
-                  array (
+                 ],
+                'styles' =>
+                 [
+                  'block' =>
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => 
-                array (
-                  0 => 
-                  array (
+                   ],
+                 ],
+                'blocks' =>
+                 [
+                  0 =>
+                   [
                     'type' => 'spacer',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'backgroundColor' => 'transparent',
                         'height' => '20px',
-                      ),
-                    ),
-                  ),
-                  1 => 
-                  array (
+                       ],
+                     ],
+                   ],
+                  1 =>
+                   [
                     'type' => 'header',
-                    'text' => '<p><span style="color: #689f2c;"><a href="[link:newsletter_view_in_browser_url]" style="color: #689f2c;">Open this email in your web browser.</a></span></p>',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'text' => '<p><span style="color: #689f2c;"><a href="[link:newsletter_view_in_browser_url]" style="color: #689f2c;">View this in your browser.</a></span></p>',
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'backgroundColor' => 'transparent',
-                      ),
-                      'text' => 
-                      array (
+                       ],
+                      'text' =>
+                       [
                         'fontColor' => '#222222',
                         'fontFamily' => 'Arial',
                         'fontSize' => '12px',
                         'textAlign' => 'center',
-                      ),
-                      'link' => 
-                      array (
+                       ],
+                      'link' =>
+                       [
                         'fontColor' => '#6cb7d4',
                         'textDecoration' => 'underline',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          1 => 
-          array (
+                       ],
+                     ],
+                   ],
+                 ],
+               ],
+             ],
+           ],
+          1 =>
+           [
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
-            array (
-              'src' => NULL,
+            'image' =>
+             [
+              'src' => null,
               'display' => 'scale',
-            ),
-            'styles' => 
-            array (
-              'block' => 
-              array (
+             ],
+            'styles' =>
+             [
+              'block' =>
+               [
                 'backgroundColor' => 'transparent',
-              ),
-            ),
-            'blocks' => 
-            array (
-              0 => 
-              array (
+               ],
+             ],
+            'blocks' =>
+             [
+              0 =>
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
-                array (
-                  'src' => NULL,
+                'image' =>
+                 [
+                  'src' => null,
                   'display' => 'scale',
-                ),
-                'styles' => 
-                array (
-                  'block' => 
-                  array (
+                 ],
+                'styles' =>
+                 [
+                  'block' =>
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => 
-                array (
-                  0 => 
-                  array (
+                   ],
+                 ],
+                'blocks' =>
+                 [
+                  0 =>
+                   [
                     'type' => 'image',
                     'link' => '',
                     'src' => $this->template_image_url . '/FarmersMarket-Top-2.jpg',
@@ -173,91 +173,91 @@ class FarmersMarket {
                     'fullWidth' => true,
                     'width' => '1200px',
                     'height' => '25px',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'textAlign' => 'center',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          2 => 
-          array (
+                       ],
+                     ],
+                   ],
+                 ],
+               ],
+             ],
+           ],
+          2 =>
+           [
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
-            array (
+            'image' =>
+             [
               'src' => $this->template_image_url . '/FarmersMarket-Middle.jpg',
               'display' => 'tile',
-            ),
-            'styles' => 
-            array (
-              'block' => 
-              array (
+             ],
+            'styles' =>
+             [
+              'block' =>
+               [
                 'backgroundColor' => 'transparent',
-              ),
-            ),
-            'blocks' => 
-            array (
-              0 => 
-              array (
+               ],
+             ],
+            'blocks' =>
+             [
+              0 =>
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
-                array (
-                  'src' => NULL,
+                'image' =>
+                 [
+                  'src' => null,
                   'display' => 'scale',
-                ),
-                'styles' => 
-                array (
-                  'block' => 
-                  array (
+                 ],
+                'styles' =>
+                 [
+                  'block' =>
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => 
-                array (
-                  0 => 
-                  array (
+                   ],
+                 ],
+                'blocks' =>
+                 [
+                  0 =>
+                   [
                     'type' => 'spacer',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'backgroundColor' => 'transparent',
                         'height' => '20px',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              1 => 
-              array (
+                       ],
+                     ],
+                   ],
+                 ],
+               ],
+              1 =>
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
-                array (
-                  'src' => NULL,
+                'image' =>
+                 [
+                  'src' => null,
                   'display' => 'scale',
-                ),
-                'styles' => 
-                array (
-                  'block' => 
-                  array (
+                 ],
+                'styles' =>
+                 [
+                  'block' =>
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => 
-                array (
-                  0 => 
-                  array (
+                   ],
+                 ],
+                'blocks' =>
+                 [
+                  0 =>
+                   [
                     'type' => 'image',
                     'link' => '',
                     'src' => $this->template_image_url . '/FarmersMarket-Logo.png',
@@ -265,198 +265,198 @@ class FarmersMarket {
                     'fullWidth' => true,
                     'width' => '200px',
                     'height' => '400px',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'textAlign' => 'center',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              2 => 
-              array (
+                       ],
+                     ],
+                   ],
+                 ],
+               ],
+              2 =>
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
-                array (
-                  'src' => NULL,
+                'image' =>
+                 [
+                  'src' => null,
                   'display' => 'scale',
-                ),
-                'styles' => 
-                array (
-                  'block' => 
-                  array (
+                 ],
+                'styles' =>
+                 [
+                  'block' =>
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => 
-                array (
-                  0 => 
-                  array (
+                   ],
+                 ],
+                'blocks' =>
+                 [
+                  0 =>
+                   [
                     'type' => 'spacer',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'backgroundColor' => 'transparent',
                         'height' => '20px',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          3 => 
-          array (
+                       ],
+                     ],
+                   ],
+                 ],
+               ],
+             ],
+           ],
+          3 =>
+           [
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
-            array (
+            'image' =>
+             [
               'src' => $this->template_image_url . '/FarmersMarket-Middle.jpg',
               'display' => 'tile',
-            ),
-            'styles' => 
-            array (
-              'block' => 
-              array (
+             ],
+            'styles' =>
+             [
+              'block' =>
+               [
                 'backgroundColor' => 'transparent',
-              ),
-            ),
-            'blocks' => 
-            array (
-              0 => 
-              array (
+               ],
+             ],
+            'blocks' =>
+             [
+              0 =>
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
-                array (
-                  'src' => NULL,
+                'image' =>
+                 [
+                  'src' => null,
                   'display' => 'scale',
-                ),
-                'styles' => 
-                array (
-                  'block' => 
-                  array (
+                 ],
+                'styles' =>
+                 [
+                  'block' =>
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => 
-                array (
-                  0 => 
-                  array (
+                   ],
+                 ],
+                'blocks' =>
+                 [
+                  0 =>
+                   [
                     'type' => 'spacer',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'backgroundColor' => 'transparent',
                         'height' => '20px',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          4 => 
-          array (
+                       ],
+                     ],
+                   ],
+                 ],
+               ],
+             ],
+           ],
+          4 =>
+           [
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
-            array (
-              'src' => NULL,
+            'image' =>
+             [
+              'src' => null,
               'display' => 'scale',
-            ),
-            'styles' => 
-            array (
-              'block' => 
-              array (
+             ],
+            'styles' =>
+             [
+              'block' =>
+               [
                 'backgroundColor' => '#252525',
-              ),
-            ),
-            'blocks' => 
-            array (
-              0 => 
-              array (
+               ],
+             ],
+            'blocks' =>
+             [
+              0 =>
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
-                array (
-                  'src' => NULL,
+                'image' =>
+                 [
+                  'src' => null,
                   'display' => 'scale',
-                ),
-                'styles' => 
-                array (
-                  'block' => 
-                  array (
+                 ],
+                'styles' =>
+                 [
+                  'block' =>
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => 
-                array (
-                  0 => 
-                  array (
+                   ],
+                 ],
+                'blocks' =>
+                 [
+                  0 =>
+                   [
                     'type' => 'spacer',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'backgroundColor' => 'transparent',
                         'height' => '44px',
-                      ),
-                    ),
-                  ),
-                  1 => 
-                  array (
+                       ],
+                     ],
+                   ],
+                  1 =>
+                   [
                     'type' => 'text',
                     'text' => '<h1 style="line-height: 32px;"><strong><span style="color: #ffffff;">COME JOIN US THIS WEEKEND</span></strong></h1>
     <p><span style="color: #ffffff;">We\'re having a big bake sale this weekend starting 9am on Saturday morning. Pop down to see us&nbsp;and our merchants.</span></p>
     <p><span style="color: #ffffff;"></span></p>
     <p><strong><a href="http://www.google.com">Add date to my calendar &gt;</a></strong></p>',
-                  ),
-                ),
-              ),
-              1 => 
-              array (
+                   ],
+                 ],
+               ],
+              1 =>
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
-                array (
-                  'src' => NULL,
+                'image' =>
+                 [
+                  'src' => null,
                   'display' => 'scale',
-                ),
-                'styles' => 
-                array (
-                  'block' => 
-                  array (
+                 ],
+                'styles' =>
+                 [
+                  'block' =>
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => 
-                array (
-                  0 => 
-                  array (
+                   ],
+                 ],
+                'blocks' =>
+                 [
+                  0 =>
+                   [
                     'type' => 'spacer',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'backgroundColor' => 'transparent',
                         'height' => '20px',
-                      ),
-                    ),
-                  ),
-                  1 => 
-                  array (
+                       ],
+                     ],
+                   ],
+                  1 =>
+                   [
                     'type' => 'image',
                     'link' => '',
                     'src' => $this->template_image_url . '/FarmersMarket-Header.jpg',
@@ -464,112 +464,112 @@ class FarmersMarket {
                     'fullWidth' => false,
                     'width' => '1000px',
                     'height' => '800px',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'textAlign' => 'center',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          5 => 
-          array (
+                       ],
+                     ],
+                   ],
+                 ],
+               ],
+             ],
+           ],
+          5 =>
+           [
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
-            array (
+            'image' =>
+             [
               'src' => $this->template_image_url . '/FarmersMarket-Middle.jpg',
               'display' => 'tile',
-            ),
-            'styles' => 
-            array (
-              'block' => 
-              array (
+             ],
+            'styles' =>
+             [
+              'block' =>
+               [
                 'backgroundColor' => 'transparent',
-              ),
-            ),
-            'blocks' => 
-            array (
-              0 => 
-              array (
+               ],
+             ],
+            'blocks' =>
+             [
+              0 =>
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
-                array (
-                  'src' => NULL,
+                'image' =>
+                 [
+                  'src' => null,
                   'display' => 'scale',
-                ),
-                'styles' => 
-                array (
-                  'block' => 
-                  array (
+                 ],
+                'styles' =>
+                 [
+                  'block' =>
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => 
-                array (
-                  0 => 
-                  array (
+                   ],
+                 ],
+                'blocks' =>
+                 [
+                  0 =>
+                   [
                     'type' => 'spacer',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'backgroundColor' => 'transparent',
                         'height' => '30px',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          6 => 
-          array (
+                       ],
+                     ],
+                   ],
+                 ],
+               ],
+             ],
+           ],
+          6 =>
+           [
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
-            array (
+            'image' =>
+             [
               'src' => $this->template_image_url . '/FarmersMarket-Middle.jpg',
               'display' => 'tile',
-            ),
-            'styles' => 
-            array (
-              'block' => 
-              array (
+             ],
+            'styles' =>
+             [
+              'block' =>
+               [
                 'backgroundColor' => 'transparent',
-              ),
-            ),
-            'blocks' => 
-            array (
-              0 => 
-              array (
+               ],
+             ],
+            'blocks' =>
+             [
+              0 =>
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
-                array (
-                  'src' => NULL,
+                'image' =>
+                 [
+                  'src' => null,
                   'display' => 'scale',
-                ),
-                'styles' => 
-                array (
-                  'block' => 
-                  array (
+                 ],
+                'styles' =>
+                 [
+                  'block' =>
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => 
-                array (
-                  0 => 
-                  array (
+                   ],
+                 ],
+                'blocks' =>
+                 [
+                  0 =>
+                   [
                     'type' => 'image',
                     'link' => '',
                     'src' => $this->template_image_url . '/FarmersMarket-Images-1.jpg',
@@ -577,28 +577,28 @@ class FarmersMarket {
                     'fullWidth' => false,
                     'width' => '500px',
                     'height' => '500px',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'textAlign' => 'center',
-                      ),
-                    ),
-                  ),
-                  1 => 
-                  array (
+                       ],
+                     ],
+                   ],
+                  1 =>
+                   [
                     'type' => 'text',
                     'text' => '<p>It\'s carrot season, which means it\'s the perfect time to try our carrot recipes!</p>',
-                  ),
-                  2 => 
-                  array (
+                   ],
+                  2 =>
+                   [
                     'type' => 'button',
                     'text' => 'CARROTS EVERYWHERE',
                     'url' => '',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'backgroundColor' => '#252525',
                         'borderColor' => '#0074a2',
                         'borderWidth' => '0px',
@@ -611,32 +611,32 @@ class FarmersMarket {
                         'fontSize' => '14px',
                         'fontWeight' => 'normal',
                         'textAlign' => 'center',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              1 => 
-              array (
+                       ],
+                     ],
+                   ],
+                 ],
+               ],
+              1 =>
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
-                array (
-                  'src' => NULL,
+                'image' =>
+                 [
+                  'src' => null,
                   'display' => 'scale',
-                ),
-                'styles' => 
-                array (
-                  'block' => 
-                  array (
+                 ],
+                'styles' =>
+                 [
+                  'block' =>
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => 
-                array (
-                  0 => 
-                  array (
+                   ],
+                 ],
+                'blocks' =>
+                 [
+                  0 =>
+                   [
                     'type' => 'image',
                     'link' => '',
                     'src' => $this->template_image_url . '/FarmersMarket-Images-2.jpg',
@@ -644,28 +644,28 @@ class FarmersMarket {
                     'fullWidth' => false,
                     'width' => '500px',
                     'height' => '500px',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'textAlign' => 'center',
-                      ),
-                    ),
-                  ),
-                  1 => 
-                  array (
+                       ],
+                     ],
+                   ],
+                  1 =>
+                   [
                     'type' => 'text',
                     'text' => '<p>Don\'t throw out those leftover pumpkins - here\'s some tips for you.</p>',
-                  ),
-                  2 => 
-                  array (
+                   ],
+                  2 =>
+                   [
                     'type' => 'button',
                     'text' => 'PUMPED FOR PUMPKINS',
                     'url' => '',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'backgroundColor' => '#252525',
                         'borderColor' => '#0074a2',
                         'borderWidth' => '0px',
@@ -678,32 +678,32 @@ class FarmersMarket {
                         'fontSize' => '14px',
                         'fontWeight' => 'normal',
                         'textAlign' => 'center',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              2 => 
-              array (
+                       ],
+                     ],
+                   ],
+                 ],
+               ],
+              2 =>
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
-                array (
-                  'src' => NULL,
+                'image' =>
+                 [
+                  'src' => null,
                   'display' => 'scale',
-                ),
-                'styles' => 
-                array (
-                  'block' => 
-                  array (
+                 ],
+                'styles' =>
+                 [
+                  'block' =>
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => 
-                array (
-                  0 => 
-                  array (
+                   ],
+                 ],
+                'blocks' =>
+                 [
+                  0 =>
+                   [
                     'type' => 'image',
                     'link' => '',
                     'src' => $this->template_image_url . '/FarmersMarket-Images-3.jpg',
@@ -711,28 +711,28 @@ class FarmersMarket {
                     'fullWidth' => false,
                     'width' => '500px',
                     'height' => '500px',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'textAlign' => 'center',
-                      ),
-                    ),
-                  ),
-                  1 => 
-                  array (
+                       ],
+                     ],
+                   ],
+                  1 =>
+                   [
                     'type' => 'text',
                     'text' => '<p>Our new bakery has opened and is making some of the best artisanal bread.</p>',
-                  ),
-                  2 => 
-                  array (
+                   ],
+                  2 =>
+                   [
                     'type' => 'button',
                     'text' => 'I KNEAD THIS',
                     'url' => '',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'backgroundColor' => '#252525',
                         'borderColor' => '#0074a2',
                         'borderWidth' => '0px',
@@ -745,119 +745,119 @@ class FarmersMarket {
                         'fontSize' => '14px',
                         'fontWeight' => 'normal',
                         'textAlign' => 'center',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          7 => 
-          array (
+                       ],
+                     ],
+                   ],
+                 ],
+               ],
+             ],
+           ],
+          7 =>
+           [
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
-            array (
+            'image' =>
+             [
               'src' => $this->template_image_url . '/FarmersMarket-Middle.jpg',
               'display' => 'tile',
-            ),
-            'styles' => 
-            array (
-              'block' => 
-              array (
+             ],
+            'styles' =>
+             [
+              'block' =>
+               [
                 'backgroundColor' => 'transparent',
-              ),
-            ),
-            'blocks' => 
-            array (
-              0 => 
-              array (
+               ],
+             ],
+            'blocks' =>
+             [
+              0 =>
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
-                array (
-                  'src' => NULL,
+                'image' =>
+                 [
+                  'src' => null,
                   'display' => 'scale',
-                ),
-                'styles' => 
-                array (
-                  'block' => 
-                  array (
+                 ],
+                'styles' =>
+                 [
+                  'block' =>
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => 
-                array (
-                  0 => 
-                  array (
+                   ],
+                 ],
+                'blocks' =>
+                 [
+                  0 =>
+                   [
                     'type' => 'spacer',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'backgroundColor' => 'transparent',
                         'height' => '20px',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          8 => 
-          array (
+                       ],
+                     ],
+                   ],
+                 ],
+               ],
+             ],
+           ],
+          8 =>
+           [
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
-            array (
+            'image' =>
+             [
               'src' => $this->template_image_url . '/FarmersMarket-Video.jpg',
               'display' => 'scale',
-            ),
-            'styles' => 
-            array (
-              'block' => 
-              array (
+             ],
+            'styles' =>
+             [
+              'block' =>
+               [
                 'backgroundColor' => '#222222',
-              ),
-            ),
-            'blocks' => 
-            array (
-              0 => 
-              array (
+               ],
+             ],
+            'blocks' =>
+             [
+              0 =>
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
-                array (
-                  'src' => NULL,
+                'image' =>
+                 [
+                  'src' => null,
                   'display' => 'scale',
-                ),
-                'styles' => 
-                array (
-                  'block' => 
-                  array (
+                 ],
+                'styles' =>
+                 [
+                  'block' =>
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => 
-                array (
-                  0 => 
-                  array (
+                   ],
+                 ],
+                'blocks' =>
+                 [
+                  0 =>
+                   [
                     'type' => 'spacer',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'backgroundColor' => 'transparent',
                         'height' => '55px',
-                      ),
-                    ),
-                  ),
-                  1 => 
-                  array (
+                       ],
+                     ],
+                   ],
+                  1 =>
+                   [
                     'type' => 'image',
                     'link' => '',
                     'src' => $this->template_image_url . '/FarmersMarket-PlayButton.png',
@@ -865,164 +865,164 @@ class FarmersMarket {
                     'fullWidth' => true,
                     'width' => '100px',
                     'height' => '400px',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'textAlign' => 'center',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              1 => 
-              array (
+                       ],
+                     ],
+                   ],
+                 ],
+               ],
+              1 =>
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
-                array (
-                  'src' => NULL,
+                'image' =>
+                 [
+                  'src' => null,
                   'display' => 'scale',
-                ),
-                'styles' => 
-                array (
-                  'block' => 
-                  array (
+                 ],
+                'styles' =>
+                 [
+                  'block' =>
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => 
-                array (
-                  0 => 
-                  array (
+                   ],
+                 ],
+                'blocks' =>
+                 [
+                  0 =>
+                   [
                     'type' => 'spacer',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'backgroundColor' => 'transparent',
                         'height' => '61px',
-                      ),
-                    ),
-                  ),
-                  1 => 
-                  array (
+                       ],
+                     ],
+                   ],
+                  1 =>
+                   [
                     'type' => 'text',
                     'text' => '<h1 style="line-height: 32px;"><strong><span style="color: #ffffff;">A DAY IN THE LIFE</span></strong></h1>
     <p><span style="color: #ffffff;">Check out what it\'s like to be at the market every weekend.</span></p>
     <p><span style="color: #ffffff;"></span></p>',
-                  ),
-                  2 => 
-                  array (
+                   ],
+                  2 =>
+                   [
                     'type' => 'spacer',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'backgroundColor' => 'transparent',
                         'height' => '20px',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          9 => 
-          array (
+                       ],
+                     ],
+                   ],
+                 ],
+               ],
+             ],
+           ],
+          9 =>
+           [
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
-            array (
+            'image' =>
+             [
               'src' => $this->template_image_url . '/FarmersMarket-Middle.jpg',
               'display' => 'tile',
-            ),
-            'styles' => 
-            array (
-              'block' => 
-              array (
+             ],
+            'styles' =>
+             [
+              'block' =>
+               [
                 'backgroundColor' => 'transparent',
-              ),
-            ),
-            'blocks' => 
-            array (
-              0 => 
-              array (
+               ],
+             ],
+            'blocks' =>
+             [
+              0 =>
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
-                array (
-                  'src' => NULL,
+                'image' =>
+                 [
+                  'src' => null,
                   'display' => 'scale',
-                ),
-                'styles' => 
-                array (
-                  'block' => 
-                  array (
+                 ],
+                'styles' =>
+                 [
+                  'block' =>
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => 
-                array (
-                  0 => 
-                  array (
+                   ],
+                 ],
+                'blocks' =>
+                 [
+                  0 =>
+                   [
                     'type' => 'spacer',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'backgroundColor' => 'transparent',
                         'height' => '20px',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          10 => 
-          array (
+                       ],
+                     ],
+                   ],
+                 ],
+               ],
+             ],
+           ],
+          10 =>
+           [
             'type' => 'container',
             'columnLayout' => '1_2',
             'orientation' => 'horizontal',
-            'image' => 
-            array (
+            'image' =>
+             [
               'src' => $this->template_image_url . '/FarmersMarket-Middle.jpg',
               'display' => 'tile',
-            ),
-            'styles' => 
-            array (
-              'block' => 
-              array (
+             ],
+            'styles' =>
+             [
+              'block' =>
+               [
                 'backgroundColor' => 'transparent',
-              ),
-            ),
-            'blocks' => 
-            array (
-              0 => 
-              array (
+               ],
+             ],
+            'blocks' =>
+             [
+              0 =>
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
-                array (
-                  'src' => NULL,
+                'image' =>
+                 [
+                  'src' => null,
                   'display' => 'scale',
-                ),
-                'styles' => 
-                array (
-                  'block' => 
-                  array (
+                 ],
+                'styles' =>
+                 [
+                  'block' =>
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => 
-                array (
-                  0 => 
-                  array (
+                   ],
+                 ],
+                'blocks' =>
+                 [
+                  0 =>
+                   [
                     'type' => 'image',
                     'link' => '',
                     'src' => $this->template_image_url . '/FarmersMarket-Logo.png',
@@ -1030,43 +1030,43 @@ class FarmersMarket {
                     'fullWidth' => true,
                     'width' => '112px',
                     'height' => '400px',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'textAlign' => 'center',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              1 => 
-              array (
+                       ],
+                     ],
+                   ],
+                 ],
+               ],
+              1 =>
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
-                array (
-                  'src' => NULL,
+                'image' =>
+                 [
+                  'src' => null,
                   'display' => 'scale',
-                ),
-                'styles' => 
-                array (
-                  'block' => 
-                  array (
+                 ],
+                'styles' =>
+                 [
+                  'block' =>
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => 
-                array (
-                  0 => 
-                  array (
+                   ],
+                 ],
+                'blocks' =>
+                 [
+                  0 =>
+                   [
                     'type' => 'social',
                     'iconSet' => 'full-symbol-black',
-                    'icons' => 
-                    array (
-                      0 => 
-                      array (
+                    'icons' =>
+                     [
+                      0 =>
+                       [
                         'type' => 'socialIcon',
                         'iconType' => 'facebook',
                         'link' => 'http://www.facebook.com',
@@ -1074,9 +1074,9 @@ class FarmersMarket {
                         'height' => '32px',
                         'width' => '32px',
                         'text' => 'Facebook',
-                      ),
-                      1 => 
-                      array (
+                       ],
+                      1 =>
+                       [
                         'type' => 'socialIcon',
                         'iconType' => 'twitter',
                         'link' => 'http://www.twitter.com',
@@ -1084,9 +1084,9 @@ class FarmersMarket {
                         'height' => '32px',
                         'width' => '32px',
                         'text' => 'Twitter',
-                      ),
-                      2 => 
-                      array (
+                       ],
+                      2 =>
+                       [
                         'type' => 'socialIcon',
                         'iconType' => 'instagram',
                         'link' => 'http://instagram.com',
@@ -1094,77 +1094,77 @@ class FarmersMarket {
                         'height' => '32px',
                         'width' => '32px',
                         'text' => 'Instagram',
-                      ),
-                    ),
-                  ),
-                  1 => 
-                  array (
+                       ],
+                     ],
+                   ],
+                  1 =>
+                   [
                     'type' => 'footer',
                     'text' => '<p><a href="[link:subscription_unsubscribe_url]">Unsubscribe</a> | <a href="[link:subscription_manage_url]">Manage your subscription</a><br />Add your postal address here!</p>',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'backgroundColor' => 'transparent',
-                      ),
-                      'text' => 
-                      array (
+                       ],
+                      'text' =>
+                       [
                         'fontColor' => '#222222',
                         'fontFamily' => 'Roboto',
                         'fontSize' => '12px',
                         'textAlign' => 'center',
-                      ),
-                      'link' => 
-                      array (
+                       ],
+                      'link' =>
+                       [
                         'fontColor' => '#689f2c',
                         'textDecoration' => 'none',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          11 => 
-          array (
+                       ],
+                     ],
+                   ],
+                 ],
+               ],
+             ],
+           ],
+          11 =>
+           [
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
-            array (
-              'src' => NULL,
+            'image' =>
+             [
+              'src' => null,
               'display' => 'scale',
-            ),
-            'styles' => 
-            array (
-              'block' => 
-              array (
+             ],
+            'styles' =>
+             [
+              'block' =>
+               [
                 'backgroundColor' => 'transparent',
-              ),
-            ),
-            'blocks' => 
-            array (
-              0 => 
-              array (
+               ],
+             ],
+            'blocks' =>
+             [
+              0 =>
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
-                array (
-                  'src' => NULL,
+                'image' =>
+                 [
+                  'src' => null,
                   'display' => 'scale',
-                ),
-                'styles' => 
-                array (
-                  'block' => 
-                  array (
+                 ],
+                'styles' =>
+                 [
+                  'block' =>
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => 
-                array (
-                  0 => 
-                  array (
+                   ],
+                 ],
+                'blocks' =>
+                 [
+                  0 =>
+                   [
                     'type' => 'image',
                     'link' => '',
                     'src' => $this->template_image_url . '/FarmersMarket-Bottom-2.jpg',
@@ -1172,64 +1172,64 @@ class FarmersMarket {
                     'fullWidth' => true,
                     'width' => '660px',
                     'height' => '50px',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'textAlign' => 'center',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-      'globalStyles' => 
-      array (
-        'text' => 
-        array (
+                       ],
+                     ],
+                   ],
+                 ],
+               ],
+             ],
+           ],
+         ],
+       ],
+      'globalStyles' =>
+       [
+        'text' =>
+         [
           'fontColor' => '#000000',
           'fontFamily' => 'Roboto',
           'fontSize' => '14px',
-        ),
-        'h1' => 
-        array (
+         ],
+        'h1' =>
+         [
           'fontColor' => '#111111',
           'fontFamily' => 'Source Sans Pro',
           'fontSize' => '30px',
-        ),
-        'h2' => 
-        array (
+         ],
+        'h2' =>
+         [
           'fontColor' => '#222222',
           'fontFamily' => 'Trebuchet MS',
           'fontSize' => '24px',
-        ),
-        'h3' => 
-        array (
+         ],
+        'h3' =>
+         [
           'fontColor' => '#333333',
           'fontFamily' => 'Trebuchet MS',
           'fontSize' => '22px',
-        ),
-        'link' => 
-        array (
+         ],
+        'link' =>
+         [
           'fontColor' => '#689f2c',
           'textDecoration' => 'underline',
-        ),
-        'wrapper' => 
-        array (
+         ],
+        'wrapper' =>
+         [
           'backgroundColor' => '#ffffff',
-        ),
-        'body' => 
-        array (
+         ],
+        'body' =>
+         [
           'backgroundColor' => '#ffffff',
-        ),
-      ),
-      'blockDefaults' => 
-      array (
-        'automatedLatestContent' => 
-        array (
+         ],
+       ],
+      'blockDefaults' =>
+       [
+        'automatedLatestContent' =>
+         [
           'amount' => '5',
           'withLayout' => false,
           'contentType' => 'post',
@@ -1246,15 +1246,15 @@ class FarmersMarket {
           'categoriesPrecededBy' => 'Categories:',
           'readMoreType' => 'button',
           'readMoreText' => 'Read more',
-          'readMoreButton' => 
-          array (
+          'readMoreButton' =>
+           [
             'text' => 'Read more',
             'url' => '[postLink]',
             'context' => 'automatedLatestContent.readMoreButton',
-            'styles' => 
-            array (
-              'block' => 
-              array (
+            'styles' =>
+             [
+              'block' =>
+               [
                 'backgroundColor' => '#2ea1cd',
                 'borderColor' => '#0074a2',
                 'borderWidth' => '1px',
@@ -1267,31 +1267,31 @@ class FarmersMarket {
                 'fontSize' => '18px',
                 'fontWeight' => 'normal',
                 'textAlign' => 'center',
-              ),
-            ),
-          ),
+               ],
+             ],
+           ],
           'sortBy' => 'newest',
           'showDivider' => true,
-          'divider' => 
-          array (
+          'divider' =>
+           [
             'context' => 'automatedLatestContent.divider',
-            'styles' => 
-            array (
-              'block' => 
-              array (
+            'styles' =>
+             [
+              'block' =>
+               [
                 'backgroundColor' => 'transparent',
                 'padding' => '13px',
                 'borderStyle' => 'solid',
                 'borderWidth' => '3px',
                 'borderColor' => '#aaaaaa',
-              ),
-            ),
-          ),
+               ],
+             ],
+           ],
           'backgroundColor' => '#ffffff',
           'backgroundColorAlternate' => '#eeeeee',
-        ),
-        'automatedLatestContentLayout' => 
-        array (
+         ],
+        'automatedLatestContentLayout' =>
+         [
           'amount' => '5',
           'withLayout' => true,
           'contentType' => 'post',
@@ -1308,15 +1308,15 @@ class FarmersMarket {
           'categoriesPrecededBy' => 'Categories:',
           'readMoreType' => 'button',
           'readMoreText' => 'Read more',
-          'readMoreButton' => 
-          array (
+          'readMoreButton' =>
+           [
             'text' => 'Read more',
             'url' => '[postLink]',
             'context' => 'automatedLatestContentLayout.readMoreButton',
-            'styles' => 
-            array (
-              'block' => 
-              array (
+            'styles' =>
+             [
+              'block' =>
+               [
                 'backgroundColor' => '#2ea1cd',
                 'borderColor' => '#0074a2',
                 'borderWidth' => '1px',
@@ -1329,37 +1329,37 @@ class FarmersMarket {
                 'fontSize' => '18px',
                 'fontWeight' => 'normal',
                 'textAlign' => 'center',
-              ),
-            ),
-          ),
+               ],
+             ],
+           ],
           'sortBy' => 'newest',
           'showDivider' => true,
-          'divider' => 
-          array (
+          'divider' =>
+           [
             'context' => 'automatedLatestContentLayout.divider',
-            'styles' => 
-            array (
-              'block' => 
-              array (
+            'styles' =>
+             [
+              'block' =>
+               [
                 'backgroundColor' => 'transparent',
                 'padding' => '13px',
                 'borderStyle' => 'solid',
                 'borderWidth' => '3px',
                 'borderColor' => '#aaaaaa',
-              ),
-            ),
-          ),
+               ],
+             ],
+           ],
           'backgroundColor' => '#ffffff',
           'backgroundColorAlternate' => '#eeeeee',
-        ),
-        'button' => 
-        array (
+         ],
+        'button' =>
+         [
           'text' => 'CARROTS EVERYWHERE',
           'url' => '',
-          'styles' => 
-          array (
-            'block' => 
-            array (
+          'styles' =>
+           [
+            'block' =>
+             [
               'backgroundColor' => '#252525',
               'borderColor' => '#0074a2',
               'borderWidth' => '0px',
@@ -1372,51 +1372,51 @@ class FarmersMarket {
               'fontSize' => '14px',
               'fontWeight' => 'normal',
               'textAlign' => 'center',
-            ),
-          ),
+             ],
+           ],
           'type' => 'button',
-        ),
-        'divider' => 
-        array (
-          'styles' => 
-          array (
-            'block' => 
-            array (
+         ],
+        'divider' =>
+         [
+          'styles' =>
+           [
+            'block' =>
+             [
               'backgroundColor' => 'transparent',
               'padding' => '13px',
               'borderStyle' => 'solid',
               'borderWidth' => '2px',
               'borderColor' => '#252525',
-            ),
-          ),
+             ],
+           ],
           'type' => 'divider',
-        ),
-        'footer' => 
-        array (
+         ],
+        'footer' =>
+         [
           'text' => '<p><a href="[link:subscription_unsubscribe_url]">Unsubscribe</a> | <a href="[link:subscription_manage_url]">Manage subscription</a><br />Add your postal address here!</p>',
-          'styles' => 
-          array (
-            'block' => 
-            array (
+          'styles' =>
+           [
+            'block' =>
+             [
               'backgroundColor' => 'transparent',
-            ),
-            'text' => 
-            array (
+             ],
+            'text' =>
+             [
               'fontColor' => '#222222',
               'fontFamily' => 'Roboto',
               'fontSize' => '12px',
               'textAlign' => 'center',
-            ),
-            'link' => 
-            array (
+             ],
+            'link' =>
+             [
               'fontColor' => '#689f2c',
               'textDecoration' => 'none',
-            ),
-          ),
+             ],
+           ],
           'type' => 'footer',
-        ),
-        'posts' => 
-        array (
+         ],
+        'posts' =>
+         [
           'amount' => '10',
           'withLayout' => true,
           'contentType' => 'post',
@@ -1434,15 +1434,15 @@ class FarmersMarket {
           'categoriesPrecededBy' => 'Categories:',
           'readMoreType' => 'link',
           'readMoreText' => 'Read more',
-          'readMoreButton' => 
-          array (
+          'readMoreButton' =>
+           [
             'text' => 'Read more',
             'url' => '[postLink]',
             'context' => 'posts.readMoreButton',
-            'styles' => 
-            array (
-              'block' => 
-              array (
+            'styles' =>
+             [
+              'block' =>
+               [
                 'backgroundColor' => '#2ea1cd',
                 'borderColor' => '#0074a2',
                 'borderWidth' => '1px',
@@ -1455,36 +1455,36 @@ class FarmersMarket {
                 'fontSize' => '18px',
                 'fontWeight' => 'normal',
                 'textAlign' => 'center',
-              ),
-            ),
-          ),
+               ],
+             ],
+           ],
           'sortBy' => 'newest',
           'showDivider' => true,
-          'divider' => 
-          array (
+          'divider' =>
+           [
             'context' => 'posts.divider',
-            'styles' => 
-            array (
-              'block' => 
-              array (
+            'styles' =>
+             [
+              'block' =>
+               [
                 'backgroundColor' => 'transparent',
                 'padding' => '13px',
                 'borderStyle' => 'solid',
                 'borderWidth' => '3px',
                 'borderColor' => '#aaaaaa',
-              ),
-            ),
-          ),
+               ],
+             ],
+           ],
           'backgroundColor' => '#ffffff',
           'backgroundColorAlternate' => '#eeeeee',
-        ),
-        'social' => 
-        array (
+         ],
+        'social' =>
+         [
           'iconSet' => 'full-symbol-black',
-          'icons' => 
-          array (
-            0 => 
-            array (
+          'icons' =>
+           [
+            0 =>
+             [
               'type' => 'socialIcon',
               'iconType' => 'facebook',
               'link' => 'http://www.facebook.com',
@@ -1492,9 +1492,9 @@ class FarmersMarket {
               'height' => '32px',
               'width' => '32px',
               'text' => 'Facebook',
-            ),
-            1 => 
-            array (
+             ],
+            1 =>
+             [
               'type' => 'socialIcon',
               'iconType' => 'twitter',
               'link' => 'http://www.twitter.com',
@@ -1502,9 +1502,9 @@ class FarmersMarket {
               'height' => '32px',
               'width' => '32px',
               'text' => 'Twitter',
-            ),
-            2 => 
-            array (
+             ],
+            2 =>
+             [
               'type' => 'socialIcon',
               'iconType' => 'instagram',
               'link' => 'http://instagram.com',
@@ -1512,48 +1512,48 @@ class FarmersMarket {
               'height' => '32px',
               'width' => '32px',
               'text' => 'Instagram',
-            ),
-          ),
+             ],
+           ],
           'type' => 'social',
-        ),
-        'spacer' => 
-        array (
-          'styles' => 
-          array (
-            'block' => 
-            array (
+         ],
+        'spacer' =>
+         [
+          'styles' =>
+           [
+            'block' =>
+             [
               'backgroundColor' => 'transparent',
               'height' => '20px',
-            ),
-          ),
+             ],
+           ],
           'type' => 'spacer',
-        ),
-        'header' => 
-        array (
-          'text' => 'Display problems?&nbsp;<a href="[link:newsletter_view_in_browser_url]">Open this email in your web browser.</a>',
-          'styles' => 
-          array (
-            'block' => 
-            array (
+         ],
+        'header' =>
+         [
+          'text' => '<a href="[link:newsletter_view_in_browser_url]">View this in your browser.</a>',
+          'styles' =>
+           [
+            'block' =>
+             [
               'backgroundColor' => 'transparent',
-            ),
-            'text' => 
-            array (
+             ],
+            'text' =>
+             [
               'fontColor' => '#222222',
               'fontFamily' => 'Arial',
               'fontSize' => '12px',
               'textAlign' => 'center',
-            ),
-            'link' => 
-            array (
+             ],
+            'link' =>
+             [
               'fontColor' => '#6cb7d4',
               'textDecoration' => 'underline',
-            ),
-          ),
+             ],
+           ],
           'type' => 'header',
-        ),
-      ),
-    );
+         ],
+       ],
+    ];
   }
 
 }

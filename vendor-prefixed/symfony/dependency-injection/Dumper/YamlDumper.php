@@ -38,7 +38,7 @@ class YamlDumper extends \MailPoetVendor\Symfony\Component\DependencyInjection\D
      *
      * @return string A YAML string representing of the service container
      */
-    public function dump(array $options = array())
+    public function dump(array $options = [])
     {
         if (!\class_exists('MailPoetVendor\\Symfony\\Component\\Yaml\\Dumper')) {
             throw new \MailPoetVendor\Symfony\Component\DependencyInjection\Exception\RuntimeException('Unable to dump the container as the Symfony Yaml Component is not installed.');
@@ -71,7 +71,7 @@ class YamlDumper extends \MailPoetVendor\Symfony\Component\DependencyInjection\D
         $tagsCode = '';
         foreach ($definition->getTags() as $name => $tags) {
             foreach ($tags as $attributes) {
-                $att = array();
+                $att = [];
                 foreach ($attributes as $key => $value) {
                     $att[] = \sprintf('%s: %s', $this->dumper->dump($key), $this->dumper->dump($value));
                 }
@@ -189,7 +189,7 @@ class YamlDumper extends \MailPoetVendor\Symfony\Component\DependencyInjection\D
             return '';
         }
         $parameters = $this->prepareParameters($this->container->getParameterBag()->all(), $this->container->isCompiled());
-        return $this->dumper->dump(array('parameters' => $parameters), 2);
+        return $this->dumper->dump(['parameters' => $parameters], 2);
     }
     /**
      * Dumps callable to YAML format.
@@ -202,9 +202,9 @@ class YamlDumper extends \MailPoetVendor\Symfony\Component\DependencyInjection\D
     {
         if (\is_array($callable)) {
             if ($callable[0] instanceof \MailPoetVendor\Symfony\Component\DependencyInjection\Reference) {
-                $callable = array($this->getServiceCall((string) $callable[0], $callable[0]), $callable[1]);
+                $callable = [$this->getServiceCall((string) $callable[0], $callable[0]), $callable[1]];
             } else {
-                $callable = array($callable[0], $callable[1]);
+                $callable = [$callable[0], $callable[1]];
             }
         }
         return $callable;
@@ -235,7 +235,7 @@ class YamlDumper extends \MailPoetVendor\Symfony\Component\DependencyInjection\D
             return new \MailPoetVendor\Symfony\Component\Yaml\Tag\TaggedValue($tag, $this->dumpValue($value->getValues()));
         }
         if (\is_array($value)) {
-            $code = array();
+            $code = [];
             foreach ($value as $k => $v) {
                 $code[$k] = $this->dumpValue($v);
             }
@@ -300,7 +300,7 @@ class YamlDumper extends \MailPoetVendor\Symfony\Component\DependencyInjection\D
      */
     private function prepareParameters(array $parameters, $escape = \true)
     {
-        $filtered = array();
+        $filtered = [];
         foreach ($parameters as $key => $value) {
             if (\is_array($value)) {
                 $value = $this->prepareParameters($value, $escape);
@@ -318,7 +318,7 @@ class YamlDumper extends \MailPoetVendor\Symfony\Component\DependencyInjection\D
      */
     private function escape(array $arguments)
     {
-        $args = array();
+        $args = [];
         foreach ($arguments as $k => $v) {
             if (\is_array($v)) {
                 $args[$k] = $this->escape($v);

@@ -2,24 +2,27 @@
 
 namespace MailPoet\Twig;
 
-if(!defined('ABSPATH')) exit;
+use MailPoetVendor\Twig\Extension\AbstractExtension;
+use MailPoetVendor\Twig\TwigFunction;
 
-class Handlebars extends \Twig_Extension {
+if (!defined('ABSPATH')) exit;
+
+class Handlebars extends AbstractExtension {
   public function getFunctions() {
-    return array(
-      new \Twig_SimpleFunction(
+    return [
+      new TwigFunction(
         'partial',
-        array(
+        [
           $this,
-          'generatePartial'
-        ),
-        array(
+          'generatePartial',
+        ],
+        [
           'needs_environment' => true,
           'needs_context' => true,
-          'is_safe' => array('all')
-        )
-      )
-    );
+          'is_safe' => ['all'],
+        ]
+      ),
+    ];
   }
 
   public function generatePartial($env, $context) {
@@ -30,7 +33,7 @@ class Handlebars extends \Twig_Extension {
     // default values
     $alias = null;
 
-    switch($args_count) {
+    switch ($args_count) {
       case 2:
         list($id, $file) = $args;
         break;
@@ -41,7 +44,7 @@ class Handlebars extends \Twig_Extension {
         return;
     }
 
-    $rendered_template = twig_include($env, $context, $file);
+    $rendered_template = \MailPoetVendor\twig_include($env, $context, $file);
 
     $output = <<<EOL
 <script id="$id" type="text/x-handlebars-template">
@@ -49,7 +52,7 @@ class Handlebars extends \Twig_Extension {
 </script>
 EOL;
 
-    if($alias !== null) {
+    if ($alias !== null) {
       $output .= <<<EOL
 <script type="text/javascript">
 jQuery(function($) {

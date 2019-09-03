@@ -18,7 +18,7 @@ use MailPoetVendor\Symfony\Component\DependencyInjection\Exception\InvalidArgume
  */
 class ResolveClassPass implements \MailPoetVendor\Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface
 {
-    private $changes = array();
+    private $changes = [];
     /**
      * {@inheritdoc}
      */
@@ -45,7 +45,7 @@ class ResolveClassPass implements \MailPoetVendor\Symfony\Component\DependencyIn
     public function getChanges()
     {
         $changes = $this->changes;
-        $this->changes = array();
+        $this->changes = [];
         return $changes;
     }
 }

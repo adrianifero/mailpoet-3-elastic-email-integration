@@ -14,134 +14,134 @@ class Software {
   }
 
   function get() {
-    return array(
+    return [
       'name' => WPFunctions::get()->__("Software", 'mailpoet'),
-      'categories' => json_encode(array('standard', 'all')),
+      'categories' => json_encode(['standard', 'all']),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),
       'body' => json_encode($this->getBody()),
-    );
+    ];
   }
 
   private function getThumbnail() {
-    return $this->template_image_url . '/thumbnail.jpg';
+    return $this->template_image_url . '/thumbnail.20190411-1500.jpg';
   }
 
   private function getBody() {
-    return array (
-      'content' => 
-      array (
+    return  [
+      'content' =>
+       [
         'type' => 'container',
         'columnLayout' => false,
         'orientation' => 'vertical',
-        'image' => 
-        array (
-          'src' => NULL,
+        'image' =>
+         [
+          'src' => null,
           'display' => 'scale',
-        ),
-        'styles' => 
-        array (
-          'block' => 
-          array (
+         ],
+        'styles' =>
+         [
+          'block' =>
+           [
             'backgroundColor' => 'transparent',
-          ),
-        ),
-        'blocks' => 
-        array (
-          0 => 
-          array (
+           ],
+         ],
+        'blocks' =>
+         [
+          0 =>
+           [
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
-            array (
-              'src' => NULL,
+            'image' =>
+             [
+              'src' => null,
               'display' => 'scale',
-            ),
-            'styles' => 
-            array (
-              'block' => 
-              array (
+             ],
+            'styles' =>
+             [
+              'block' =>
+               [
                 'backgroundColor' => 'transparent',
-              ),
-            ),
-            'blocks' => 
-            array (
-              0 => 
-              array (
+               ],
+             ],
+            'blocks' =>
+             [
+              0 =>
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
-                array (
-                  'src' => NULL,
+                'image' =>
+                 [
+                  'src' => null,
                   'display' => 'scale',
-                ),
-                'styles' => 
-                array (
-                  'block' => 
-                  array (
+                 ],
+                'styles' =>
+                 [
+                  'block' =>
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => 
-                array (
-                  0 => 
-                  array (
+                   ],
+                 ],
+                'blocks' =>
+                 [
+                  0 =>
+                   [
                     'type' => 'spacer',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'backgroundColor' => 'transparent',
                         'height' => '60px',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          1 => 
-          array (
+                       ],
+                     ],
+                   ],
+                 ],
+               ],
+             ],
+           ],
+          1 =>
+           [
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
-            array (
-              'src' => NULL,
+            'image' =>
+             [
+              'src' => null,
               'display' => 'scale',
-            ),
-            'styles' => 
-            array (
-              'block' => 
-              array (
+             ],
+            'styles' =>
+             [
+              'block' =>
+               [
                 'backgroundColor' => 'transparent',
-              ),
-            ),
-            'blocks' => 
-            array (
-              0 => 
-              array (
+               ],
+             ],
+            'blocks' =>
+             [
+              0 =>
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
-                array (
-                  'src' => NULL,
+                'image' =>
+                 [
+                  'src' => null,
                   'display' => 'scale',
-                ),
-                'styles' => 
-                array (
-                  'block' => 
-                  array (
+                 ],
+                'styles' =>
+                 [
+                  'block' =>
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => 
-                array (
-                  0 => 
-                  array (
+                   ],
+                 ],
+                'blocks' =>
+                 [
+                  0 =>
+                   [
                     'type' => 'image',
                     'link' => '',
                     'src' => $this->template_image_url . '/Software-Logo.png',
@@ -149,132 +149,132 @@ class Software {
                     'fullWidth' => false,
                     'width' => '140px',
                     'height' => '122px',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'textAlign' => 'left',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              1 => 
-              array (
+                       ],
+                     ],
+                   ],
+                 ],
+               ],
+              1 =>
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
-                array (
-                  'src' => NULL,
+                'image' =>
+                 [
+                  'src' => null,
                   'display' => 'scale',
-                ),
-                'styles' => 
-                array (
-                  'block' => 
-                  array (
+                 ],
+                'styles' =>
+                 [
+                  'block' =>
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => 
-                array (
-                  0 => 
-                  array (
+                   ],
+                 ],
+                'blocks' =>
+                 [
+                  0 =>
+                   [
                     'type' => 'header',
                     'text' => '<p><strong><a href="[link:newsletter_view_in_browser_url]">View online</a></strong></p>',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'backgroundColor' => 'transparent',
-                      ),
-                      'text' => 
-                      array (
+                       ],
+                      'text' =>
+                       [
                         'fontColor' => '#222222',
                         'fontFamily' => 'Merriweather Sans',
                         'fontSize' => '12px',
                         'textAlign' => 'right',
-                      ),
-                      'link' => 
-                      array (
+                       ],
+                      'link' =>
+                       [
                         'fontColor' => '#212327',
                         'textDecoration' => 'underline',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          2 => 
-          array (
+                       ],
+                     ],
+                   ],
+                 ],
+               ],
+             ],
+           ],
+          2 =>
+           [
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
-            array (
-              'src' => NULL,
+            'image' =>
+             [
+              'src' => null,
               'display' => 'scale',
-            ),
-            'styles' => 
-            array (
-              'block' => 
-              array (
+             ],
+            'styles' =>
+             [
+              'block' =>
+               [
                 'backgroundColor' => 'transparent',
-              ),
-            ),
-            'blocks' => 
-            array (
-              0 => 
-              array (
+               ],
+             ],
+            'blocks' =>
+             [
+              0 =>
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
-                array (
-                  'src' => NULL,
+                'image' =>
+                 [
+                  'src' => null,
                   'display' => 'scale',
-                ),
-                'styles' => 
-                array (
-                  'block' => 
-                  array (
+                 ],
+                'styles' =>
+                 [
+                  'block' =>
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => 
-                array (
-                  0 => 
-                  array (
+                   ],
+                 ],
+                'blocks' =>
+                 [
+                  0 =>
+                   [
                     'type' => 'spacer',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'backgroundColor' => 'transparent',
                         'height' => '30px',
-                      ),
-                    ),
-                  ),
-                  1 => 
-                  array (
+                       ],
+                     ],
+                   ],
+                  1 =>
+                   [
                     'type' => 'text',
                     'text' => '<h1 style="text-align: center; line-height: 46px;"><span style="color: #212327;"><strong>Your music.<br />Your way.</strong></span></h1>',
-                  ),
-                  2 => 
-                  array (
+                   ],
+                  2 =>
+                   [
                     'type' => 'spacer',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'backgroundColor' => 'transparent',
                         'height' => '40px',
-                      ),
-                    ),
-                  ),
-                  3 => 
-                  array (
+                       ],
+                     ],
+                   ],
+                  3 =>
+                   [
                     'type' => 'image',
                     'link' => '',
                     'src' => $this->template_image_url . '/Software-Header.jpg',
@@ -282,137 +282,137 @@ class Software {
                     'fullWidth' => true,
                     'width' => '1200px',
                     'height' => '800px',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'textAlign' => 'center',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          3 => 
-          array (
+                       ],
+                     ],
+                   ],
+                 ],
+               ],
+             ],
+           ],
+          3 =>
+           [
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
-            array (
-              'src' => NULL,
+            'image' =>
+             [
+              'src' => null,
               'display' => 'scale',
-            ),
-            'styles' => 
-            array (
-              'block' => 
-              array (
+             ],
+            'styles' =>
+             [
+              'block' =>
+               [
                 'backgroundColor' => 'transparent',
-              ),
-            ),
-            'blocks' => 
-            array (
-              0 => 
-              array (
+               ],
+             ],
+            'blocks' =>
+             [
+              0 =>
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
-                array (
-                  'src' => NULL,
+                'image' =>
+                 [
+                  'src' => null,
                   'display' => 'scale',
-                ),
-                'styles' => 
-                array (
-                  'block' => 
-                  array (
+                 ],
+                'styles' =>
+                 [
+                  'block' =>
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => 
-                array (
-                  0 => 
-                  array (
+                   ],
+                 ],
+                'blocks' =>
+                 [
+                  0 =>
+                   [
                     'type' => 'spacer',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'backgroundColor' => 'transparent',
                         'height' => '40px',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          4 => 
-          array (
+                       ],
+                     ],
+                   ],
+                 ],
+               ],
+             ],
+           ],
+          4 =>
+           [
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
-            array (
-              'src' => NULL,
+            'image' =>
+             [
+              'src' => null,
               'display' => 'scale',
-            ),
-            'styles' => 
-            array (
-              'block' => 
-              array (
+             ],
+            'styles' =>
+             [
+              'block' =>
+               [
                 'backgroundColor' => 'transparent',
-              ),
-            ),
-            'blocks' => 
-            array (
-              0 => 
-              array (
+               ],
+             ],
+            'blocks' =>
+             [
+              0 =>
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
-                array (
-                  'src' => NULL,
+                'image' =>
+                 [
+                  'src' => null,
                   'display' => 'scale',
-                ),
-                'styles' => 
-                array (
-                  'block' => 
-                  array (
+                 ],
+                'styles' =>
+                 [
+                  'block' =>
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => 
-                array (
-                  0 => 
-                  array (
+                   ],
+                 ],
+                'blocks' =>
+                 [
+                  0 =>
+                   [
                     'type' => 'spacer',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'backgroundColor' => 'transparent',
                         'height' => '50px',
-                      ),
-                    ),
-                  ),
-                  1 => 
-                  array (
+                       ],
+                     ],
+                   ],
+                  1 =>
+                   [
                     'type' => 'text',
                     'text' => '<h2 style="text-align: left;"><strong>Find music fast</strong></h2>
     <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin placerat feugiat est, malesuada varius sem finibus a. Nunc feugiat sollicitudin gravida. In eu vestibulum orci, sit amet ultrices mauris.</p>',
-                  ),
-                  2 => 
-                  array (
+                   ],
+                  2 =>
+                   [
                     'type' => 'button',
                     'text' => 'Find out more',
                     'url' => '',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'backgroundColor' => '#212327',
                         'borderColor' => '#212327',
                         'borderWidth' => '0px',
@@ -425,32 +425,32 @@ class Software {
                         'fontSize' => '14px',
                         'fontWeight' => 'bold',
                         'textAlign' => 'left',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              1 => 
-              array (
+                       ],
+                     ],
+                   ],
+                 ],
+               ],
+              1 =>
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
-                array (
-                  'src' => NULL,
+                'image' =>
+                 [
+                  'src' => null,
                   'display' => 'scale',
-                ),
-                'styles' => 
-                array (
-                  'block' => 
-                  array (
+                 ],
+                'styles' =>
+                 [
+                  'block' =>
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => 
-                array (
-                  0 => 
-                  array (
+                   ],
+                 ],
+                'blocks' =>
+                 [
+                  0 =>
+                   [
                     'type' => 'image',
                     'link' => '',
                     'src' => $this->template_image_url . '/Software-Image-1.jpg',
@@ -458,112 +458,112 @@ class Software {
                     'fullWidth' => true,
                     'width' => '800px',
                     'height' => '800px',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'textAlign' => 'center',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          5 => 
-          array (
+                       ],
+                     ],
+                   ],
+                 ],
+               ],
+             ],
+           ],
+          5 =>
+           [
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
-            array (
-              'src' => NULL,
+            'image' =>
+             [
+              'src' => null,
               'display' => 'scale',
-            ),
-            'styles' => 
-            array (
-              'block' => 
-              array (
+             ],
+            'styles' =>
+             [
+              'block' =>
+               [
                 'backgroundColor' => 'transparent',
-              ),
-            ),
-            'blocks' => 
-            array (
-              0 => 
-              array (
+               ],
+             ],
+            'blocks' =>
+             [
+              0 =>
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
-                array (
-                  'src' => NULL,
+                'image' =>
+                 [
+                  'src' => null,
                   'display' => 'scale',
-                ),
-                'styles' => 
-                array (
-                  'block' => 
-                  array (
+                 ],
+                'styles' =>
+                 [
+                  'block' =>
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => 
-                array (
-                  0 => 
-                  array (
+                   ],
+                 ],
+                'blocks' =>
+                 [
+                  0 =>
+                   [
                     'type' => 'spacer',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'backgroundColor' => 'transparent',
                         'height' => '40px',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          6 => 
-          array (
+                       ],
+                     ],
+                   ],
+                 ],
+               ],
+             ],
+           ],
+          6 =>
+           [
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
-            array (
-              'src' => NULL,
+            'image' =>
+             [
+              'src' => null,
               'display' => 'scale',
-            ),
-            'styles' => 
-            array (
-              'block' => 
-              array (
+             ],
+            'styles' =>
+             [
+              'block' =>
+               [
                 'backgroundColor' => 'transparent',
-              ),
-            ),
-            'blocks' => 
-            array (
-              0 => 
-              array (
+               ],
+             ],
+            'blocks' =>
+             [
+              0 =>
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
-                array (
-                  'src' => NULL,
+                'image' =>
+                 [
+                  'src' => null,
                   'display' => 'scale',
-                ),
-                'styles' => 
-                array (
-                  'block' => 
-                  array (
+                 ],
+                'styles' =>
+                 [
+                  'block' =>
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => 
-                array (
-                  0 => 
-                  array (
+                   ],
+                 ],
+                'blocks' =>
+                 [
+                  0 =>
+                   [
                     'type' => 'image',
                     'link' => '',
                     'src' => $this->template_image_url . '/Software-Image-2.jpg',
@@ -571,62 +571,62 @@ class Software {
                     'fullWidth' => true,
                     'width' => '800px',
                     'height' => '800px',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'textAlign' => 'center',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              1 => 
-              array (
+                       ],
+                     ],
+                   ],
+                 ],
+               ],
+              1 =>
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
-                array (
-                  'src' => NULL,
+                'image' =>
+                 [
+                  'src' => null,
                   'display' => 'scale',
-                ),
-                'styles' => 
-                array (
-                  'block' => 
-                  array (
+                 ],
+                'styles' =>
+                 [
+                  'block' =>
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => 
-                array (
-                  0 => 
-                  array (
+                   ],
+                 ],
+                'blocks' =>
+                 [
+                  0 =>
+                   [
                     'type' => 'spacer',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'backgroundColor' => 'transparent',
                         'height' => '50px',
-                      ),
-                    ),
-                  ),
-                  1 => 
-                  array (
+                       ],
+                     ],
+                   ],
+                  1 =>
+                   [
                     'type' => 'text',
                     'text' => '<h2 style="text-align: left;"><strong>Keep up with the trend</strong></h2>
     <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin placerat feugiat est, malesuada varius sem finibus a. Nunc feugiat sollicitudin gravida. In eu vestibulum orci, sit amet ultrices mauris.</p>',
-                  ),
-                  2 => 
-                  array (
+                   ],
+                  2 =>
+                   [
                     'type' => 'button',
                     'text' => 'Find out more',
                     'url' => '',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'backgroundColor' => '#212327',
                         'borderColor' => '#212327',
                         'borderWidth' => '0px',
@@ -639,132 +639,132 @@ class Software {
                         'fontSize' => '14px',
                         'fontWeight' => 'bold',
                         'textAlign' => 'left',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          7 => 
-          array (
+                       ],
+                     ],
+                   ],
+                 ],
+               ],
+             ],
+           ],
+          7 =>
+           [
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
-            array (
-              'src' => NULL,
+            'image' =>
+             [
+              'src' => null,
               'display' => 'scale',
-            ),
-            'styles' => 
-            array (
-              'block' => 
-              array (
+             ],
+            'styles' =>
+             [
+              'block' =>
+               [
                 'backgroundColor' => 'transparent',
-              ),
-            ),
-            'blocks' => 
-            array (
-              0 => 
-              array (
+               ],
+             ],
+            'blocks' =>
+             [
+              0 =>
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
-                array (
-                  'src' => NULL,
+                'image' =>
+                 [
+                  'src' => null,
                   'display' => 'scale',
-                ),
-                'styles' => 
-                array (
-                  'block' => 
-                  array (
+                 ],
+                'styles' =>
+                 [
+                  'block' =>
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => 
-                array (
-                  0 => 
-                  array (
+                   ],
+                 ],
+                'blocks' =>
+                 [
+                  0 =>
+                   [
                     'type' => 'spacer',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'backgroundColor' => 'transparent',
                         'height' => '50px',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          8 => 
-          array (
+                       ],
+                     ],
+                   ],
+                 ],
+               ],
+             ],
+           ],
+          8 =>
+           [
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
-            array (
-              'src' => NULL,
+            'image' =>
+             [
+              'src' => null,
               'display' => 'scale',
-            ),
-            'styles' => 
-            array (
-              'block' => 
-              array (
+             ],
+            'styles' =>
+             [
+              'block' =>
+               [
                 'backgroundColor' => '#ffffff',
-              ),
-            ),
-            'blocks' => 
-            array (
-              0 => 
-              array (
+               ],
+             ],
+            'blocks' =>
+             [
+              0 =>
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
-                array (
-                  'src' => NULL,
+                'image' =>
+                 [
+                  'src' => null,
                   'display' => 'scale',
-                ),
-                'styles' => 
-                array (
-                  'block' => 
-                  array (
+                 ],
+                'styles' =>
+                 [
+                  'block' =>
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => 
-                array (
-                  0 => 
-                  array (
+                   ],
+                 ],
+                'blocks' =>
+                 [
+                  0 =>
+                   [
                     'type' => 'spacer',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'backgroundColor' => 'transparent',
                         'height' => '40px',
-                      ),
-                    ),
-                  ),
-                  1 => 
-                  array (
+                       ],
+                     ],
+                   ],
+                  1 =>
+                   [
                     'type' => 'text',
                     'text' => '<h2 style="text-align: center;"><strong>Get the app now for free</strong></h2>
     <p style="text-align: center;">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin placerat feugiat est, malesuada varius sem finibus a. Nunc feugiat sollicitudin gravida.</p>',
-                  ),
-                  2 => 
-                  array (
+                   ],
+                  2 =>
+                   [
                     'type' => 'button',
                     'text' => 'Download for free',
                     'url' => '',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'backgroundColor' => '#dbbb00',
                         'borderColor' => '#212327',
                         'borderWidth' => '0px',
@@ -777,77 +777,77 @@ class Software {
                         'fontSize' => '18px',
                         'fontWeight' => 'bold',
                         'textAlign' => 'center',
-                      ),
-                    ),
-                  ),
-                  3 => 
-                  array (
+                       ],
+                     ],
+                   ],
+                  3 =>
+                   [
                     'type' => 'spacer',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'backgroundColor' => 'transparent',
                         'height' => '20px',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          9 => 
-          array (
+                       ],
+                     ],
+                   ],
+                 ],
+               ],
+             ],
+           ],
+          9 =>
+           [
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
-            array (
-              'src' => NULL,
+            'image' =>
+             [
+              'src' => null,
               'display' => 'scale',
-            ),
-            'styles' => 
-            array (
-              'block' => 
-              array (
+             ],
+            'styles' =>
+             [
+              'block' =>
+               [
                 'backgroundColor' => 'transparent',
-              ),
-            ),
-            'blocks' => 
-            array (
-              0 => 
-              array (
+               ],
+             ],
+            'blocks' =>
+             [
+              0 =>
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
-                array (
-                  'src' => NULL,
+                'image' =>
+                 [
+                  'src' => null,
                   'display' => 'scale',
-                ),
-                'styles' => 
-                array (
-                  'block' => 
-                  array (
+                 ],
+                'styles' =>
+                 [
+                  'block' =>
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => 
-                array (
-                  0 => 
-                  array (
+                   ],
+                 ],
+                'blocks' =>
+                 [
+                  0 =>
+                   [
                     'type' => 'spacer',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'backgroundColor' => 'transparent',
                         'height' => '50px',
-                      ),
-                    ),
-                  ),
-                  1 => 
-                  array (
+                       ],
+                     ],
+                   ],
+                  1 =>
+                   [
                     'type' => 'image',
                     'link' => '',
                     'src' => $this->template_image_url . '/Software-Logo.png',
@@ -855,22 +855,22 @@ class Software {
                     'fullWidth' => false,
                     'width' => '140px',
                     'height' => '122px',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'textAlign' => 'center',
-                      ),
-                    ),
-                  ),
-                  2 => 
-                  array (
+                       ],
+                     ],
+                   ],
+                  2 =>
+                   [
                     'type' => 'social',
                     'iconSet' => 'full-symbol-black',
-                    'icons' => 
-                    array (
-                      0 => 
-                      array (
+                    'icons' =>
+                     [
+                      0 =>
+                       [
                         'type' => 'socialIcon',
                         'iconType' => 'facebook',
                         'link' => 'http://www.facebook.com',
@@ -878,9 +878,9 @@ class Software {
                         'height' => '32px',
                         'width' => '32px',
                         'text' => 'Facebook',
-                      ),
-                      1 => 
-                      array (
+                       ],
+                      1 =>
+                       [
                         'type' => 'socialIcon',
                         'iconType' => 'twitter',
                         'link' => 'http://www.twitter.com',
@@ -888,9 +888,9 @@ class Software {
                         'height' => '32px',
                         'width' => '32px',
                         'text' => 'Twitter',
-                      ),
-                      2 => 
-                      array (
+                       ],
+                      2 =>
+                       [
                         'type' => 'socialIcon',
                         'iconType' => 'youtube',
                         'link' => 'http://www.youtube.com',
@@ -898,95 +898,95 @@ class Software {
                         'height' => '32px',
                         'width' => '32px',
                         'text' => 'Youtube',
-                      ),
-                    ),
-                  ),
-                  3 => 
-                  array (
+                       ],
+                     ],
+                   ],
+                  3 =>
+                   [
                     'type' => 'footer',
                     'text' => '<p><a href="[link:subscription_unsubscribe_url]">Unsubscribe</a> | <a href="[link:subscription_manage_url]">Manage subscription</a><br />Add your postal address here!</p>',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'backgroundColor' => 'transparent',
-                      ),
-                      'text' => 
-                      array (
+                       ],
+                      'text' =>
+                       [
                         'fontColor' => '#222222',
                         'fontFamily' => 'Merriweather Sans',
                         'fontSize' => '12px',
                         'textAlign' => 'center',
-                      ),
-                      'link' => 
-                      array (
+                       ],
+                      'link' =>
+                       [
                         'fontColor' => '#212327',
                         'textDecoration' => 'underline',
-                      ),
-                    ),
-                  ),
-                  4 => 
-                  array (
+                       ],
+                     ],
+                   ],
+                  4 =>
+                   [
                     'type' => 'spacer',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'backgroundColor' => 'transparent',
                         'height' => '20px',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-      'globalStyles' => 
-      array (
-        'text' => 
-        array (
+                       ],
+                     ],
+                   ],
+                 ],
+               ],
+             ],
+           ],
+         ],
+       ],
+      'globalStyles' =>
+       [
+        'text' =>
+         [
           'fontColor' => '#212327',
           'fontFamily' => 'Merriweather Sans',
           'fontSize' => '14px',
-        ),
-        'h1' => 
-        array (
+         ],
+        'h1' =>
+         [
           'fontColor' => '#212327',
           'fontFamily' => 'Merriweather Sans',
           'fontSize' => '40px',
-        ),
-        'h2' => 
-        array (
+         ],
+        'h2' =>
+         [
           'fontColor' => '#212327',
           'fontFamily' => 'Merriweather Sans',
           'fontSize' => '26px',
-        ),
-        'h3' => 
-        array (
+         ],
+        'h3' =>
+         [
           'fontColor' => '#212327',
           'fontFamily' => 'Merriweather Sans',
           'fontSize' => '22px',
-        ),
-        'link' => 
-        array (
+         ],
+        'link' =>
+         [
           'fontColor' => '#212327',
           'textDecoration' => 'underline',
-        ),
-        'wrapper' => 
-        array (
+         ],
+        'wrapper' =>
+         [
           'backgroundColor' => '#dbbb00',
-        ),
-        'body' => 
-        array (
+         ],
+        'body' =>
+         [
           'backgroundColor' => '#dbbb00',
-        ),
-      ),
-      'blockDefaults' => 
-      array (
-        'automatedLatestContent' => 
-        array (
+         ],
+       ],
+      'blockDefaults' =>
+       [
+        'automatedLatestContent' =>
+         [
           'amount' => '5',
           'withLayout' => false,
           'contentType' => 'post',
@@ -1003,15 +1003,15 @@ class Software {
           'categoriesPrecededBy' => 'Categories:',
           'readMoreType' => 'button',
           'readMoreText' => 'Read more',
-          'readMoreButton' => 
-          array (
+          'readMoreButton' =>
+           [
             'text' => 'Read more',
             'url' => '[postLink]',
             'context' => 'automatedLatestContent.readMoreButton',
-            'styles' => 
-            array (
-              'block' => 
-              array (
+            'styles' =>
+             [
+              'block' =>
+               [
                 'backgroundColor' => '#2ea1cd',
                 'borderColor' => '#0074a2',
                 'borderWidth' => '1px',
@@ -1024,31 +1024,31 @@ class Software {
                 'fontSize' => '18px',
                 'fontWeight' => 'normal',
                 'textAlign' => 'center',
-              ),
-            ),
-          ),
+               ],
+             ],
+           ],
           'sortBy' => 'newest',
           'showDivider' => true,
-          'divider' => 
-          array (
+          'divider' =>
+           [
             'context' => 'automatedLatestContent.divider',
-            'styles' => 
-            array (
-              'block' => 
-              array (
+            'styles' =>
+             [
+              'block' =>
+               [
                 'backgroundColor' => 'transparent',
                 'padding' => '13px',
                 'borderStyle' => 'solid',
                 'borderWidth' => '3px',
                 'borderColor' => '#aaaaaa',
-              ),
-            ),
-          ),
+               ],
+             ],
+           ],
           'backgroundColor' => '#ffffff',
           'backgroundColorAlternate' => '#eeeeee',
-        ),
-        'automatedLatestContentLayout' => 
-        array (
+         ],
+        'automatedLatestContentLayout' =>
+         [
           'amount' => '5',
           'withLayout' => true,
           'contentType' => 'post',
@@ -1065,15 +1065,15 @@ class Software {
           'categoriesPrecededBy' => 'Categories:',
           'readMoreType' => 'button',
           'readMoreText' => 'Read more',
-          'readMoreButton' => 
-          array (
+          'readMoreButton' =>
+           [
             'text' => 'Read more',
             'url' => '[postLink]',
             'context' => 'automatedLatestContentLayout.readMoreButton',
-            'styles' => 
-            array (
-              'block' => 
-              array (
+            'styles' =>
+             [
+              'block' =>
+               [
                 'backgroundColor' => '#2ea1cd',
                 'borderColor' => '#0074a2',
                 'borderWidth' => '1px',
@@ -1086,37 +1086,37 @@ class Software {
                 'fontSize' => '18px',
                 'fontWeight' => 'normal',
                 'textAlign' => 'center',
-              ),
-            ),
-          ),
+               ],
+             ],
+           ],
           'sortBy' => 'newest',
           'showDivider' => true,
-          'divider' => 
-          array (
+          'divider' =>
+           [
             'context' => 'automatedLatestContentLayout.divider',
-            'styles' => 
-            array (
-              'block' => 
-              array (
+            'styles' =>
+             [
+              'block' =>
+               [
                 'backgroundColor' => 'transparent',
                 'padding' => '13px',
                 'borderStyle' => 'solid',
                 'borderWidth' => '3px',
                 'borderColor' => '#aaaaaa',
-              ),
-            ),
-          ),
+               ],
+             ],
+           ],
           'backgroundColor' => '#ffffff',
           'backgroundColorAlternate' => '#eeeeee',
-        ),
-        'button' => 
-        array (
+         ],
+        'button' =>
+         [
           'text' => 'Find out more',
           'url' => '',
-          'styles' => 
-          array (
-            'block' => 
-            array (
+          'styles' =>
+           [
+            'block' =>
+             [
               'backgroundColor' => '#212327',
               'borderColor' => '#212327',
               'borderWidth' => '0px',
@@ -1129,50 +1129,50 @@ class Software {
               'fontSize' => '14px',
               'fontWeight' => 'bold',
               'textAlign' => 'left',
-            ),
-          ),
+             ],
+           ],
           'type' => 'button',
-        ),
-        'divider' => 
-        array (
-          'styles' => 
-          array (
-            'block' => 
-            array (
+         ],
+        'divider' =>
+         [
+          'styles' =>
+           [
+            'block' =>
+             [
               'backgroundColor' => 'transparent',
               'padding' => '13px',
               'borderStyle' => 'solid',
               'borderWidth' => '3px',
               'borderColor' => '#aaaaaa',
-            ),
-          ),
-        ),
-        'footer' => 
-        array (
+             ],
+           ],
+         ],
+        'footer' =>
+         [
           'text' => '<p><a href="[link:subscription_unsubscribe_url]">Unsubscribe</a> | <a href="[link:subscription_manage_url]">Manage subscription</a><br />Add your postal address here!</p>',
-          'styles' => 
-          array (
-            'block' => 
-            array (
+          'styles' =>
+           [
+            'block' =>
+             [
               'backgroundColor' => 'transparent',
-            ),
-            'text' => 
-            array (
+             ],
+            'text' =>
+             [
               'fontColor' => '#222222',
               'fontFamily' => 'Merriweather Sans',
               'fontSize' => '12px',
               'textAlign' => 'center',
-            ),
-            'link' => 
-            array (
+             ],
+            'link' =>
+             [
               'fontColor' => '#212327',
               'textDecoration' => 'underline',
-            ),
-          ),
+             ],
+           ],
           'type' => 'footer',
-        ),
-        'posts' => 
-        array (
+         ],
+        'posts' =>
+         [
           'amount' => '10',
           'withLayout' => true,
           'contentType' => 'post',
@@ -1190,15 +1190,15 @@ class Software {
           'categoriesPrecededBy' => 'Categories:',
           'readMoreType' => 'link',
           'readMoreText' => 'Read more',
-          'readMoreButton' => 
-          array (
+          'readMoreButton' =>
+           [
             'text' => 'Read more',
             'url' => '[postLink]',
             'context' => 'posts.readMoreButton',
-            'styles' => 
-            array (
-              'block' => 
-              array (
+            'styles' =>
+             [
+              'block' =>
+               [
                 'backgroundColor' => '#2ea1cd',
                 'borderColor' => '#0074a2',
                 'borderWidth' => '1px',
@@ -1211,36 +1211,36 @@ class Software {
                 'fontSize' => '18px',
                 'fontWeight' => 'normal',
                 'textAlign' => 'center',
-              ),
-            ),
-          ),
+               ],
+             ],
+           ],
           'sortBy' => 'newest',
           'showDivider' => true,
-          'divider' => 
-          array (
+          'divider' =>
+           [
             'context' => 'posts.divider',
-            'styles' => 
-            array (
-              'block' => 
-              array (
+            'styles' =>
+             [
+              'block' =>
+               [
                 'backgroundColor' => 'transparent',
                 'padding' => '13px',
                 'borderStyle' => 'solid',
                 'borderWidth' => '3px',
                 'borderColor' => '#aaaaaa',
-              ),
-            ),
-          ),
+               ],
+             ],
+           ],
           'backgroundColor' => '#ffffff',
           'backgroundColorAlternate' => '#eeeeee',
-        ),
-        'social' => 
-        array (
+         ],
+        'social' =>
+         [
           'iconSet' => 'full-symbol-black',
-          'icons' => 
-          array (
-            0 => 
-            array (
+          'icons' =>
+           [
+            0 =>
+             [
               'type' => 'socialIcon',
               'iconType' => 'facebook',
               'link' => 'http://www.facebook.com',
@@ -1248,9 +1248,9 @@ class Software {
               'height' => '32px',
               'width' => '32px',
               'text' => 'Facebook',
-            ),
-            1 => 
-            array (
+             ],
+            1 =>
+             [
               'type' => 'socialIcon',
               'iconType' => 'twitter',
               'link' => 'http://www.twitter.com',
@@ -1258,9 +1258,9 @@ class Software {
               'height' => '32px',
               'width' => '32px',
               'text' => 'Twitter',
-            ),
-            2 => 
-            array (
+             ],
+            2 =>
+             [
               'type' => 'socialIcon',
               'iconType' => 'youtube',
               'link' => 'http://www.youtube.com',
@@ -1268,48 +1268,48 @@ class Software {
               'height' => '32px',
               'width' => '32px',
               'text' => 'Youtube',
-            ),
-          ),
+             ],
+           ],
           'type' => 'social',
-        ),
-        'spacer' => 
-        array (
-          'styles' => 
-          array (
-            'block' => 
-            array (
+         ],
+        'spacer' =>
+         [
+          'styles' =>
+           [
+            'block' =>
+             [
               'backgroundColor' => 'transparent',
               'height' => '20px',
-            ),
-          ),
+             ],
+           ],
           'type' => 'spacer',
-        ),
-        'header' => 
-        array (
-          'text' => 'Display problems?&nbsp;<a href="[link:newsletter_view_in_browser_url]">Open this email in your web browser.</a>',
-          'styles' => 
-          array (
-            'block' => 
-            array (
+         ],
+        'header' =>
+         [
+          'text' => '<a href="[link:newsletter_view_in_browser_url]">View this in your browser.</a>',
+          'styles' =>
+           [
+            'block' =>
+             [
               'backgroundColor' => 'transparent',
-            ),
-            'text' => 
-            array (
+             ],
+            'text' =>
+             [
               'fontColor' => '#222222',
               'fontFamily' => 'Merriweather Sans',
               'fontSize' => '12px',
               'textAlign' => 'right',
-            ),
-            'link' => 
-            array (
+             ],
+            'link' =>
+             [
               'fontColor' => '#212327',
               'textDecoration' => 'underline',
-            ),
-          ),
+             ],
+           ],
           'type' => 'header',
-        ),
-      ),
-    );
+         ],
+       ],
+    ];
   }
 
 }

@@ -1,24 +1,31 @@
 <?php
 namespace MailPoet\Models;
 
-if(!defined('ABSPATH')) exit;
+use MailPoet\Entities\SegmentEntity;
+use MailPoet\WP\Functions as WPFunctions;
+use MailPoet\WooCommerce\Helper as WCHelper;
+
+if (!defined('ABSPATH')) exit;
 
 /**
- * @property int $id
  * @property array $subscribers_count
+ * @property string $name
+ * @property string $type
+ * @property string $description
  */
+
 class Segment extends Model {
   static $_table = MP_SEGMENTS_TABLE;
-  const TYPE_WP_USERS = 'wp_users';
-  const TYPE_WC_USERS = 'woocommerce_users';
-  const TYPE_DEFAULT = 'default';
+  const TYPE_WP_USERS = SegmentEntity::TYPE_WP_USERS;
+  const TYPE_WC_USERS = SegmentEntity::TYPE_WC_USERS;
+  const TYPE_DEFAULT = SegmentEntity::TYPE_DEFAULT;
 
   function __construct() {
     parent::__construct();
 
-    $this->addValidations('name', array(
-      'required' => __('Please specify a name.', 'mailpoet')
-    ));
+    $this->addValidations('name', [
+      'required' => WPFunctions::get()->__('Please specify a name.', 'mailpoet'),
+    ]);
   }
 
   function delete() {
@@ -29,8 +36,8 @@ class Segment extends Model {
 
   function newsletters() {
     return $this->has_many_through(
-      __NAMESPACE__.'\Newsletter',
-      __NAMESPACE__.'\NewsletterSegment',
+      __NAMESPACE__ . '\Newsletter',
+      __NAMESPACE__ . '\NewsletterSegment',
       'segment_id',
       'newsletter_id'
     );
@@ -38,18 +45,18 @@ class Segment extends Model {
 
   function subscribers() {
     return $this->has_many_through(
-      __NAMESPACE__.'\Subscriber',
-      __NAMESPACE__.'\SubscriberSegment',
+      __NAMESPACE__ . '\Subscriber',
+      __NAMESPACE__ . '\SubscriberSegment',
       'segment_id',
       'subscriber_id'
-    )->where(MP_SUBSCRIBER_SEGMENT_TABLE.'.status', Subscriber::STATUS_SUBSCRIBED);
+    );
   }
 
-  function duplicate($data = array()) {
+  function duplicate($data = []) {
     $duplicate = parent::duplicate($data);
 
-    if($duplicate !== false) {
-      foreach($this->subscribers()->findResultSet() as $relation) {
+    if ($duplicate !== false) {
+      foreach ($this->subscribers()->findResultSet() as $relation) {
         $new_relation = SubscriberSegment::create();
         $new_relation->set('subscriber_id', $relation->id);
         $new_relation->set('segment_id', $duplicate->id);
@@ -93,6 +100,11 @@ class Segment extends Model {
         Subscriber::STATUS_UNSUBSCRIBED
       )
       ->select_expr(
+        'SUM(CASE WHEN subscribers.status = "' . Subscriber::STATUS_INACTIVE . '"
+        AND relation.status != "' . Subscriber::STATUS_UNSUBSCRIBED . '" THEN 1 ELSE 0 END)',
+        Subscriber::STATUS_INACTIVE
+      )
+      ->select_expr(
         'SUM(CASE WHEN subscribers.status = "' . Subscriber::STATUS_UNCONFIRMED . '"
         AND relation.status != "' . Subscriber::STATUS_UNSUBSCRIBED . '" THEN 1 ELSE 0 END)',
         Subscriber::STATUS_UNCONFIRMED
@@ -112,15 +124,15 @@ class Segment extends Model {
   static function getWPSegment() {
     $wp_segment = self::where('type', self::TYPE_WP_USERS)->findOne();
 
-    if($wp_segment === false) {
+    if ($wp_segment === false) {
       // create the wp users segment
       $wp_segment = Segment::create();
-      $wp_segment->hydrate(array(
-        'name' => __('WordPress Users', 'mailpoet'),
+      $wp_segment->hydrate([
+        'name' => WPFunctions::get()->__('WordPress Users', 'mailpoet'),
         'description' =>
-          __('This list contains all of your WordPress users.', 'mailpoet'),
-        'type' => self::TYPE_WP_USERS
-      ));
+          WPFunctions::get()->__('This list contains all of your WordPress users.', 'mailpoet'),
+        'type' => self::TYPE_WP_USERS,
+      ]);
       $wp_segment->save();
     }
 
@@ -130,42 +142,69 @@ class Segment extends Model {
   static function getWooCommerceSegment() {
     $wc_segment = self::where('type', self::TYPE_WC_USERS)->findOne();
 
-    if($wc_segment === false) {
+    if ($wc_segment === false) {
       // create the WooCommerce customers segment
       $wc_segment = Segment::create();
-      $wc_segment->hydrate(array(
-        'name' => __('WooCommerce Customers', 'mailpoet'),
+      $wc_segment->hydrate([
+        'name' => WPFunctions::get()->__('WooCommerce Customers', 'mailpoet'),
         'description' =>
-          __('This list contains all of your WooCommerce customers.', 'mailpoet'),
-        'type' => self::TYPE_WC_USERS
-      ));
+          WPFunctions::get()->__('This list contains all of your WooCommerce customers.', 'mailpoet'),
+        'type' => self::TYPE_WC_USERS,
+      ]);
       $wc_segment->save();
     }
 
     return $wc_segment;
   }
 
+  static function shouldShowWooCommerceSegment() {
+    $woocommerce_helper = new WCHelper();
+    $is_woocommerce_active = $woocommerce_helper->isWooCommerceActive();
+    $woocommerce_user_exists = Segment::tableAlias('segment')
+      ->where('segment.type', Segment::TYPE_WC_USERS)
+      ->join(
+        MP_SUBSCRIBER_SEGMENT_TABLE,
+        'segment_subscribers.segment_id = segment.id',
+        'segment_subscribers'
+      )
+      ->limit(1)
+      ->findOne();
+
+    if (!$is_woocommerce_active && !$woocommerce_user_exists) {
+      return false;
+    }
+    return true;
+  }
+
+  static function getSegmentTypes() {
+    $types = [Segment::TYPE_DEFAULT, Segment::TYPE_WP_USERS];
+    if (Segment::shouldShowWooCommerceSegment()) {
+      $types[] = Segment::TYPE_WC_USERS;
+    }
+    return $types;
+  }
+
   static function search($orm, $search = '') {
-    return $orm->whereLike('name', '%'.$search.'%');
+    return $orm->whereLike('name', '%' . $search . '%');
   }
 
   static function groups() {
-    return array(
-      array(
+    return [
+      [
         'name' => 'all',
-        'label' => __('All', 'mailpoet'),
-        'count' => Segment::getPublished()->count()
-      ),
-      array(
+        'label' => WPFunctions::get()->__('All', 'mailpoet'),
+        'count' => Segment::getPublished()->count(),
+      ],
+      [
         'name' => 'trash',
-        'label' => __('Trash', 'mailpoet'),
-        'count' => Segment::getTrashed()->count()
-      )
-    );
+        'label' => WPFunctions::get()->__('Trash', 'mailpoet'),
+        'count' => Segment::getTrashed()->count(),
+      ],
+    ];
   }
 
   static function groupBy($orm, $group = null) {
-    if($group === 'trash') {
+    if ($group === 'trash') {
       $orm->whereNotNull('deleted_at');
     } else {
       $orm->whereNull('deleted_at');
@@ -174,31 +213,31 @@ class Segment extends Model {
   }
 
   static function getSegmentsWithSubscriberCount($type = self::TYPE_DEFAULT) {
-    $query = self::selectMany(array(self::$_table.'.id', self::$_table.'.name'))
-      ->whereIn('type', array(Segment::TYPE_DEFAULT, Segment::TYPE_WP_USERS, Segment::TYPE_WC_USERS))
+    $query = self::selectMany([self::$_table . '.id', self::$_table . '.name'])
+      ->whereIn('type', Segment::getSegmentTypes())
       ->selectExpr(
-        self::$_table.'.*, ' .
-        'COUNT(IF('.
-          MP_SUBSCRIBER_SEGMENT_TABLE.'.status="'.Subscriber::STATUS_SUBSCRIBED.'"'
-          .' AND '.
-          MP_SUBSCRIBERS_TABLE.'.deleted_at IS NULL'
-          .' AND '.
-          MP_SUBSCRIBERS_TABLE.'.status="'.Subscriber::STATUS_SUBSCRIBED.'"'
-          .', 1, NULL)) `subscribers`'
+        self::$_table . '.*, ' .
+        'COUNT(IF(' .
+          MP_SUBSCRIBER_SEGMENT_TABLE . '.status="' . Subscriber::STATUS_SUBSCRIBED . '"'
+          . ' AND ' .
+          MP_SUBSCRIBERS_TABLE . '.deleted_at IS NULL'
+          . ' AND ' .
+          MP_SUBSCRIBERS_TABLE . '.status="' . Subscriber::STATUS_SUBSCRIBED . '"'
+          . ', 1, NULL)) `subscribers`'
       )
       ->leftOuterJoin(
         MP_SUBSCRIBER_SEGMENT_TABLE,
-        array(self::$_table.'.id', '=', MP_SUBSCRIBER_SEGMENT_TABLE.'.segment_id'))
+        [self::$_table . '.id', '=', MP_SUBSCRIBER_SEGMENT_TABLE . '.segment_id'])
       ->leftOuterJoin(
         MP_SUBSCRIBERS_TABLE,
-        array(MP_SUBSCRIBER_SEGMENT_TABLE.'.subscriber_id', '=', MP_SUBSCRIBERS_TABLE.'.id'))
-      ->groupBy(self::$_table.'.id')
-      ->groupBy(self::$_table.'.name')
-      ->orderByAsc(self::$_table.'.name')
-      ->whereNull(self::$_table.'.deleted_at');
+        [MP_SUBSCRIBER_SEGMENT_TABLE . '.subscriber_id', '=', MP_SUBSCRIBERS_TABLE . '.id'])
+      ->groupBy(self::$_table . '.id')
+      ->groupBy(self::$_table . '.name')
+      ->orderByAsc(self::$_table . '.name')
+      ->whereNull(self::$_table . '.deleted_at');
 
-    if(!empty($type)) {
-      $query->where(self::$_table.'.type', $type);
+    if (!empty($type)) {
+      $query->where(self::$_table . '.type', $type);
     }
 
     return $query->findArray();
@@ -221,7 +260,7 @@ class Segment extends Model {
       'AND subscribers.deleted_at IS NULL ' .
       'GROUP BY segments.id) ' .
       'UNION ALL ' .
-      '(SELECT 0 as id, "' . __('Not in a List', 'mailpoet') . '" as name, COUNT(*) as subscribers ' .
+      '(SELECT 0 as id, "' . WPFunctions::get()->__('Not in a List', 'mailpoet') . '" as name, COUNT(*) as subscribers ' .
       'FROM ' . MP_SUBSCRIBERS_TABLE . ' subscribers ' .
       'LEFT JOIN ' . MP_SUBSCRIBER_SEGMENT_TABLE . ' relation on relation.subscriber_id = subscribers.id ' .
       'WHERE relation.subscriber_id is NULL ' .
@@ -231,10 +270,10 @@ class Segment extends Model {
     )->findArray();
   }
 
-  static function listingQuery(array $data = array()) {
+  static function listingQuery(array $data = []) {
     $query = self::select('*');
-    $query->whereIn('type', array(Segment::TYPE_DEFAULT, Segment::TYPE_WP_USERS, Segment::TYPE_WC_USERS));
-    if(isset($data['group'])) {
+    $query->whereIn('type', Segment::getSegmentTypes());
+    if (isset($data['group'])) {
       $query->filter('groupBy', $data['group']);
     }
     return $query;
@@ -246,15 +285,15 @@ class Segment extends Model {
 
   static function bulkTrash($orm) {
     $count = parent::bulkAction($orm, function($ids) {
-      Segment::rawExecute(join(' ', array(
+      Segment::rawExecute(join(' ', [
         'UPDATE `' . Segment::$_table . '`',
         'SET `deleted_at` = NOW()',
-        'WHERE `id` IN ('.rtrim(str_repeat('?,', count($ids)), ',').')',
-        'AND `type` = "' . Segment::TYPE_DEFAULT . '"'
-      )), $ids);
+        'WHERE `id` IN (' . rtrim(str_repeat('?,', count($ids)), ',') . ')',
+        'AND `type` = "' . Segment::TYPE_DEFAULT . '"',
+      ]), $ids);
     });
 
-    return array('count' => $count);
+    return ['count' => $count];
   }
 
   static function bulkDelete($orm) {
@@ -271,7 +310,7 @@ class Segment extends Model {
       Segment::whereIn('id', $ids)->deleteMany();
     });
 
-    return array('count' => $count);
+    return ['count' => $count];
   }
 
   static function getAnalytics() {
@@ -279,8 +318,8 @@ class Segment extends Model {
                         ->whereNull('deleted_at')
                         ->groupBy('type')
                         ->findArray();
-    $result = array();
-    foreach($analytics as $segment) {
+    $result = [];
+    foreach ($analytics as $segment) {
       $result[$segment['type']] = $segment['count'];
     }
     return $result;

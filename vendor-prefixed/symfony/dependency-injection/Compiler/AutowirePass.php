@@ -26,13 +26,13 @@ use MailPoetVendor\Symfony\Component\DependencyInjection\TypedReference;
  */
 class AutowirePass extends \MailPoetVendor\Symfony\Component\DependencyInjection\Compiler\AbstractRecursivePass
 {
-    private $definedTypes = array();
+    private $definedTypes = [];
     private $types;
     private $ambiguousServiceTypes;
-    private $autowired = array();
+    private $autowired = [];
     private $lastFailure;
     private $throwOnAutowiringException;
-    private $autowiringExceptions = array();
+    private $autowiringExceptions = [];
     private $strictMode;
     /**
      * @param bool $throwOnAutowireException Errors can be retrieved via Definition::getErrors()
@@ -57,15 +57,15 @@ class AutowirePass extends \MailPoetVendor\Symfony\Component\DependencyInjection
     public function process(\MailPoetVendor\Symfony\Component\DependencyInjection\ContainerBuilder $container)
     {
         // clear out any possibly stored exceptions from before
-        $this->autowiringExceptions = array();
+        $this->autowiringExceptions = [];
         $this->strictMode = $container->hasParameter('container.autowiring.strict_mode') && $container->getParameter('container.autowiring.strict_mode');
         try {
             parent::process($container);
         } finally {
-            $this->definedTypes = array();
+            $this->definedTypes = [];
             $this->types = null;
             $this->ambiguousServiceTypes = null;
-            $this->autowired = array();
+            $this->autowired = [];
         }
     }
     /**
@@ -80,7 +80,7 @@ class AutowirePass extends \MailPoetVendor\Symfony\Component\DependencyInjection
     public static function createResourceForClass(\ReflectionClass $reflectionClass)
     {
         @\trigger_error('The ' . __METHOD__ . '() method is deprecated since Symfony 3.3 and will be removed in 4.0. Use ContainerBuilder::getReflectionClass() instead.', \E_USER_DEPRECATED);
-        $metadata = array();
+        $metadata = [];
         foreach ($reflectionClass->getMethods(\ReflectionMethod::IS_PUBLIC) as $reflectionMethod) {
             if (!$reflectionMethod->isStatic()) {
                 $metadata[$reflectionMethod->name] = self::getResourceMetadataForMethod($reflectionMethod);
@@ -127,7 +127,7 @@ class AutowirePass extends \MailPoetVendor\Symfony\Component\DependencyInjection
             throw new \MailPoetVendor\Symfony\Component\DependencyInjection\Exception\AutowiringFailedException($this->currentId, $e->getMessage(), 0, $e);
         }
         if ($constructor) {
-            \array_unshift($methodCalls, array($constructor, $value->getArguments()));
+            \array_unshift($methodCalls, [$constructor, $value->getArguments()]);
         }
         $methodCalls = $this->autowireCalls($reflectionClass, $methodCalls);
         if ($constructor) {
@@ -154,7 +154,15 @@ class AutowirePass extends \MailPoetVendor\Symfony\Component\DependencyInjection
             if ($method instanceof \ReflectionFunctionAbstract) {
                 $reflectionMethod = $method;
             } else {
-                $reflectionMethod = $this->getReflectionMethod(new \MailPoetVendor\Symfony\Component\DependencyInjection\Definition($reflectionClass->name), $method);
+                $definition = new \MailPoetVendor\Symfony\Component\DependencyInjection\Definition($reflectionClass->name);
+                try {
+                    $reflectionMethod = $this->getReflectionMethod($definition, $method);
+                } catch (\MailPoetVendor\Symfony\Component\DependencyInjection\Exception\RuntimeException $e) {
+                    if ($definition->getFactory()) {
+                        continue;
+                    }
+                    throw $e;
+                }
             }
             $arguments = $this->autowireMethod($reflectionMethod, $arguments);
             if ($arguments !== $call[1]) {
@@ -272,9 +280,9 @@ class AutowirePass extends \MailPoetVendor\Symfony\Component\DependencyInjection
      */
     private function populateAvailableTypes($onlyAutowiringTypes = \false)
     {
-        $this->types = array();
+        $this->types = [];
         if (!$onlyAutowiringTypes) {
-            $this->ambiguousServiceTypes = array();
+            $this->ambiguousServiceTypes = [];
         }
         foreach ($this->container->getDefinitions() as $id => $definition) {
             $this->populateAvailableType($id, $definition, $onlyAutowiringTypes);
@@ -333,7 +341,7 @@ class AutowirePass extends \MailPoetVendor\Symfony\Component\DependencyInjection
         }
         // keep an array of all services matching this type
         if (!isset($this->ambiguousServiceTypes[$type])) {
-            $this->ambiguousServiceTypes[$type] = array($this->types[$type]);
+            $this->ambiguousServiceTypes[$type] = [$this->types[$type]];
             unset($this->types[$type]);
         }
         $this->ambiguousServiceTypes[$type][] = $id;
@@ -376,7 +384,16 @@ class AutowirePass extends \MailPoetVendor\Symfony\Component\DependencyInjection
     }
     private function createTypeNotFoundMessage(\MailPoetVendor\Symfony\Component\DependencyInjection\TypedReference $reference, $label)
     {
-        if (!($r = $this->container->getReflectionClass($type = $reference->getType(), \false))) {
+        $trackResources = $this->container->isTrackingResources();
+        $this->container->setResourceTracking(\false);
+        try {
+            if ($r = $this->container->getReflectionClass($type = $reference->getType(), \false)) {
+                $alternatives = $this->createTypeAlternatives($reference);
+            }
+        } finally {
+            $this->container->setResourceTracking($trackResources);
+        }
+        if (!$r) {
             // either $type does not exist or a parent class does not exist
             try {
                 $resource = new \MailPoetVendor\Symfony\Component\Config\Resource\ClassExistenceResource($type, \false);
@@ -388,7 +405,6 @@ class AutowirePass extends \MailPoetVendor\Symfony\Component\DependencyInjection
             }
             $message = \sprintf('has type "%s" but this class %s.', $type, $parentMsg ? \sprintf('is missing a parent class (%s)', $parentMsg) : 'was not found');
         } else {
-            $alternatives = $this->createTypeAlternatives($reference);
             $message = $this->container->has($type) ? 'this service is abstract' : 'no such service exists';
             $message = \sprintf('references %s "%s" but %s.%s', $r->isInterface() ? 'interface' : 'class', $type, $message, $alternatives);
             if ($r->isInterface() && !$alternatives) {
@@ -427,7 +443,7 @@ class AutowirePass extends \MailPoetVendor\Symfony\Component\DependencyInjection
      */
     private static function getResourceMetadataForMethod(\ReflectionMethod $method)
     {
-        $methodArgumentsMetadata = array();
+        $methodArgumentsMetadata = [];
         foreach ($method->getParameters() as $parameter) {
             try {
                 $class = $parameter->getClass();
@@ -436,13 +452,13 @@ class AutowirePass extends \MailPoetVendor\Symfony\Component\DependencyInjection
                 $class = \false;
             }
             $isVariadic = \method_exists($parameter, 'isVariadic') && $parameter->isVariadic();
-            $methodArgumentsMetadata[] = array('class' => $class, 'isOptional' => $parameter->isOptional(), 'defaultValue' => $parameter->isOptional() && !$isVariadic ? $parameter->getDefaultValue() : null);
+            $methodArgumentsMetadata[] = ['class' => $class, 'isOptional' => $parameter->isOptional(), 'defaultValue' => $parameter->isOptional() && !$isVariadic ? $parameter->getDefaultValue() : null];
         }
         return $methodArgumentsMetadata;
     }
     private function getAliasesSuggestionForType($type, $extraContext = null)
     {
-        $aliases = array();
+        $aliases = [];
         foreach (\class_parents($type) + \class_implements($type) as $parent) {
             if ($this->container->has($parent) && !$this->container->findDefinition($parent)->isAbstract()) {
                 $aliases[] = $parent;

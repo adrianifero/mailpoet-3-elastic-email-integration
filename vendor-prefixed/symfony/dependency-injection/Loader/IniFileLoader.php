@@ -28,7 +28,7 @@ class IniFileLoader extends \MailPoetVendor\Symfony\Component\DependencyInjectio
         $this->container->fileExists($path);
         // first pass to catch parsing errors
         $result = \parse_ini_file($path, \true);
-        if (\false === $result || array() === $result) {
+        if (\false === $result || [] === $result) {
             throw new \MailPoetVendor\Symfony\Component\DependencyInjection\Exception\InvalidArgumentException(\sprintf('The "%s" file is not valid.', $resource));
         }
         // real raw parsing
@@ -60,7 +60,9 @@ class IniFileLoader extends \MailPoetVendor\Symfony\Component\DependencyInjectio
     private function phpize($value)
     {
         // trim on the right as comments removal keep whitespaces
-        $value = \rtrim($value);
+        if ($value !== ($v = \rtrim($value))) {
+            $value = '""' === \substr_replace($v, '', 1, -1) ? \substr($v, 1, -1) : $v;
+        }
         $lowercaseValue = \strtolower($value);
         switch (\true) {
             case \defined($value):

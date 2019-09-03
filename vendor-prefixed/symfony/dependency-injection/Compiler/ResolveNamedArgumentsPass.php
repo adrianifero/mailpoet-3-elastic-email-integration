@@ -30,11 +30,11 @@ class ResolveNamedArgumentsPass extends \MailPoetVendor\Symfony\Component\Depend
             return parent::processValue($value, $isRoot);
         }
         $calls = $value->getMethodCalls();
-        $calls[] = array('__construct', $value->getArguments());
+        $calls[] = ['__construct', $value->getArguments()];
         foreach ($calls as $i => $call) {
             list($method, $arguments) = $call;
             $parameters = null;
-            $resolvedArguments = array();
+            $resolvedArguments = [];
             foreach ($arguments as $key => $argument) {
                 if (\is_int($key)) {
                     $resolvedArguments[$key] = $argument;
@@ -43,6 +43,7 @@ class ResolveNamedArgumentsPass extends \MailPoetVendor\Symfony\Component\Depend
                 if (null === $parameters) {
                     $r = $this->getReflectionMethod($value, $method);
                     $class = $r instanceof \ReflectionMethod ? $r->class : $this->currentId;
+                    $method = $r->getName();
                     $parameters = $r->getParameters();
                 }
                 if (isset($key[0]) && '$' === $key[0]) {

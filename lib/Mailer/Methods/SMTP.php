@@ -2,6 +2,7 @@
 namespace MailPoet\Mailer\Methods;
 
 use MailPoet\Mailer\Mailer;
+use MailPoet\Mailer\Methods\Common\BlacklistCheck;
 use MailPoet\Mailer\Methods\ErrorMappers\SMTPMapper;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -24,6 +25,9 @@ class SMTP {
   /** @var SMTPMapper */
   private $error_mapper;
 
+  /** @var BlacklistCheck */
+  private $blacklist;
+
   private $wp;
 
   function __construct(
@@ -45,9 +49,14 @@ class SMTP {
     $this->mailer_logger = new \Swift_Plugins_Loggers_ArrayLogger();
     $this->mailer->registerPlugin(new \Swift_Plugins_LoggerPlugin($this->mailer_logger));
     $this->error_mapper = $error_mapper;
+    $this->blacklist = new BlacklistCheck();
   }
 
-  function send($newsletter, $subscriber, $extra_params = array()) {
+  function send($newsletter, $subscriber, $extra_params = []) {
+    if ($this->blacklist->isBlacklisted($subscriber)) {
+      $error = $this->error_mapper->getBlacklistError($subscriber);
+      return Mailer::formatMailerErrorResult($error);
+    }
     try {
       $message = $this->createMessage($newsletter, $subscriber, $extra_params);
       $result = $this->mailer->send($message);
@@ -78,19 +87,19 @@ class SMTP {
     return \Swift_Mailer::newInstance($transport);
   }
 
-  function createMessage($newsletter, $subscriber, $extra_params = array()) {
+  function createMessage($newsletter, $subscriber, $extra_params = []) {
     $message = \Swift_Message::newInstance()
       ->setTo($this->processSubscriber($subscriber))
       ->setFrom(
-        array(
-          $this->sender['from_email'] => $this->sender['from_name']
-        )
+        [
+          $this->sender['from_email'] => $this->sender['from_name'],
+        ]
       )
       ->setSender($this->sender['from_email'])
       ->setReplyTo(
-        array(
-          $this->reply_to['reply_to_email'] => $this->reply_to['reply_to_name']
-        )
+        [
+          $this->reply_to['reply_to_email'] => $this->reply_to['reply_to_name'],
+        ]
       )
       ->setReturnPath($this->return_path)
       ->setSubject($newsletter['subject']);
@@ -110,13 +119,13 @@ class SMTP {
   function processSubscriber($subscriber) {
     preg_match('!(?P<name>.*?)\s<(?P<email>.*?)>!', $subscriber, $subscriber_data);
     if (!isset($subscriber_data['email'])) {
-      $subscriber_data = array(
+      $subscriber_data = [
         'email' => $subscriber,
-      );
+      ];
     }
-    return array(
+    return [
       $subscriber_data['email'] =>
-        (isset($subscriber_data['name'])) ? $subscriber_data['name'] : ''
-    );
+        (isset($subscriber_data['name'])) ? $subscriber_data['name'] : '',
+    ];
   }
 }

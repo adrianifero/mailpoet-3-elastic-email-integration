@@ -4,14 +4,13 @@ namespace MailPoet\Cron\Workers\SendingQueue\Tasks;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Util\Helpers;
 use MailPoet\Router\Router;
-use MailPoet\Models\Setting;
 use MailPoet\Subscription\Url;
 use MailPoet\Models\Subscriber;
 use MailPoet\Router\Endpoints\Track;
 use MailPoet\Newsletter\Links\Links as NewsletterLinks;
 use MailPoet\Models\NewsletterLink as NewsletterLinkModel;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 class Links {
   static function process($rendered_newsletter, $newsletter, $queue) {
@@ -28,10 +27,10 @@ class Links {
     // split the processed body with hashed links back to HTML and TEXT
     list($rendered_newsletter['html'], $rendered_newsletter['text'])
       = Helpers::splitObject($content);
-    return array(
+    return [
       $rendered_newsletter,
-      $links
-    );
+      $links,
+    ];
   }
 
   static function saveLinks($links, $newsletter, $queue) {
@@ -41,16 +40,18 @@ class Links {
   static function getUnsubscribeUrl($queue, $subscriber_id) {
     $subscriber = Subscriber::where('id', $subscriber_id)->findOne();
     $settings = new SettingsController();
-    if((boolean)$settings->get('tracking.enabled')) {
+    if ((boolean)$settings->get('tracking.enabled')) {
       $link_hash = NewsletterLinkModel::where('queue_id', $queue->id)
         ->where('url', '[link:subscription_unsubscribe_url]')
-        ->findOne()
-        ->hash;
+        ->findOne();
+      if (!$link_hash instanceof NewsletterLinkModel) {
+        return '';
+      }
       $data = NewsletterLinks::createUrlDataObject(
-        $subscriber->id, 
+        $subscriber->id,
         $subscriber->email,
-        $queue->id, 
-        $link_hash, 
+        $queue->id,
+        $link_hash->hash,
         false
       );
       $url = Router::buildRequest(

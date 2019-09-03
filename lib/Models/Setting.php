@@ -2,9 +2,14 @@
 namespace MailPoet\Models;
 
 use MailPoet\Settings\SettingsController;
+use MailPoet\WP\Functions as WPFunctions;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
+/**
+ * @property string $name
+ * @property string|null $value
+ */
 class Setting extends Model {
   public static $_table = MP_SETTINGS_TABLE;
 
@@ -16,9 +21,9 @@ class Setting extends Model {
   function __construct() {
     parent::__construct();
 
-    $this->addValidations('name', array(
-      'required' => __('Please specify a name.', 'mailpoet')
-    ));
+    $this->addValidations('name', [
+      'required' => WPFunctions::get()->__('Please specify a name.', 'mailpoet'),
+    ]);
   }
 
   /**
@@ -26,15 +31,16 @@ class Setting extends Model {
    * @deprecated
    */
   public static function getValue($key, $default = null) {
+    trigger_error('Calling Settings::getValue() is deprecated and will be removed. Use \MailPoet\Settings\SettingsController instead.', E_USER_DEPRECATED);
     $settings = new SettingsController();
-    $settings->get($key, $default);
+    return $settings->get($key, $default);
   }
 
   public static function getAll() {
     $settingsCollection = self::findMany();
-    $settings = array();
-    if(!empty($settingsCollection)) {
-      foreach($settingsCollection as $setting) {
+    $settings = [];
+    if (!empty($settingsCollection)) {
+      foreach ($settingsCollection as $setting) {
         $value = (is_serialized($setting->value)
           ? unserialize($setting->value)
           : $setting->value
@@ -45,8 +51,8 @@ class Setting extends Model {
     return $settings;
   }
 
-  public static function createOrUpdate($data = array()) {
-    $keys = isset($data['name']) ? array('name' => $data['name']) : false;
+  public static function createOrUpdate($data = []) {
+    $keys = isset($data['name']) ? ['name' => $data['name']] : false;
     return parent::_createOrUpdate($data, $keys);
   }
 
@@ -57,12 +63,12 @@ class Setting extends Model {
 
   public static function saveDefaultSenderIfNeeded($sender_address, $sender_name) {
     $settings = new SettingsController();
-    if(empty($sender_address) || empty($sender_name) || $settings->get('sender')) {
+    if (empty($sender_address) || empty($sender_name) || $settings->get('sender')) {
       return;
     }
-    $settings->set('sender', array(
+    $settings->set('sender', [
       'address' => $sender_address,
-      'name' => $sender_name
-    ));
+      'name' => $sender_name,
+    ]);
   }
 }

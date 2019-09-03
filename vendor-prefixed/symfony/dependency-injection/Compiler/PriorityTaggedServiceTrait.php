@@ -36,7 +36,7 @@ trait PriorityTaggedServiceTrait
      */
     private function findAndSortTaggedServices($tagName, \MailPoetVendor\Symfony\Component\DependencyInjection\ContainerBuilder $container)
     {
-        $services = array();
+        $services = [];
         foreach ($container->findTaggedServiceIds($tagName, \true) as $serviceId => $attributes) {
             $priority = isset($attributes[0]['priority']) ? $attributes[0]['priority'] : 0;
             $services[$priority][] = new \MailPoetVendor\Symfony\Component\DependencyInjection\Reference($serviceId);

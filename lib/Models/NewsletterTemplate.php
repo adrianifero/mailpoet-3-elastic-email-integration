@@ -1,8 +1,18 @@
 <?php
 namespace MailPoet\Models;
+use MailPoet\WP\Functions as WPFunctions;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
+/**
+ * @property string $name
+ * @property int|null $newsletter_id
+ * @property string $categories
+ * @property string $description
+ * @property string|null $body
+ * @property string|null $thumbnail
+ * @property int|null $readonly
+ */
 class NewsletterTemplate extends Model {
   public static $_table = MP_NEWSLETTER_TEMPLATES_TABLE;
 
@@ -12,16 +22,16 @@ class NewsletterTemplate extends Model {
   function __construct() {
     parent::__construct();
 
-    $this->addValidations('name', array(
-      'required' => __('Please specify a name.', 'mailpoet')
-    ));
-    $this->addValidations('body', array(
-      'required' => __('The template body cannot be empty.', 'mailpoet')
-    ));
+    $this->addValidations('name', [
+      'required' => WPFunctions::get()->__('Please specify a name.', 'mailpoet'),
+    ]);
+    $this->addValidations('body', [
+      'required' => WPFunctions::get()->__('The template body cannot be empty.', 'mailpoet'),
+    ]);
   }
 
   static function cleanRecentlySent($data) {
-    if(!empty($data['categories']) && $data['categories'] === self::RECENTLY_SENT_CATEGORIES) {
+    if (!empty($data['categories']) && $data['categories'] === self::RECENTLY_SENT_CATEGORIES) {
       $ids = parent::where('categories', self::RECENTLY_SENT_CATEGORIES)
         ->select('id')
         ->orderByDesc('id')
@@ -38,7 +48,7 @@ class NewsletterTemplate extends Model {
 
   function asArray() {
     $template = parent::asArray();
-    if(isset($template['body'])) {
+    if (isset($template['body'])) {
       $template['body'] = json_decode($template['body'], true);
     }
     return $template;

@@ -13,21 +13,22 @@ use MailPoet\Models\SubscriberSegment;
 use MailPoet\Segments\SubscribersFinder;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\Newsletter\Scheduler\Scheduler as NewsletterScheduler;
-use MailPoet\WP\Functions as WPFunctions;
 
 if (!defined('ABSPATH')) exit;
 
 class Scheduler {
-  public $timer;
-  private $wp;
-  const UNCONFIRMED_SUBSCRIBER_RESCHEDULE_TIMEOUT = 5;
   const TASK_BATCH_SIZE = 5;
 
-  function __construct($timer = false) {
+  public $timer;
+
+  /** @var SubscribersFinder */
+  private $subscribers_finder;
+
+  function __construct(SubscribersFinder $subscribers_finder, $timer = false) {
     $this->timer = ($timer) ? $timer : microtime(true);
     // abort if execution limit is reached
     CronHelper::enforceExecutionLimit($this->timer);
-    $this->wp = new WPFunctions();
+    $this->subscribers_finder = $subscribers_finder;
   }
 
   function process() {
@@ -93,8 +94,7 @@ class Scheduler {
 
     // ensure that subscribers are in segments
 
-    $finder = new SubscribersFinder();
-    $subscribers_count = $finder->addSubscribersToTaskFromSegments($queue->task(), $segments);
+    $subscribers_count = $this->subscribers_finder->addSubscribersToTaskFromSegments($queue->task(), $segments);
 
     if (empty($subscribers_count)) {
       Logger::getLogger('post-notifications')->addInfo(
@@ -118,14 +118,14 @@ class Scheduler {
       'post notification set status to sending',
       ['newsletter_id' => $newsletter->id, 'task_id' => $queue->task_id]
     );
+    $this->reScheduleBounceTask();
     return true;
   }
 
   function processScheduledAutomaticEmail($newsletter, $queue) {
     if ($newsletter->sendTo === 'segment') {
       $segment = Segment::findOne($newsletter->segment);
-      $finder = new SubscribersFinder();
-      $result = $finder->addSubscribersToTaskFromSegments($queue->task(), [$segment]);
+      $result = $this->subscribers_finder->addSubscribersToTaskFromSegments($queue->task(), [$segment]);
       if (empty($result)) {
         $queue->delete();
         return false;
@@ -148,14 +148,14 @@ class Scheduler {
 
   function processScheduledStandardNewsletter($newsletter, SendingTask $task) {
     $segments = $newsletter->segments()->findMany();
-    $finder = new SubscribersFinder();
-    $finder->addSubscribersToTaskFromSegments($task->task(), $segments);
+    $this->subscribers_finder->addSubscribersToTaskFromSegments($task->task(), $segments);
     // update current queue
     $task->updateCount();
     $task->status = null;
     $task->save();
     // update newsletter status
     $newsletter->setStatus(Newsletter::STATUS_SENDING);
+    $this->reScheduleBounceTask();
     return true;
   }
 
@@ -173,12 +173,8 @@ class Scheduler {
     }
     // check if subscriber is confirmed (subscribed)
     if ($subscriber->status !== Subscriber::STATUS_SUBSCRIBED) {
-      // reschedule delivery in 5 minutes
-      $scheduled_at = Carbon::createFromTimestamp($this->wp->currentTime('timestamp'));
-      $queue->scheduled_at = $scheduled_at->addMinutes(
-        self::UNCONFIRMED_SUBSCRIBER_RESCHEDULE_TIMEOUT
-      );
-      $queue->save();
+      // reschedule delivery
+      $queue->rescheduleProgressively();
       return false;
     }
     return true;
@@ -229,6 +225,18 @@ class Scheduler {
       return $queue->task_id;
     }, $scheduled_queues);
     ScheduledTask::touchAllByIds($ids);
+  }
+
+  private function reScheduleBounceTask() {
+    $bounce_tasks = Bounce::getScheduledTasks($future = true);
+    if (count($bounce_tasks)) {
+      $bounce_task = reset($bounce_tasks);
+      if (Carbon::createFromTimestamp(current_time('timestamp'))->addHour(42)->lessThan($bounce_task->scheduled_at)) {
+        $random_offset = rand(-6 * 60 * 60, 6 * 60 * 60);
+        $bounce_task->scheduled_at = Carbon::createFromTimestamp(current_time('timestamp'))->addSecond((36 * 60 * 60) + $random_offset);
+        $bounce_task->save();
+      }
+    }
   }
 
   static function getScheduledQueues() {

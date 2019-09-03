@@ -30,8 +30,8 @@ class ReplaceAliasByActualDefinitionPass extends \MailPoetVendor\Symfony\Compone
     public function process(\MailPoetVendor\Symfony\Component\DependencyInjection\ContainerBuilder $container)
     {
         // First collect all alias targets that need to be replaced
-        $seenAliasTargets = array();
-        $replacements = array();
+        $seenAliasTargets = [];
+        $replacements = [];
         foreach ($container->getAliases() as $definitionId => $target) {
             $targetId = $container->normalizeId($target);
             // Special case: leave this target alone
@@ -65,7 +65,7 @@ class ReplaceAliasByActualDefinitionPass extends \MailPoetVendor\Symfony\Compone
         }
         $this->replacements = $replacements;
         parent::process($container);
-        $this->replacements = array();
+        $this->replacements = [];
     }
     /**
      * {@inheritdoc}

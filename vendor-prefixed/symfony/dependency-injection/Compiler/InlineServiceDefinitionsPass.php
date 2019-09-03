@@ -21,8 +21,8 @@ use MailPoetVendor\Symfony\Component\DependencyInjection\Reference;
  */
 class InlineServiceDefinitionsPass extends \MailPoetVendor\Symfony\Component\DependencyInjection\Compiler\AbstractRecursivePass implements \MailPoetVendor\Symfony\Component\DependencyInjection\Compiler\RepeatablePassInterface
 {
-    private $cloningIds = array();
-    private $inlinedServiceIds = array();
+    private $cloningIds = [];
+    private $inlinedServiceIds = [];
     /**
      * {@inheritdoc}
      */
@@ -105,12 +105,17 @@ class InlineServiceDefinitionsPass extends \MailPoetVendor\Symfony\Component\Dep
         if ($this->currentId == $id) {
             return \false;
         }
-        $ids = array();
+        $ids = [];
+        $isReferencedByConstructor = \false;
         foreach ($graph->getNode($id)->getInEdges() as $edge) {
-            if ($edge->isWeak()) {
+            $isReferencedByConstructor = $isReferencedByConstructor || $edge->isReferencedByConstructor();
+            if ($edge->isWeak() || $edge->isLazy()) {
                 return \false;
             }
             $ids[] = $edge->getSourceNode()->getId();
+        }
+        if (!$ids) {
+            return \true;
         }
         if (\count(\array_unique($ids)) > 1) {
             return \false;
@@ -118,6 +123,6 @@ class InlineServiceDefinitionsPass extends \MailPoetVendor\Symfony\Component\Dep
         if (\count($ids) > 1 && \is_array($factory = $definition->getFactory()) && ($factory[0] instanceof \MailPoetVendor\Symfony\Component\DependencyInjection\Reference || $factory[0] instanceof \MailPoetVendor\Symfony\Component\DependencyInjection\Definition)) {
             return \false;
         }
-        return !$ids || $this->container->getDefinition($ids[0])->isShared();
+        return $this->container->getDefinition($ids[0])->isShared();
     }
 }

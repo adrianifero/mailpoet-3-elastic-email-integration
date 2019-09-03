@@ -5,6 +5,7 @@ namespace MailPoet\Cron\Workers\SendingQueue\Tasks;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Links as LinksTask;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Posts as PostsTask;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Shortcodes as ShortcodesTask;
+use MailPoet\Logging\Logger;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Models\Newsletter as NewsletterModel;
 use MailPoet\Models\NewsletterSegment as NewsletterSegmentModel;
@@ -15,7 +16,7 @@ use MailPoet\Settings\SettingsController;
 use MailPoet\Util\Helpers;
 use MailPoet\WP\Functions as WPFunctions;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 class Newsletter {
   public $tracking_enabled;
@@ -24,13 +25,20 @@ class Newsletter {
   /** @var WPFunctions */
   private $wp;
 
-  function __construct(WPFunctions $wp = null) {
+  /** @var PostsTask */
+  private $posts_task;
+
+  function __construct(WPFunctions $wp = null, PostsTask $posts_task = null) {
     $settings = new SettingsController();
     $this->tracking_enabled = (boolean)$settings->get('tracking.enabled');
-    if($wp == null) {
+    if ($wp === null) {
       $wp = new WPFunctions;
     }
     $this->wp = $wp;
+    if ($posts_task === null) {
+      $posts_task = new PostsTask;
+    }
+    $this->posts_task = $posts_task;
   }
 
   function getNewsletterFromQueue($queue) {
@@ -38,38 +46,42 @@ class Newsletter {
     $newsletter = $queue->newsletter()
       ->whereNull('deleted_at')
       ->whereAnyIs(
-        array(
-          array('status' => NewsletterModel::STATUS_ACTIVE),
-          array('status' => NewsletterModel::STATUS_SENDING)
-        )
+        [
+          ['status' => NewsletterModel::STATUS_ACTIVE],
+          ['status' => NewsletterModel::STATUS_SENDING],
+        ]
       )
       ->findOne();
-    if(!$newsletter) return false;
+    if (!$newsletter) return false;
     // if this is a notification history, get existing active or sending parent newsletter
-    if($newsletter->type == NewsletterModel::TYPE_NOTIFICATION_HISTORY) {
+    if ($newsletter->type == NewsletterModel::TYPE_NOTIFICATION_HISTORY) {
       $parent_newsletter = $newsletter->parent()
         ->whereNull('deleted_at')
         ->whereAnyIs(
-          array(
-            array('status' => NewsletterModel::STATUS_ACTIVE),
-            array('status' => NewsletterModel::STATUS_SENDING)
-          )
+          [
+            ['status' => NewsletterModel::STATUS_ACTIVE],
+            ['status' => NewsletterModel::STATUS_SENDING],
+          ]
         )
         ->findOne();
-      if(!$parent_newsletter) return false;
+      if (!$parent_newsletter) return false;
     }
     return $newsletter;
   }
 
   function preProcessNewsletter(\MailPoet\Models\Newsletter $newsletter, $queue) {
     // return the newsletter if it was previously rendered
-    if(!is_null($queue->getNewsletterRenderedBody())) {
+    if (!is_null($queue->getNewsletterRenderedBody())) {
       return (!$queue->validate()) ?
         $this->stopNewsletterPreProcessing(sprintf('QUEUE-%d-RENDER', $queue->id)) :
         $newsletter;
     }
+    Logger::getLogger('newsletters')->addInfo(
+      'pre-processing newsletter',
+      ['newsletter_id' => $newsletter->id, 'task_id' => $queue->task_id]
+    );
     // if tracking is enabled, do additional processing
-    if($this->tracking_enabled) {
+    if ($this->tracking_enabled) {
       // hook to the newsletter post-processing filter and add tracking image
       $this->tracking_image_inserted = OpenTracking::addTrackingImage();
       // render newsletter
@@ -90,17 +102,20 @@ class Newsletter {
         $newsletter
       );
     }
-    // check if this is a post notification and if it contains posts
-    $newsletter_contains_posts = strpos($rendered_newsletter['html'], 'data-post-id');
-    if($newsletter->type === NewsletterModel::TYPE_NOTIFICATION_HISTORY &&
-      !$newsletter_contains_posts
+    // check if this is a post notification and if it contains at least 1 ALC post
+    if ($newsletter->type === NewsletterModel::TYPE_NOTIFICATION_HISTORY &&
+      $this->posts_task->getAlcPostsCount($rendered_newsletter, $newsletter) === 0
     ) {
       // delete notification history record since it will never be sent
+      Logger::getLogger('post-notifications')->addInfo(
+        'no posts in post notification, deleting it',
+        ['newsletter_id' => $newsletter->id, 'task_id' => $queue->task_id]
+      );
       $newsletter->delete();
       return false;
     }
     // extract and save newsletter posts
-    PostsTask::extractAndSave($rendered_newsletter, $newsletter);
+    $this->posts_task->extractAndSave($rendered_newsletter, $newsletter);
     // update queue with the rendered and pre-processed newsletter
     $queue->newsletter_rendered_subject = ShortcodesTask::process(
       $newsletter->subject,
@@ -111,19 +126,21 @@ class Newsletter {
     );
     // if the rendered subject is empty, use a default subject,
     // having no subject in a newsletter is considered spammy
-    if(empty(trim($queue->newsletter_rendered_subject))) {
-      $queue->newsletter_rendered_subject = __('No subject', 'mailpoet');
+    if (empty(trim($queue->newsletter_rendered_subject))) {
+      $queue->newsletter_rendered_subject = WPFunctions::get()->__('No subject', 'mailpoet');
     }
     $queue->newsletter_rendered_body = $rendered_newsletter;
     $queue->save();
     // catch DB errors
     $queue_errors = $queue->getErrors();
-    if(!$queue_errors) {
+    if (!$queue_errors) {
       // verify that the rendered body was successfully saved
       $queue = SendingQueueModel::findOne($queue->id);
-      $queue_errors = ($queue->validate() !== true);
+      if ($queue instanceof SendingQueueModel) {
+        $queue_errors = ($queue->validate() !== true);
+      }
     }
-    if($queue_errors) {
+    if ($queue_errors) {
       $this->stopNewsletterPreProcessing(sprintf('QUEUE-%d-SAVE', $queue->id));
     }
     return $newsletter;
@@ -134,11 +151,11 @@ class Newsletter {
     // to speed the processing, join content into a continuous string
     $rendered_newsletter = $queue->getNewsletterRenderedBody();
     $prepared_newsletter = Helpers::joinObject(
-      array(
+      [
         $queue->newsletter_rendered_subject,
         $rendered_newsletter['html'],
-        $rendered_newsletter['text']
-      )
+        $rendered_newsletter['text'],
+      ]
     );
     $prepared_newsletter = ShortcodesTask::process(
       $prepared_newsletter,
@@ -147,7 +164,7 @@ class Newsletter {
       $subscriber,
       $queue
     );
-    if($this->tracking_enabled) {
+    if ($this->tracking_enabled) {
       $prepared_newsletter = NewsletterLinks::replaceSubscriberData(
         $subscriber->id,
         $queue->id,
@@ -155,18 +172,19 @@ class Newsletter {
       );
     }
     $prepared_newsletter = Helpers::splitObject($prepared_newsletter);
-    return array(
+    return [
+      'id' => $newsletter->id,
       'subject' => $prepared_newsletter[0],
-      'body' => array(
+      'body' => [
         'html' => $prepared_newsletter[1],
-        'text' => $prepared_newsletter[2]
-      )
-    );
+        'text' => $prepared_newsletter[2],
+      ],
+    ];
   }
 
   function markNewsletterAsSent($newsletter, $queue) {
     // if it's a standard or notification history newsletter, update its status
-    if($newsletter->type === NewsletterModel::TYPE_STANDARD ||
+    if ($newsletter->type === NewsletterModel::TYPE_STANDARD ||
        $newsletter->type === NewsletterModel::TYPE_NOTIFICATION_HISTORY
     ) {
       $newsletter->status = NewsletterModel::STATUS_SENT;
@@ -185,7 +203,7 @@ class Newsletter {
   function stopNewsletterPreProcessing($error_code = null) {
     MailerLog::processError(
       'queue_save',
-      __('There was an error processing your newsletter during sending. If possible, please contact us and report this issue.', 'mailpoet'),
+      WPFunctions::get()->__('There was an error processing your newsletter during sending. If possible, please contact us and report this issue.', 'mailpoet'),
       $error_code
     );
   }

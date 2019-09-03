@@ -34,10 +34,10 @@ use MailPoetVendor\Symfony\Component\Yaml\Yaml;
  */
 class YamlFileLoader extends \MailPoetVendor\Symfony\Component\DependencyInjection\Loader\FileLoader
 {
-    private static $serviceKeywords = array('alias' => 'alias', 'parent' => 'parent', 'class' => 'class', 'shared' => 'shared', 'synthetic' => 'synthetic', 'lazy' => 'lazy', 'public' => 'public', 'abstract' => 'abstract', 'deprecated' => 'deprecated', 'factory' => 'factory', 'file' => 'file', 'arguments' => 'arguments', 'properties' => 'properties', 'configurator' => 'configurator', 'calls' => 'calls', 'tags' => 'tags', 'decorates' => 'decorates', 'decoration_inner_name' => 'decoration_inner_name', 'decoration_priority' => 'decoration_priority', 'autowire' => 'autowire', 'autowiring_types' => 'autowiring_types', 'autoconfigure' => 'autoconfigure', 'bind' => 'bind');
-    private static $prototypeKeywords = array('resource' => 'resource', 'namespace' => 'namespace', 'exclude' => 'exclude', 'parent' => 'parent', 'shared' => 'shared', 'lazy' => 'lazy', 'public' => 'public', 'abstract' => 'abstract', 'deprecated' => 'deprecated', 'factory' => 'factory', 'arguments' => 'arguments', 'properties' => 'properties', 'configurator' => 'configurator', 'calls' => 'calls', 'tags' => 'tags', 'autowire' => 'autowire', 'autoconfigure' => 'autoconfigure', 'bind' => 'bind');
-    private static $instanceofKeywords = array('shared' => 'shared', 'lazy' => 'lazy', 'public' => 'public', 'properties' => 'properties', 'configurator' => 'configurator', 'calls' => 'calls', 'tags' => 'tags', 'autowire' => 'autowire');
-    private static $defaultsKeywords = array('public' => 'public', 'tags' => 'tags', 'autowire' => 'autowire', 'autoconfigure' => 'autoconfigure', 'bind' => 'bind');
+    private static $serviceKeywords = ['alias' => 'alias', 'parent' => 'parent', 'class' => 'class', 'shared' => 'shared', 'synthetic' => 'synthetic', 'lazy' => 'lazy', 'public' => 'public', 'abstract' => 'abstract', 'deprecated' => 'deprecated', 'factory' => 'factory', 'file' => 'file', 'arguments' => 'arguments', 'properties' => 'properties', 'configurator' => 'configurator', 'calls' => 'calls', 'tags' => 'tags', 'decorates' => 'decorates', 'decoration_inner_name' => 'decoration_inner_name', 'decoration_priority' => 'decoration_priority', 'autowire' => 'autowire', 'autowiring_types' => 'autowiring_types', 'autoconfigure' => 'autoconfigure', 'bind' => 'bind'];
+    private static $prototypeKeywords = ['resource' => 'resource', 'namespace' => 'namespace', 'exclude' => 'exclude', 'parent' => 'parent', 'shared' => 'shared', 'lazy' => 'lazy', 'public' => 'public', 'abstract' => 'abstract', 'deprecated' => 'deprecated', 'factory' => 'factory', 'arguments' => 'arguments', 'properties' => 'properties', 'configurator' => 'configurator', 'calls' => 'calls', 'tags' => 'tags', 'autowire' => 'autowire', 'autoconfigure' => 'autoconfigure', 'bind' => 'bind'];
+    private static $instanceofKeywords = ['shared' => 'shared', 'lazy' => 'lazy', 'public' => 'public', 'properties' => 'properties', 'configurator' => 'configurator', 'calls' => 'calls', 'tags' => 'tags', 'autowire' => 'autowire'];
+    private static $defaultsKeywords = ['public' => 'public', 'tags' => 'tags', 'autowire' => 'autowire', 'autoconfigure' => 'autoconfigure', 'bind' => 'bind'];
     private $yamlParser;
     private $anonymousServicesCount;
     private $anonymousServicesSuffix;
@@ -73,7 +73,7 @@ class YamlFileLoader extends \MailPoetVendor\Symfony\Component\DependencyInjecti
         try {
             $this->parseDefinitions($content, $path);
         } finally {
-            $this->instanceof = array();
+            $this->instanceof = [];
         }
     }
     /**
@@ -84,10 +84,10 @@ class YamlFileLoader extends \MailPoetVendor\Symfony\Component\DependencyInjecti
         if (!\is_string($resource)) {
             return \false;
         }
-        if (null === $type && \in_array(\pathinfo($resource, \PATHINFO_EXTENSION), array('yaml', 'yml'), \true)) {
+        if (null === $type && \in_array(\pathinfo($resource, \PATHINFO_EXTENSION), ['yaml', 'yml'], \true)) {
             return \true;
         }
-        return \in_array($type, array('yaml', 'yml'), \true);
+        return \in_array($type, ['yaml', 'yml'], \true);
     }
     /**
      * Parses all imports.
@@ -106,7 +106,7 @@ class YamlFileLoader extends \MailPoetVendor\Symfony\Component\DependencyInjecti
         $defaultDirectory = \dirname($file);
         foreach ($content['imports'] as $import) {
             if (!\is_array($import)) {
-                $import = array('resource' => $import);
+                $import = ['resource' => $import];
             }
             if (!isset($import['resource'])) {
                 throw new \MailPoetVendor\Symfony\Component\DependencyInjection\Exception\InvalidArgumentException(\sprintf('An import should provide a resource in %s. Check your YAML syntax.', $file));
@@ -135,7 +135,7 @@ class YamlFileLoader extends \MailPoetVendor\Symfony\Component\DependencyInjecti
             if (!\is_array($instanceof)) {
                 throw new \MailPoetVendor\Symfony\Component\DependencyInjection\Exception\InvalidArgumentException(\sprintf('Service "_instanceof" key must be an array, "%s" given in "%s".', \gettype($instanceof), $file));
             }
-            $this->instanceof = array();
+            $this->instanceof = [];
             $this->isLoadingInstanceof = \true;
             foreach ($instanceof as $id => $service) {
                 if (!$service || !\is_array($service)) {
@@ -144,7 +144,7 @@ class YamlFileLoader extends \MailPoetVendor\Symfony\Component\DependencyInjecti
                 if (\is_string($service) && 0 === \strpos($service, '@')) {
                     throw new \MailPoetVendor\Symfony\Component\DependencyInjection\Exception\InvalidArgumentException(\sprintf('Type definition "%s" cannot be an alias within "_instanceof" in %s. Check your YAML syntax.', $id, $file));
                 }
-                $this->parseDefinition($id, $service, $file, array());
+                $this->parseDefinition($id, $service, $file, []);
             }
         }
         $this->isLoadingInstanceof = \false;
@@ -164,7 +164,7 @@ class YamlFileLoader extends \MailPoetVendor\Symfony\Component\DependencyInjecti
     private function parseDefaults(array &$content, $file)
     {
         if (!\array_key_exists('_defaults', $content['services'])) {
-            return array();
+            return [];
         }
         $defaults = $content['services']['_defaults'];
         unset($content['services']['_defaults']);
@@ -182,7 +182,7 @@ class YamlFileLoader extends \MailPoetVendor\Symfony\Component\DependencyInjecti
             }
             foreach ($tags as $tag) {
                 if (!\is_array($tag)) {
-                    $tag = array('name' => $tag);
+                    $tag = ['name' => $tag];
                 }
                 if (!isset($tag['name'])) {
                     throw new \MailPoetVendor\Symfony\Component\DependencyInjection\Exception\InvalidArgumentException(\sprintf('A "tags" entry in "_defaults" is missing a "name" key in %s.', $file));
@@ -246,10 +246,10 @@ class YamlFileLoader extends \MailPoetVendor\Symfony\Component\DependencyInjecti
             return;
         }
         if (\is_array($service) && $this->isUsingShortSyntax($service)) {
-            $service = array('arguments' => $service);
+            $service = ['arguments' => $service];
         }
         if (null === $service) {
-            $service = array();
+            $service = [];
         }
         if (!\is_array($service)) {
             throw new \MailPoetVendor\Symfony\Component\DependencyInjection\Exception\InvalidArgumentException(\sprintf('A service definition must be an array or a string starting with "@" but %s found for service "%s" in %s. Check your YAML syntax.', \gettype($service), $id, $file));
@@ -263,7 +263,7 @@ class YamlFileLoader extends \MailPoetVendor\Symfony\Component\DependencyInjecti
                 $alias->setPublic($defaults['public']);
             }
             foreach ($service as $key => $value) {
-                if (!\in_array($key, array('alias', 'public'))) {
+                if (!\in_array($key, ['alias', 'public'])) {
                     @\trigger_error(\sprintf('The configuration key "%s" is unsupported for the service "%s" which is defined as an alias in "%s". Allowed configuration keys for service aliases are "alias" and "public". The YamlFileLoader will raise an exception in Symfony 4.0, instead of silently ignoring unsupported attributes.', $key, $id, $file), \E_USER_DEPRECATED);
                 }
             }
@@ -300,7 +300,7 @@ class YamlFileLoader extends \MailPoetVendor\Symfony\Component\DependencyInjecti
             if (isset($defaults['autoconfigure'])) {
                 $definition->setAutoconfigured($defaults['autoconfigure']);
             }
-            $definition->setChanges(array());
+            $definition->setChanges([]);
         }
         if (isset($service['class'])) {
             $definition->setClass($service['class']);
@@ -345,10 +345,10 @@ class YamlFileLoader extends \MailPoetVendor\Symfony\Component\DependencyInjecti
             foreach ($service['calls'] as $call) {
                 if (isset($call['method'])) {
                     $method = $call['method'];
-                    $args = isset($call['arguments']) ? $this->resolveServices($call['arguments'], $file) : array();
+                    $args = isset($call['arguments']) ? $this->resolveServices($call['arguments'], $file) : [];
                 } else {
                     $method = $call[0];
-                    $args = isset($call[1]) ? $this->resolveServices($call[1], $file) : array();
+                    $args = isset($call[1]) ? $this->resolveServices($call[1], $file) : [];
                 }
                 if (!\is_array($args)) {
                     throw new \MailPoetVendor\Symfony\Component\DependencyInjection\Exception\InvalidArgumentException(\sprintf('The second parameter for function call "%s" must be an array of its arguments for service "%s" in %s. Check your YAML syntax.', $method, $id, $file));
@@ -356,7 +356,7 @@ class YamlFileLoader extends \MailPoetVendor\Symfony\Component\DependencyInjecti
                 $definition->addMethodCall($method, $args);
             }
         }
-        $tags = isset($service['tags']) ? $service['tags'] : array();
+        $tags = isset($service['tags']) ? $service['tags'] : [];
         if (!\is_array($tags)) {
             throw new \MailPoetVendor\Symfony\Component\DependencyInjection\Exception\InvalidArgumentException(\sprintf('Parameter "tags" must be an array for service "%s" in %s. Check your YAML syntax.', $id, $file));
         }
@@ -365,7 +365,7 @@ class YamlFileLoader extends \MailPoetVendor\Symfony\Component\DependencyInjecti
         }
         foreach ($tags as $tag) {
             if (!\is_array($tag)) {
-                $tag = array('name' => $tag);
+                $tag = ['name' => $tag];
             }
             if (!isset($tag['name'])) {
                 throw new \MailPoetVendor\Symfony\Component\DependencyInjection\Exception\InvalidArgumentException(\sprintf('A "tags" entry is missing a "name" key for service "%s" in %s.', $id, $file));
@@ -410,7 +410,7 @@ class YamlFileLoader extends \MailPoetVendor\Symfony\Component\DependencyInjecti
         }
         if (isset($defaults['bind']) || isset($service['bind'])) {
             // deep clone, to avoid multiple process of the same instance in the passes
-            $bindings = isset($defaults['bind']) ? \unserialize(\serialize($defaults['bind'])) : array();
+            $bindings = isset($defaults['bind']) ? \unserialize(\serialize($defaults['bind'])) : [];
             if (isset($service['bind'])) {
                 if (!\is_array($service['bind'])) {
                     throw new \MailPoetVendor\Symfony\Component\DependencyInjection\Exception\InvalidArgumentException(\sprintf('Parameter "bind" must be an array for service "%s" in %s. Check your YAML syntax.', $id, $file));
@@ -448,7 +448,7 @@ class YamlFileLoader extends \MailPoetVendor\Symfony\Component\DependencyInjecti
      * @param string       $id        A service identifier
      * @param string       $file      A parsed file
      *
-     * @throws InvalidArgumentException When errors are occuried
+     * @throws InvalidArgumentException When errors occur
      *
      * @return string|array A parsed callable
      */
@@ -460,13 +460,13 @@ class YamlFileLoader extends \MailPoetVendor\Symfony\Component\DependencyInjecti
             }
             if (\false !== \strpos($callable, ':') && \false === \strpos($callable, '::')) {
                 $parts = \explode(':', $callable);
-                return array($this->resolveServices('@' . $parts[0], $file), $parts[1]);
+                return [$this->resolveServices('@' . $parts[0], $file), $parts[1]];
             }
             return $callable;
         }
         if (\is_array($callable)) {
             if (isset($callable[0]) && isset($callable[1])) {
-                return array($this->resolveServices($callable[0], $file), $callable[1]);
+                return [$this->resolveServices($callable[0], $file), $callable[1]];
             }
             if ('factory' === $parameter && isset($callable[1]) && null === $callable[0]) {
                 return $callable;
@@ -505,7 +505,7 @@ class YamlFileLoader extends \MailPoetVendor\Symfony\Component\DependencyInjecti
         try {
             $configuration = $this->yamlParser->parseFile($file, \MailPoetVendor\Symfony\Component\Yaml\Yaml::PARSE_CONSTANT | \MailPoetVendor\Symfony\Component\Yaml\Yaml::PARSE_CUSTOM_TAGS);
         } catch (\MailPoetVendor\Symfony\Component\Yaml\Exception\ParseException $e) {
-            throw new \MailPoetVendor\Symfony\Component\DependencyInjection\Exception\InvalidArgumentException(\sprintf('The file "%s" does not contain valid YAML.', $file), 0, $e);
+            throw new \MailPoetVendor\Symfony\Component\DependencyInjection\Exception\InvalidArgumentException(\sprintf('The file "%s" does not contain valid YAML: %s', $file, $e->getMessage()), 0, $e);
         } finally {
             \restore_error_handler();
         }
@@ -530,7 +530,7 @@ class YamlFileLoader extends \MailPoetVendor\Symfony\Component\DependencyInjecti
             throw new \MailPoetVendor\Symfony\Component\DependencyInjection\Exception\InvalidArgumentException(\sprintf('The service file "%s" is not valid. It should contain an array. Check your YAML syntax.', $file));
         }
         foreach ($content as $namespace => $data) {
-            if (\in_array($namespace, array('imports', 'parameters', 'services'))) {
+            if (\in_array($namespace, ['imports', 'parameters', 'services'])) {
                 continue;
             }
             if (!$this->container->hasExtension($namespace)) {
@@ -579,9 +579,9 @@ class YamlFileLoader extends \MailPoetVendor\Symfony\Component\DependencyInjecti
                 $isLoadingInstanceof = $this->isLoadingInstanceof;
                 $this->isLoadingInstanceof = \false;
                 $instanceof = $this->instanceof;
-                $this->instanceof = array();
+                $this->instanceof = [];
                 $id = \sprintf('%d_%s', ++$this->anonymousServicesCount, \preg_replace('/^.*\\\\/', '', isset($argument['class']) ? $argument['class'] : '') . $this->anonymousServicesSuffix);
-                $this->parseDefinition($id, $argument, $file, array());
+                $this->parseDefinition($id, $argument, $file, []);
                 if (!$this->container->hasDefinition($id)) {
                     throw new \MailPoetVendor\Symfony\Component\DependencyInjection\Exception\InvalidArgumentException(\sprintf('Creating an alias using the tag "!service" is not allowed in "%s".', $file));
                 }
@@ -631,11 +631,11 @@ class YamlFileLoader extends \MailPoetVendor\Symfony\Component\DependencyInjecti
     private function loadFromExtensions(array $content)
     {
         foreach ($content as $namespace => $values) {
-            if (\in_array($namespace, array('imports', 'parameters', 'services'))) {
+            if (\in_array($namespace, ['imports', 'parameters', 'services'])) {
                 continue;
             }
             if (!\is_array($values) && null !== $values) {
-                $values = array();
+                $values = [];
             }
             $this->container->loadFromExtension($namespace, $values);
         }

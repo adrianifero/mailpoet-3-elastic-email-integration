@@ -51,6 +51,7 @@ class ServiceConfigurator extends \MailPoetVendor\Symfony\Component\DependencyIn
     public function __destruct()
     {
         parent::__destruct();
+        $this->container->addRemovedBindingIds($this->id);
         if (!$this->definition instanceof \MailPoetVendor\Symfony\Component\DependencyInjection\ChildDefinition) {
             $this->container->setDefinition($this->id, $this->definition->setInstanceofConditionals($this->instanceof));
         } else {

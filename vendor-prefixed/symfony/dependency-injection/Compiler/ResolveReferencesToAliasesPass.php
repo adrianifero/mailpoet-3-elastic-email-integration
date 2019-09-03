@@ -56,10 +56,10 @@ class ResolveReferencesToAliasesPass extends \MailPoetVendor\Symfony\Component\D
      */
     private function getDefinitionId($id, \MailPoetVendor\Symfony\Component\DependencyInjection\ContainerBuilder $container)
     {
-        $seen = array();
+        $seen = [];
         while ($container->hasAlias($id)) {
             if (isset($seen[$id])) {
-                throw new \MailPoetVendor\Symfony\Component\DependencyInjection\Exception\ServiceCircularReferenceException($id, \array_merge(\array_keys($seen), array($id)));
+                throw new \MailPoetVendor\Symfony\Component\DependencyInjection\Exception\ServiceCircularReferenceException($id, \array_merge(\array_keys($seen), [$id]));
             }
             $seen[$id] = \true;
             $id = $container->normalizeId($container->getAlias($id));

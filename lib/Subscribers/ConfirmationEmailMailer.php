@@ -2,8 +2,11 @@
 
 namespace MailPoet\Subscribers;
 
+use Html2Text\Html2Text;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Models\Subscriber;
+use MailPoet\Services\AuthorizedEmailsController;
+use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscription\Url;
 use MailPoet\Util\Helpers;
@@ -13,7 +16,7 @@ class ConfirmationEmailMailer {
 
   const MAX_CONFIRMATION_EMAILS = 3;
 
-  /** @var Mailer */
+  /** @var Mailer|null */
   private $mailer;
 
   /** @var WPFunctions */
@@ -26,10 +29,10 @@ class ConfirmationEmailMailer {
    * @param Mailer|null $mailer
    */
   function __construct($mailer = null, WPFunctions $wp = null) {
-    if($mailer) {
+    if ($mailer) {
       $this->mailer = $mailer;
     }
-    if($wp) {
+    if ($wp) {
       $this->wp = $wp;
     } else {
       $this->wp = new WPFunctions;
@@ -40,13 +43,17 @@ class ConfirmationEmailMailer {
   function sendConfirmationEmail(Subscriber $subscriber) {
     $signup_confirmation = $this->settings->get('signup_confirmation');
 
-    if((bool)$signup_confirmation['enabled'] === false) {
+    if ((bool)$signup_confirmation['enabled'] === false) {
       return false;
     }
 
-    $subscriber->count_confirmations++;
-    $subscriber->save();
-    if(!$this->wp->isUserLoggedIn() && $subscriber->count_confirmations > self::MAX_CONFIRMATION_EMAILS) {
+    if (!$this->wp->isUserLoggedIn() && $subscriber->count_confirmations >= self::MAX_CONFIRMATION_EMAILS) {
+      return false;
+    }
+
+    $authorization_emails_validation = $this->settings->get(AuthorizedEmailsController::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING);
+    $unauthorized_confirmation_email = isset($authorization_emails_validation['invalid_confirmation_address']);
+    if (Bridge::isMPSendingServiceEnabled() && $unauthorized_confirmation_email) {
       return false;
     }
 
@@ -60,7 +67,7 @@ class ConfirmationEmailMailer {
     // replace list of segments shortcode
     $body = str_replace(
       '[lists_to_confirm]',
-      '<strong>'.join(', ', $segment_names).'</strong>',
+      '<strong>' . join(', ', $segment_names) . '</strong>',
       $body
     );
 
@@ -68,18 +75,21 @@ class ConfirmationEmailMailer {
     $body = Helpers::replaceLinkTags(
       $body,
       Url::getConfirmationUrl($subscriber),
-      array('target' => '_blank'),
+      ['target' => '_blank'],
       'activation_link'
     );
 
+    //create a text version. @ is important here, Html2Text throws warnings
+    $text = @Html2Text::convert((mb_detect_encoding($body, 'UTF-8', true)) ? $body : utf8_encode($body));
+
     // build email data
-    $email = array(
+    $email = [
       'subject' => $signup_confirmation['subject'],
-      'body' => array(
+      'body' => [
         'html' => $body,
-        'text' => $body
-      )
-    );
+        'text' => $text,
+      ],
+    ];
 
     // set from
     $from = (
@@ -97,14 +107,22 @@ class ConfirmationEmailMailer {
 
     // send email
     try {
-      if(!$this->mailer) {
-        $this->mailer = new Mailer(false, $from, $reply_to);
+      if (!$this->mailer) {
+        $this->mailer = new Mailer();
       }
-      $this->mailer->getSenderNameAndAddress($from);
-      $this->mailer->getReplyToNameAndAddress($reply_to);
-      return $this->mailer->send($email, $subscriber);
-    } catch(\Exception $e) {
-      $subscriber->setError($e->getMessage());
+      $this->mailer->init(false, $from, $reply_to);
+      $result = $this->mailer->send($email, $subscriber);
+      if ($result['response'] === false) {
+        $subscriber->setError(__('Something went wrong with your subscription. Please contact the website owner.', 'mailpoet'));
+        return false;
+      };
+      if (!$this->wp->isUserLoggedIn()) {
+        $subscriber->count_confirmations++;
+        $subscriber->save();
+      }
+      return true;
+    } catch (\Exception $e) {
+      $subscriber->setError(__('Something went wrong with your subscription. Please contact the website owner.', 'mailpoet'));
       return false;
     }
   }

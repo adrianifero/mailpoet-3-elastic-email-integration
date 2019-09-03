@@ -30,7 +30,7 @@ class AutowireRequiredMethodsPass extends \MailPoetVendor\Symfony\Component\Depe
         if (!($reflectionClass = $this->container->getReflectionClass($value->getClass(), \false))) {
             return $value;
         }
-        $alreadyCalledMethods = array();
+        $alreadyCalledMethods = [];
         foreach ($value->getMethodCalls() as list($method)) {
             $alreadyCalledMethods[\strtolower($method)] = \true;
         }

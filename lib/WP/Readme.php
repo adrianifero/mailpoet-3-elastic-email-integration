@@ -6,25 +6,25 @@ class Readme {
     // Extract changelog section of the readme.txt
     preg_match('/== Changelog ==(.*?)(\n==|$)/is', $readme_txt, $changelog);
 
-    if(empty($changelog[1])) {
+    if (empty($changelog[1])) {
       return false;
     }
 
     // Get changelog entries
     $entries = preg_split('/\n(?=\=)/', trim($changelog[1]), -1, PREG_SPLIT_NO_EMPTY);
 
-    if(empty($entries)) {
+    if (empty($entries)) {
       return false;
     }
 
     $c = 0;
-    $changelog = array();
+    $changelog = [];
 
-    foreach($entries as $entry) {
+    foreach ($entries as $entry) {
       // Locate version header and changes list
       preg_match('/=(.*?)=(.*)/s', $entry, $parts);
 
-      if(empty($parts[1]) || empty($parts[2])) {
+      if (empty($parts[1]) || empty($parts[2])) {
         return false;
       }
 
@@ -34,12 +34,12 @@ class Readme {
       // Get individual items from the list
       $list = preg_split('/(^|\n)[\* ]*/', $list, -1, PREG_SPLIT_NO_EMPTY);
 
-      $changelog[] = array(
+      $changelog[] = [
         'version' => $header,
         'changes' => $list,
-      );
+      ];
 
-      if(++$c == $limit) {
+      if (++$c == $limit) {
         break;
       }
     }

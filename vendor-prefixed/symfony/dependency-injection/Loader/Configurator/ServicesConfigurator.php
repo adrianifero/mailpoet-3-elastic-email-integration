@@ -34,7 +34,7 @@ class ServicesConfigurator extends \MailPoetVendor\Symfony\Component\DependencyI
         $this->container = $container;
         $this->loader = $loader;
         $this->instanceof =& $instanceof;
-        $instanceof = array();
+        $instanceof = [];
     }
     /**
      * Defines a set of defaults for following service definitions.
@@ -74,7 +74,7 @@ class ServicesConfigurator extends \MailPoetVendor\Symfony\Component\DependencyI
         $definition->setAutowired($defaults->isAutowired());
         $definition->setAutoconfigured($defaults->isAutoconfigured());
         $definition->setBindings($defaults->getBindings());
-        $definition->setChanges(array());
+        $definition->setChanges([]);
         $configurator = new \MailPoetVendor\Symfony\Component\DependencyInjection\Loader\Configurator\ServiceConfigurator($this->container, $this->instanceof, $allowParent, $this, $definition, $id, $defaults->getTags());
         return null !== $class ? $configurator->class($class) : $configurator;
     }
@@ -119,7 +119,7 @@ class ServicesConfigurator extends \MailPoetVendor\Symfony\Component\DependencyI
     {
         $allowParent = !$this->defaults->getChanges() && empty($this->instanceof);
         $definition = $this->container->getDefinition($id);
-        return new \MailPoetVendor\Symfony\Component\DependencyInjection\Loader\Configurator\ServiceConfigurator($this->container, $definition->getInstanceofConditionals(), $allowParent, $this, $definition, $id, array());
+        return new \MailPoetVendor\Symfony\Component\DependencyInjection\Loader\Configurator\ServiceConfigurator($this->container, $definition->getInstanceofConditionals(), $allowParent, $this, $definition, $id, []);
     }
     /**
      * Registers a service.

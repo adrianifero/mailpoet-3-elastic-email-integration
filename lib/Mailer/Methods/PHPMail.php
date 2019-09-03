@@ -3,6 +3,7 @@
 namespace MailPoet\Mailer\Methods;
 
 use MailPoet\Mailer\Mailer;
+use MailPoet\Mailer\Methods\Common\BlacklistCheck;
 use MailPoet\Mailer\Methods\ErrorMappers\PHPMailMapper;
 
 if (!defined('ABSPATH')) exit;
@@ -18,6 +19,9 @@ class PHPMail {
   /** @var PHPMailMapper  */
   private $error_mapper;
 
+  /** @var BlacklistCheck */
+  private $blacklist;
+
   function __construct($sender, $reply_to, $return_path, PHPMailMapper $error_mapper) {
     $this->sender = $sender;
     $this->reply_to = $reply_to;
@@ -26,9 +30,14 @@ class PHPMail {
       $this->sender['from_email'];
     $this->mailer = $this->buildMailer();
     $this->error_mapper = $error_mapper;
+    $this->blacklist = new BlacklistCheck();
   }
 
-  function send($newsletter, $subscriber, $extra_params = array()) {
+  function send($newsletter, $subscriber, $extra_params = []) {
+    if ($this->blacklist->isBlacklisted($subscriber)) {
+      $error = $this->error_mapper->getBlacklistError($subscriber);
+      return Mailer::formatMailerErrorResult($error);
+    }
     try {
       $mailer = $this->configureMailerWithMessage($newsletter, $subscriber, $extra_params);
       $result = $mailer->send();
@@ -50,7 +59,7 @@ class PHPMail {
     return $mailer;
   }
 
-  function configureMailerWithMessage($newsletter, $subscriber, $extra_params = array()) {
+  function configureMailerWithMessage($newsletter, $subscriber, $extra_params = []) {
     $mailer = $this->mailer;
     $mailer->clearAddresses();
     $mailer->clearCustomHeaders();
@@ -67,19 +76,31 @@ class PHPMail {
     if (!empty($extra_params['unsubscribe_url'])) {
       $this->mailer->addCustomHeader('List-Unsubscribe', $extra_params['unsubscribe_url']);
     }
+
+    // Enforce base64 encoding when lines are too long, otherwise quoted-printable encoding
+    // is automatically used which can occasionally break the email body.
+    // Explanation:
+    //   The bug occurs on Unix systems where mail() function passes email to a variation of
+    //   sendmail command which expects only NL as line endings (POSIX). Since quoted-printable
+    //   requires CRLF some of those commands convert LF to CRLF which can break the email body
+    //   because it already (correctly) uses CRLF. Such CRLF then (wrongly) becomes CRCRLF.
+    if (\PHPMailer::hasLineLongerThanMax($mailer->Body)) {
+      $mailer->Encoding = 'base64';
+    }
+
     return $mailer;
   }
 
   function processSubscriber($subscriber) {
     preg_match('!(?P<name>.*?)\s<(?P<email>.*?)>!', $subscriber, $subscriber_data);
     if (!isset($subscriber_data['email'])) {
-      $subscriber_data = array(
+      $subscriber_data = [
         'email' => $subscriber,
-      );
+      ];
     }
-    return array(
+    return [
       'email' => $subscriber_data['email'],
-      'name' => (isset($subscriber_data['name'])) ? $subscriber_data['name'] : ''
-    );
+      'name' => (isset($subscriber_data['name'])) ? $subscriber_data['name'] : '',
+    ];
   }
 }

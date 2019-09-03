@@ -1,56 +1,65 @@
 <?php
 namespace MailPoet\Util;
 
+use MailPoet\WP\Functions as WPFunctions;
+
 class Url {
-  static function getCurrentUrl() {
-    $home_url = parse_url(home_url());
-    $query_args = add_query_arg(null, null);
+  /** @var WPFunctions */
+  private $wp;
 
-    // Remove home_url() path from add_query_arg
-    if(isset($home_url['path'])) {
-      $query_args = str_replace($home_url['path'], null, $query_args);
-    }
-
-    return home_url($query_args);
+  function __construct(WPFunctions $wp) {
+    $this->wp = $wp;
   }
 
-  static function redirectTo($url = null) {
-    wp_safe_redirect($url);
+  function getCurrentUrl() {
+    $home_url = parse_url($this->wp->homeUrl());
+    $query_args = $this->wp->addQueryArg(null, null);
+
+    // Remove $this->wp->homeUrl() path from add_query_arg
+    if (isset($home_url['path'])) {
+      $query_args = str_replace($home_url['path'], '', $query_args);
+    }
+
+    return $this->wp->homeUrl($query_args);
+  }
+
+  function redirectTo($url = null) {
+    $this->wp->wpSafeRedirect($url);
     exit();
   }
 
-  static function redirectBack($params = array()) {
+  function redirectBack($params = []) {
     // check mailpoet_redirect parameter
     $referer = (isset($_POST['mailpoet_redirect'])
       ? $_POST['mailpoet_redirect']
-      : wp_get_referer()
+      : $this->wp->wpGetReferer()
     );
 
     // fallback: home_url
-    if(!$referer) {
-      $referer = home_url();
+    if (!$referer) {
+      $referer = $this->wp->homeUrl();
     }
 
     // append extra params to url
-    if(!empty($params)) {
-      $referer = add_query_arg($params, $referer);
+    if (!empty($params)) {
+      $referer = $this->wp->addQueryArg($params, $referer);
     }
 
-    self::redirectTo($referer);
+    $this->redirectTo($referer);
     exit();
   }
 
-  static function redirectWithReferer($url = null) {
-    $current_url = self::getCurrentUrl();
-    $url = add_query_arg(
-      array(
-        'mailpoet_redirect' => urlencode($current_url)
-      ),
+  function redirectWithReferer($url = null) {
+    $current_url = $this->getCurrentUrl();
+    $url = $this->wp->addQueryArg(
+      [
+        'mailpoet_redirect' => urlencode($current_url),
+      ],
       $url
     );
 
-    if($url !== $current_url) {
-      self::redirectTo($url);
+    if ($url !== $current_url) {
+      $this->redirectTo($url);
     }
     exit();
   }

@@ -38,23 +38,23 @@ use MailPoetVendor\Symfony\Component\DependencyInjection\ParameterBag\ParameterB
 class Container implements \MailPoetVendor\Symfony\Component\DependencyInjection\ResettableContainerInterface
 {
     protected $parameterBag;
-    protected $services = array();
-    protected $fileMap = array();
-    protected $methodMap = array();
-    protected $aliases = array();
-    protected $loading = array();
-    protected $resolving = array();
-    protected $syntheticIds = array();
+    protected $services = [];
+    protected $fileMap = [];
+    protected $methodMap = [];
+    protected $aliases = [];
+    protected $loading = [];
+    protected $resolving = [];
+    protected $syntheticIds = [];
     /**
      * @internal
      */
-    protected $privates = array();
+    protected $privates = [];
     /**
      * @internal
      */
-    protected $normalizedIds = array();
-    private $underscoreMap = array('_' => '', '.' => '_', '\\' => '_');
-    private $envCache = array();
+    protected $normalizedIds = [];
+    private $underscoreMap = ['_' => '', '.' => '_', '\\' => '_'];
+    private $envCache = [];
     private $compiled = \false;
     private $getEnv;
     public function __construct(\MailPoetVendor\Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface $parameterBag = null)
@@ -142,7 +142,7 @@ class Container implements \MailPoetVendor\Symfony\Component\DependencyInjection
     /**
      * Sets a service.
      *
-     * Setting a service to null resets the service: has() returns false and get()
+     * Setting a synthetic service to null resets it: has() returns false and get()
      * behaves in the same way as if the service was never created.
      *
      * @param string $id      The service identifier
@@ -261,7 +261,7 @@ class Container implements \MailPoetVendor\Symfony\Component\DependencyInjection
                 return $this;
             }
             if (isset($this->loading[$id])) {
-                throw new \MailPoetVendor\Symfony\Component\DependencyInjection\Exception\ServiceCircularReferenceException($id, \array_merge(\array_keys($this->loading), array($id)));
+                throw new \MailPoetVendor\Symfony\Component\DependencyInjection\Exception\ServiceCircularReferenceException($id, \array_merge(\array_keys($this->loading), [$id]));
             }
             $this->loading[$id] = \true;
             try {
@@ -292,12 +292,12 @@ class Container implements \MailPoetVendor\Symfony\Component\DependencyInjection
                 throw new \MailPoetVendor\Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException($id);
             }
             if (isset($this->syntheticIds[$id])) {
-                throw new \MailPoetVendor\Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException($id, null, null, array(), \sprintf('The "%s" service is synthetic, it needs to be set at boot time before it can be used.', $id));
+                throw new \MailPoetVendor\Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException($id, null, null, [], \sprintf('The "%s" service is synthetic, it needs to be set at boot time before it can be used.', $id));
             }
             if (isset($this->getRemovedIds()[$id])) {
-                throw new \MailPoetVendor\Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException($id, null, null, array(), \sprintf('The "%s" service or alias has been removed or inlined when the container was compiled. You should either make it public, or stop using the container directly and use dependency injection instead.', $id));
+                throw new \MailPoetVendor\Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException($id, null, null, [], \sprintf('The "%s" service or alias has been removed or inlined when the container was compiled. You should either make it public, or stop using the container directly and use dependency injection instead.', $id));
             }
-            $alternatives = array();
+            $alternatives = [];
             foreach ($this->getServiceIds() as $knownId) {
                 $lev = \levenshtein($id, $knownId);
                 if ($lev <= \strlen($id) / 3 || \false !== \strpos($knownId, $id)) {
@@ -333,7 +333,7 @@ class Container implements \MailPoetVendor\Symfony\Component\DependencyInjection
      */
     public function reset()
     {
-        $this->services = array();
+        $this->services = [];
     }
     /**
      * Gets all service ids.
@@ -342,7 +342,7 @@ class Container implements \MailPoetVendor\Symfony\Component\DependencyInjection
      */
     public function getServiceIds()
     {
-        $ids = array();
+        $ids = [];
         if (!$this->methodMap && !$this instanceof \MailPoetVendor\Symfony\Component\DependencyInjection\ContainerBuilder && __CLASS__ !== static::class) {
             // We only check the convention-based factory in a compiled container (i.e. a child class other than a ContainerBuilder,
             // and only when the dumper has not generated the method map (otherwise the method map is considered to be fully populated by the dumper)
@@ -363,7 +363,7 @@ class Container implements \MailPoetVendor\Symfony\Component\DependencyInjection
      */
     public function getRemovedIds()
     {
-        return array();
+        return [];
     }
     /**
      * Camelizes a string.
@@ -374,7 +374,7 @@ class Container implements \MailPoetVendor\Symfony\Component\DependencyInjection
      */
     public static function camelize($id)
     {
-        return \strtr(\ucwords(\strtr($id, array('_' => ' ', '.' => '_ ', '\\' => '_ '))), array(' ' => ''));
+        return \strtr(\ucwords(\strtr($id, ['_' => ' ', '.' => '_ ', '\\' => '_ '])), [' ' => '']);
     }
     /**
      * A string to underscore.
@@ -385,7 +385,7 @@ class Container implements \MailPoetVendor\Symfony\Component\DependencyInjection
      */
     public static function underscore($id)
     {
-        return \strtolower(\preg_replace(array('/([A-Z]+)([A-Z][a-z])/', '/([a-z\\d])([A-Z])/'), array('\\1_\\2', '\\1_\\2'), \str_replace('_', '.', $id)));
+        return \strtolower(\preg_replace(['/([A-Z]+)([A-Z][a-z])/', '/([a-z\\d])([A-Z])/'], ['\\1_\\2', '\\1_\\2'], \str_replace('_', '.', $id)));
     }
     /**
      * Creates a service by requiring its factory file.
@@ -414,7 +414,7 @@ class Container implements \MailPoetVendor\Symfony\Component\DependencyInjection
             return $this->envCache[$name];
         }
         if (!$this->has($id = 'container.env_var_processors_locator')) {
-            $this->set($id, new \MailPoetVendor\Symfony\Component\DependencyInjection\ServiceLocator(array()));
+            $this->set($id, new \MailPoetVendor\Symfony\Component\DependencyInjection\ServiceLocator([]));
         }
         if (!$this->getEnv) {
             $this->getEnv = new \ReflectionMethod($this, __FUNCTION__);

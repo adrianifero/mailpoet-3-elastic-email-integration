@@ -9,19 +9,3 @@ class pQuery extends \pQuery {
     return $parser->root;
   }
 }
-
-class Html5Parser extends \pQuery\HtmlParser {
-  var $root = 'MailPoet\Util\pQuery\DomNode';
-}
-
-class DomNode extends \pQuery\DomNode {
-  var $childClass = 'MailPoet\Util\pQuery\DomNode';
-
-  function getInnerText() {
-    return html_entity_decode($this->toString(true, true, 1), ENT_NOQUOTES, 'UTF-8');
-  }
-
-  function getOuterText() {
-    return html_entity_decode($this->toString(), ENT_NOQUOTES, 'UTF-8');
-  }
-}

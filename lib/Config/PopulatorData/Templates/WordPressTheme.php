@@ -14,212 +14,212 @@ class WordPressTheme {
   }
 
   function get() {
-    return array(
+    return [
       'name' => WPFunctions::get()->__("WordPress Theme", 'mailpoet'),
-      'categories' => json_encode(array('standard', 'all')),
+      'categories' => json_encode(['standard', 'all']),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),
       'body' => json_encode($this->getBody()),
-    );
+    ];
   }
 
   private function getThumbnail() {
-    return $this->template_image_url . '/thumbnail.jpg';
+    return $this->template_image_url . '/thumbnail.20190411-1500.jpg';
   }
 
   private function getBody() {
-    return array (
-      'content' => 
-      array (
+    return  [
+      'content' =>
+       [
         'type' => 'container',
         'columnLayout' => false,
         'orientation' => 'vertical',
-        'image' => 
-        array (
-          'src' => NULL,
+        'image' =>
+         [
+          'src' => null,
           'display' => 'scale',
-        ),
-        'styles' => 
-        array (
-          'block' => 
-          array (
+         ],
+        'styles' =>
+         [
+          'block' =>
+           [
             'backgroundColor' => 'transparent',
-          ),
-        ),
-        'blocks' => 
-        array (
-          0 => 
-          array (
+           ],
+         ],
+        'blocks' =>
+         [
+          0 =>
+           [
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
-            array (
-              'src' => NULL,
+            'image' =>
+             [
+              'src' => null,
               'display' => 'scale',
-            ),
-            'styles' => 
-            array (
-              'block' => 
-              array (
+             ],
+            'styles' =>
+             [
+              'block' =>
+               [
                 'backgroundColor' => '#b8dae3',
-              ),
-            ),
-            'blocks' => 
-            array (
-              0 => 
-              array (
+               ],
+             ],
+            'blocks' =>
+             [
+              0 =>
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
-                array (
-                  'src' => NULL,
+                'image' =>
+                 [
+                  'src' => null,
                   'display' => 'scale',
-                ),
-                'styles' => 
-                array (
-                  'block' => 
-                  array (
+                 ],
+                'styles' =>
+                 [
+                  'block' =>
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => 
-                array (
-                  0 => 
-                  array (
+                   ],
+                 ],
+                'blocks' =>
+                 [
+                  0 =>
+                   [
                     'type' => 'spacer',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'backgroundColor' => 'transparent',
                         'height' => '20px',
-                      ),
-                    ),
-                  ),
-                  1 => 
-                  array (
+                       ],
+                     ],
+                   ],
+                  1 =>
+                   [
                     'type' => 'header',
                     'text' => '<p><a href="[link:newsletter_view_in_browser_url]">Open this email in your web browser &gt;</a></p>',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'backgroundColor' => 'transparent',
-                      ),
-                      'text' => 
-                      array (
+                       ],
+                      'text' =>
+                       [
                         'fontColor' => '#222222',
                         'fontFamily' => 'Arvo',
                         'fontSize' => '12px',
                         'textAlign' => 'center',
-                      ),
-                      'link' => 
-                      array (
+                       ],
+                      'link' =>
+                       [
                         'fontColor' => '#222222',
                         'textDecoration' => 'none',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          1 => 
-          array (
+                       ],
+                     ],
+                   ],
+                 ],
+               ],
+             ],
+           ],
+          1 =>
+           [
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
-            array (
-              'src' => NULL,
+            'image' =>
+             [
+              'src' => null,
               'display' => 'scale',
-            ),
-            'styles' => 
-            array (
-              'block' => 
-              array (
+             ],
+            'styles' =>
+             [
+              'block' =>
+               [
                 'backgroundColor' => '#051137',
-              ),
-            ),
-            'blocks' => 
-            array (
-              0 => 
-              array (
+               ],
+             ],
+            'blocks' =>
+             [
+              0 =>
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
-                array (
-                  'src' => NULL,
+                'image' =>
+                 [
+                  'src' => null,
                   'display' => 'scale',
-                ),
-                'styles' => 
-                array (
-                  'block' => 
-                  array (
+                 ],
+                'styles' =>
+                 [
+                  'block' =>
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => 
-                array (
-                  0 => 
-                  array (
+                   ],
+                 ],
+                'blocks' =>
+                 [
+                  0 =>
+                   [
                     'type' => 'spacer',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'backgroundColor' => 'transparent',
                         'height' => '20px',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          2 => 
-          array (
+                       ],
+                     ],
+                   ],
+                 ],
+               ],
+             ],
+           ],
+          2 =>
+           [
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
-            array (
-              'src' => NULL,
+            'image' =>
+             [
+              'src' => null,
               'display' => 'scale',
-            ),
-            'styles' => 
-            array (
-              'block' => 
-              array (
+             ],
+            'styles' =>
+             [
+              'block' =>
+               [
                 'backgroundColor' => '#051137',
-              ),
-            ),
-            'blocks' => 
-            array (
-              0 => 
-              array (
+               ],
+             ],
+            'blocks' =>
+             [
+              0 =>
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
-                array (
-                  'src' => NULL,
+                'image' =>
+                 [
+                  'src' => null,
                   'display' => 'scale',
-                ),
-                'styles' => 
-                array (
-                  'block' => 
-                  array (
+                 ],
+                'styles' =>
+                 [
+                  'block' =>
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => 
-                array (
-                  0 => 
-                  array (
+                   ],
+                 ],
+                'blocks' =>
+                 [
+                  0 =>
+                   [
                     'type' => 'image',
                     'link' => '',
                     'src' => $this->template_image_url . '/Wordpress-Logo.png',
@@ -227,55 +227,55 @@ class WordPressTheme {
                     'fullWidth' => false,
                     'width' => '260px',
                     'height' => '177px',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'textAlign' => 'left',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              1 => 
-              array (
+                       ],
+                     ],
+                   ],
+                 ],
+               ],
+              1 =>
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
-                array (
-                  'src' => NULL,
+                'image' =>
+                 [
+                  'src' => null,
                   'display' => 'scale',
-                ),
-                'styles' => 
-                array (
-                  'block' => 
-                  array (
+                 ],
+                'styles' =>
+                 [
+                  'block' =>
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => 
-                array (
-                  0 => 
-                  array (
+                   ],
+                 ],
+                'blocks' =>
+                 [
+                  0 =>
+                   [
                     'type' => 'spacer',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'backgroundColor' => 'transparent',
                         'height' => '22px',
-                      ),
-                    ),
-                  ),
-                  1 => 
-                  array (
+                       ],
+                     ],
+                   ],
+                  1 =>
+                   [
                     'type' => 'social',
                     'iconSet' => 'full-symbol-grey',
-                    'icons' => 
-                    array (
-                      0 => 
-                      array (
+                    'icons' =>
+                     [
+                      0 =>
+                       [
                         'type' => 'socialIcon',
                         'iconType' => 'facebook',
                         'link' => 'http://www.facebook.com',
@@ -283,9 +283,9 @@ class WordPressTheme {
                         'height' => '32px',
                         'width' => '32px',
                         'text' => 'Facebook',
-                      ),
-                      1 => 
-                      array (
+                       ],
+                      1 =>
+                       [
                         'type' => 'socialIcon',
                         'iconType' => 'twitter',
                         'link' => 'http://www.twitter.com',
@@ -293,9 +293,9 @@ class WordPressTheme {
                         'height' => '32px',
                         'width' => '32px',
                         'text' => 'Twitter',
-                      ),
-                      2 => 
-                      array (
+                       ],
+                      2 =>
+                       [
                         'type' => 'socialIcon',
                         'iconType' => 'website',
                         'link' => '',
@@ -303,9 +303,9 @@ class WordPressTheme {
                         'height' => '32px',
                         'width' => '32px',
                         'text' => 'Website',
-                      ),
-                      3 => 
-                      array (
+                       ],
+                      3 =>
+                       [
                         'type' => 'socialIcon',
                         'iconType' => 'email',
                         'link' => '',
@@ -313,70 +313,70 @@ class WordPressTheme {
                         'height' => '32px',
                         'width' => '32px',
                         'text' => 'Email',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          3 => 
-          array (
+                       ],
+                     ],
+                   ],
+                 ],
+               ],
+             ],
+           ],
+          3 =>
+           [
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
-            array (
+            'image' =>
+             [
               'src' => $this->template_image_url . '/Wordpress-Header-b.jpg',
               'display' => 'scale',
-            ),
-            'styles' => 
-            array (
-              'block' => 
-              array (
+             ],
+            'styles' =>
+             [
+              'block' =>
+               [
                 'backgroundColor' => '#2d557f',
-              ),
-            ),
-            'blocks' => 
-            array (
-              0 => 
-              array (
+               ],
+             ],
+            'blocks' =>
+             [
+              0 =>
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
-                array (
-                  'src' => NULL,
+                'image' =>
+                 [
+                  'src' => null,
                   'display' => 'scale',
-                ),
-                'styles' => 
-                array (
-                  'block' => 
-                  array (
+                 ],
+                'styles' =>
+                 [
+                  'block' =>
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => 
-                array (
-                  0 => 
-                  array (
+                   ],
+                 ],
+                'blocks' =>
+                 [
+                  0 =>
+                   [
                     'type' => 'spacer',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'backgroundColor' => 'transparent',
                         'height' => '20px',
-                      ),
-                    ),
-                  ),
-                  1 => 
-                  array (
+                       ],
+                     ],
+                   ],
+                  1 =>
+                   [
                     'type' => 'text',
                     'text' => '<h3 style="text-align: center;"><span style="color: #ffffff;">ThemeZone presents...</span></h3>',
-                  ),
-                  2 => 
-                  array (
+                   ],
+                  2 =>
+                   [
                     'type' => 'image',
                     'link' => '',
                     'src' => $this->template_image_url . '/Wordpress-Header-img.png',
@@ -384,29 +384,29 @@ class WordPressTheme {
                     'fullWidth' => false,
                     'width' => '1134px',
                     'height' => '898px',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'textAlign' => 'center',
-                      ),
-                    ),
-                  ),
-                  3 => 
-                  array (
+                       ],
+                     ],
+                   ],
+                  3 =>
+                   [
                     'type' => 'text',
                     'text' => '<h2 style="text-align: center;"><span style="color: #ffffff;">The Winter Theme Bundle</span></h2>
     <p style="text-align: center;"><span style="color: #ffffff;"><span>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin placerat feugiat est, malesuada varius sem finibus a. Nunc feugiat sollicitudin gravida.</span></span></p>',
-                  ),
-                  4 => 
-                  array (
+                   ],
+                  4 =>
+                   [
                     'type' => 'button',
                     'text' => 'Take a look',
                     'url' => '',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'backgroundColor' => '#ffffff',
                         'borderColor' => '#1e986a',
                         'borderWidth' => '0px',
@@ -419,83 +419,83 @@ class WordPressTheme {
                         'fontSize' => '16px',
                         'fontWeight' => 'bold',
                         'textAlign' => 'center',
-                      ),
-                    ),
-                  ),
-                  5 => 
-                  array (
+                       ],
+                     ],
+                   ],
+                  5 =>
+                   [
                     'type' => 'spacer',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'backgroundColor' => 'transparent',
                         'height' => '44px',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          4 => 
-          array (
+                       ],
+                     ],
+                   ],
+                 ],
+               ],
+             ],
+           ],
+          4 =>
+           [
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
-            array (
-              'src' => NULL,
+            'image' =>
+             [
+              'src' => null,
               'display' => 'scale',
-            ),
-            'styles' => 
-            array (
-              'block' => 
-              array (
+             ],
+            'styles' =>
+             [
+              'block' =>
+               [
                 'backgroundColor' => 'transparent',
-              ),
-            ),
-            'blocks' => 
-            array (
-              0 => 
-              array (
+               ],
+             ],
+            'blocks' =>
+             [
+              0 =>
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
-                array (
-                  'src' => NULL,
+                'image' =>
+                 [
+                  'src' => null,
                   'display' => 'scale',
-                ),
-                'styles' => 
-                array (
-                  'block' => 
-                  array (
+                 ],
+                'styles' =>
+                 [
+                  'block' =>
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => 
-                array (
-                  0 => 
-                  array (
+                   ],
+                 ],
+                'blocks' =>
+                 [
+                  0 =>
+                   [
                     'type' => 'spacer',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'backgroundColor' => 'transparent',
                         'height' => '20px',
-                      ),
-                    ),
-                  ),
-                  1 => 
-                  array (
+                       ],
+                     ],
+                   ],
+                  1 =>
+                   [
                     'type' => 'text',
                     'text' => '<h2 style="text-align: center;"><span style="color: #333333;">Fully customisable and ready to use</span></h2>
     <p style="text-align: center;"><span style="color: #333333;">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin placerat feugiat est, malesuada varius sem finibus a. Nunc feugiat sollicitudin gravida.</span></p>',
-                  ),
-                  2 => 
-                  array (
+                   ],
+                  2 =>
+                   [
                     'type' => 'image',
                     'link' => '',
                     'src' => $this->template_image_url . '/Wordpress-Image-1.jpg',
@@ -503,109 +503,109 @@ class WordPressTheme {
                     'fullWidth' => true,
                     'width' => '400px',
                     'height' => '340px',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'textAlign' => 'center',
-                      ),
-                    ),
-                  ),
-                  3 => 
-                  array (
+                       ],
+                     ],
+                   ],
+                  3 =>
+                   [
                     'type' => 'spacer',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'backgroundColor' => 'transparent',
                         'height' => '20px',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          5 => 
-          array (
+                       ],
+                     ],
+                   ],
+                 ],
+               ],
+             ],
+           ],
+          5 =>
+           [
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
-            array (
-              'src' => NULL,
+            'image' =>
+             [
+              'src' => null,
               'display' => 'scale',
-            ),
-            'styles' => 
-            array (
-              'block' => 
-              array (
+             ],
+            'styles' =>
+             [
+              'block' =>
+               [
                 'backgroundColor' => 'transparent',
-              ),
-            ),
-            'blocks' => 
-            array (
-              0 => 
-              array (
+               ],
+             ],
+            'blocks' =>
+             [
+              0 =>
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
-                array (
-                  'src' => NULL,
+                'image' =>
+                 [
+                  'src' => null,
                   'display' => 'scale',
-                ),
-                'styles' => 
-                array (
-                  'block' => 
-                  array (
+                 ],
+                'styles' =>
+                 [
+                  'block' =>
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => 
-                array (
-                  0 => 
-                  array (
+                   ],
+                 ],
+                'blocks' =>
+                 [
+                  0 =>
+                   [
                     'type' => 'spacer',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'backgroundColor' => 'transparent',
                         'height' => '60px',
-                      ),
-                    ),
-                  ),
-                  1 => 
-                  array (
+                       ],
+                     ],
+                   ],
+                  1 =>
+                   [
                     'type' => 'text',
                     'text' => '<h2 style="text-align: left;"><span style="color: #333333;">Beautiful,&nbsp;simple design</span></h2>
     <p style="text-align: left;"><span style="color: #333333;">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin placerat feugiat est, malesuada varius sem finibus a. Nunc feugiat sollicitudin gravida.</span></p>',
-                  ),
-                ),
-              ),
-              1 => 
-              array (
+                   ],
+                 ],
+               ],
+              1 =>
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
-                array (
-                  'src' => NULL,
+                'image' =>
+                 [
+                  'src' => null,
                   'display' => 'scale',
-                ),
-                'styles' => 
-                array (
-                  'block' => 
-                  array (
+                 ],
+                'styles' =>
+                 [
+                  'block' =>
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => 
-                array (
-                  0 => 
-                  array (
+                   ],
+                 ],
+                'blocks' =>
+                 [
+                  0 =>
+                   [
                     'type' => 'image',
                     'link' => '',
                     'src' => $this->template_image_url . '/Wordpress-Image-2.jpg',
@@ -613,382 +613,382 @@ class WordPressTheme {
                     'fullWidth' => true,
                     'width' => '541px',
                     'height' => '454px',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'textAlign' => 'center',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          6 => 
-          array (
+                       ],
+                     ],
+                   ],
+                 ],
+               ],
+             ],
+           ],
+          6 =>
+           [
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
-            array (
-              'src' => NULL,
+            'image' =>
+             [
+              'src' => null,
               'display' => 'scale',
-            ),
-            'styles' => 
-            array (
-              'block' => 
-              array (
+             ],
+            'styles' =>
+             [
+              'block' =>
+               [
                 'backgroundColor' => 'transparent',
-              ),
-            ),
-            'blocks' => 
-            array (
-              0 => 
-              array (
+               ],
+             ],
+            'blocks' =>
+             [
+              0 =>
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
-                array (
-                  'src' => NULL,
+                'image' =>
+                 [
+                  'src' => null,
                   'display' => 'scale',
-                ),
-                'styles' => 
-                array (
-                  'block' => 
-                  array (
+                 ],
+                'styles' =>
+                 [
+                  'block' =>
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => 
-                array (
-                  0 => 
-                  array (
+                   ],
+                 ],
+                'blocks' =>
+                 [
+                  0 =>
+                   [
                     'type' => 'spacer',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'backgroundColor' => 'transparent',
                         'height' => '40px',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          7 => 
-          array (
+                       ],
+                     ],
+                   ],
+                 ],
+               ],
+             ],
+           ],
+          7 =>
+           [
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
-            array (
-              'src' => NULL,
+            'image' =>
+             [
+              'src' => null,
               'display' => 'scale',
-            ),
-            'styles' => 
-            array (
-              'block' => 
-              array (
+             ],
+            'styles' =>
+             [
+              'block' =>
+               [
                 'backgroundColor' => '#051137',
-              ),
-            ),
-            'blocks' => 
-            array (
-              0 => 
-              array (
+               ],
+             ],
+            'blocks' =>
+             [
+              0 =>
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
-                array (
-                  'src' => NULL,
+                'image' =>
+                 [
+                  'src' => null,
                   'display' => 'scale',
-                ),
-                'styles' => 
-                array (
-                  'block' => 
-                  array (
+                 ],
+                'styles' =>
+                 [
+                  'block' =>
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => 
-                array (
-                  0 => 
-                  array (
+                   ],
+                 ],
+                'blocks' =>
+                 [
+                  0 =>
+                   [
                     'type' => 'spacer',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'backgroundColor' => 'transparent',
                         'height' => '40px',
-                      ),
-                    ),
-                  ),
-                  1 => 
-                  array (
+                       ],
+                     ],
+                   ],
+                  1 =>
+                   [
                     'type' => 'text',
                     'text' => '<h2 style="text-align: center;"><span style="color: #ffffff;">Installation is super easy</span></h2>
     <p style="text-align: center;"><span style="color: #ffffff;"><span>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin placerat feugiat est, malesuada varius sem finibus a. Nunc feugiat sollicitudin gravida.</span></span></p>',
-                  ),
-                ),
-              ),
-            ),
-          ),
-          8 => 
-          array (
+                   ],
+                 ],
+               ],
+             ],
+           ],
+          8 =>
+           [
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
-            array (
-              'src' => NULL,
+            'image' =>
+             [
+              'src' => null,
               'display' => 'scale',
-            ),
-            'styles' => 
-            array (
-              'block' => 
-              array (
+             ],
+            'styles' =>
+             [
+              'block' =>
+               [
                 'backgroundColor' => '#051137',
-              ),
-            ),
-            'blocks' => 
-            array (
-              0 => 
-              array (
+               ],
+             ],
+            'blocks' =>
+             [
+              0 =>
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
-                array (
-                  'src' => NULL,
+                'image' =>
+                 [
+                  'src' => null,
                   'display' => 'scale',
-                ),
-                'styles' => 
-                array (
-                  'block' => 
-                  array (
+                 ],
+                'styles' =>
+                 [
+                  'block' =>
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => 
-                array (
-                  0 => 
-                  array (
+                   ],
+                 ],
+                'blocks' =>
+                 [
+                  0 =>
+                   [
                     'type' => 'text',
                     'text' => '<h2 style="text-align: center;"><span style="color: #2ecd91;"><strong>1</strong></span></h2>
     <p style="text-align: center;"><span style="color: #ffffff;"><span>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</span></span></p>',
-                  ),
-                ),
-              ),
-              1 => 
-              array (
+                   ],
+                 ],
+               ],
+              1 =>
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
-                array (
-                  'src' => NULL,
+                'image' =>
+                 [
+                  'src' => null,
                   'display' => 'scale',
-                ),
-                'styles' => 
-                array (
-                  'block' => 
-                  array (
+                 ],
+                'styles' =>
+                 [
+                  'block' =>
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => 
-                array (
-                  0 => 
-                  array (
+                   ],
+                 ],
+                'blocks' =>
+                 [
+                  0 =>
+                   [
                     'type' => 'text',
                     'text' => '<h2 style="text-align: center;"><span style="color: #2ecd91;"><strong><span>2</span></strong></span></h2>
     <p style="text-align: center;"><span style="color: #ffffff;"><span>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</span></span></p>',
-                  ),
-                ),
-              ),
-              2 => 
-              array (
+                   ],
+                 ],
+               ],
+              2 =>
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
-                array (
-                  'src' => NULL,
+                'image' =>
+                 [
+                  'src' => null,
                   'display' => 'scale',
-                ),
-                'styles' => 
-                array (
-                  'block' => 
-                  array (
+                 ],
+                'styles' =>
+                 [
+                  'block' =>
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => 
-                array (
-                  0 => 
-                  array (
+                   ],
+                 ],
+                'blocks' =>
+                 [
+                  0 =>
+                   [
                     'type' => 'text',
                     'text' => '<h2 style="text-align: center;"><span style="color: #2ecd91;"><strong><span>3</span></strong></span></h2>
     <p style="text-align: center;"><span style="color: #ffffff;"><span>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</span></span></p>',
-                  ),
-                ),
-              ),
-            ),
-          ),
-          9 => 
-          array (
+                   ],
+                 ],
+               ],
+             ],
+           ],
+          9 =>
+           [
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
-            array (
-              'src' => NULL,
+            'image' =>
+             [
+              'src' => null,
               'display' => 'scale',
-            ),
-            'styles' => 
-            array (
-              'block' => 
-              array (
+             ],
+            'styles' =>
+             [
+              'block' =>
+               [
                 'backgroundColor' => '#051137',
-              ),
-            ),
-            'blocks' => 
-            array (
-              0 => 
-              array (
+               ],
+             ],
+            'blocks' =>
+             [
+              0 =>
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
-                array (
-                  'src' => NULL,
+                'image' =>
+                 [
+                  'src' => null,
                   'display' => 'scale',
-                ),
-                'styles' => 
-                array (
-                  'block' => 
-                  array (
+                 ],
+                'styles' =>
+                 [
+                  'block' =>
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => 
-                array (
-                  0 => 
-                  array (
+                   ],
+                 ],
+                'blocks' =>
+                 [
+                  0 =>
+                   [
                     'type' => 'spacer',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'backgroundColor' => 'transparent',
                         'height' => '30px',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          10 => 
-          array (
+                       ],
+                     ],
+                   ],
+                 ],
+               ],
+             ],
+           ],
+          10 =>
+           [
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
-            array (
-              'src' => NULL,
+            'image' =>
+             [
+              'src' => null,
               'display' => 'scale',
-            ),
-            'styles' => 
-            array (
-              'block' => 
-              array (
+             ],
+            'styles' =>
+             [
+              'block' =>
+               [
                 'backgroundColor' => '#b8dae3',
-              ),
-            ),
-            'blocks' => 
-            array (
-              0 => 
-              array (
+               ],
+             ],
+            'blocks' =>
+             [
+              0 =>
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
-                array (
-                  'src' => NULL,
+                'image' =>
+                 [
+                  'src' => null,
                   'display' => 'scale',
-                ),
-                'styles' => 
-                array (
-                  'block' => 
-                  array (
+                 ],
+                'styles' =>
+                 [
+                  'block' =>
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => 
-                array (
-                  0 => 
-                  array (
+                   ],
+                 ],
+                'blocks' =>
+                 [
+                  0 =>
+                   [
                     'type' => 'spacer',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'backgroundColor' => 'transparent',
                         'height' => '40px',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          11 => 
-          array (
+                       ],
+                     ],
+                   ],
+                 ],
+               ],
+             ],
+           ],
+          11 =>
+           [
             'type' => 'container',
             'columnLayout' => false,
             'orientation' => 'horizontal',
-            'image' => 
-            array (
-              'src' => NULL,
+            'image' =>
+             [
+              'src' => null,
               'display' => 'scale',
-            ),
-            'styles' => 
-            array (
-              'block' => 
-              array (
+             ],
+            'styles' =>
+             [
+              'block' =>
+               [
                 'backgroundColor' => '#b8dae3',
-              ),
-            ),
-            'blocks' => 
-            array (
-              0 => 
-              array (
+               ],
+             ],
+            'blocks' =>
+             [
+              0 =>
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
-                array (
-                  'src' => NULL,
+                'image' =>
+                 [
+                  'src' => null,
                   'display' => 'scale',
-                ),
-                'styles' => 
-                array (
-                  'block' => 
-                  array (
+                 ],
+                'styles' =>
+                 [
+                  'block' =>
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => 
-                array (
-                  0 => 
-                  array (
+                   ],
+                 ],
+                'blocks' =>
+                 [
+                  0 =>
+                   [
                     'type' => 'image',
                     'link' => '',
                     'src' => $this->template_image_url . '/Wordpress-Logo-Footer.png',
@@ -996,109 +996,109 @@ class WordPressTheme {
                     'fullWidth' => false,
                     'width' => '190px',
                     'height' => '177px',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'textAlign' => 'left',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              1 => 
-              array (
+                       ],
+                     ],
+                   ],
+                 ],
+               ],
+              1 =>
+               [
                 'type' => 'container',
                 'columnLayout' => false,
                 'orientation' => 'vertical',
-                'image' => 
-                array (
-                  'src' => NULL,
+                'image' =>
+                 [
+                  'src' => null,
                   'display' => 'scale',
-                ),
-                'styles' => 
-                array (
-                  'block' => 
-                  array (
+                 ],
+                'styles' =>
+                 [
+                  'block' =>
+                   [
                     'backgroundColor' => 'transparent',
-                  ),
-                ),
-                'blocks' => 
-                array (
-                  0 => 
-                  array (
+                   ],
+                 ],
+                'blocks' =>
+                 [
+                  0 =>
+                   [
                     'type' => 'footer',
                     'text' => '<p><a href="[link:subscription_unsubscribe_url]">Unsubscribe</a> | <a href="[link:subscription_manage_url]">Manage subscription</a><br />Add your postal address here!</p>',
-                    'styles' => 
-                    array (
-                      'block' => 
-                      array (
+                    'styles' =>
+                     [
+                      'block' =>
+                       [
                         'backgroundColor' => 'transparent',
-                      ),
-                      'text' => 
-                      array (
+                       ],
+                      'text' =>
+                       [
                         'fontColor' => '#222222',
                         'fontFamily' => 'Arvo',
                         'fontSize' => '12px',
                         'textAlign' => 'right',
-                      ),
-                      'link' => 
-                      array (
+                       ],
+                      'link' =>
+                       [
                         'fontColor' => '#051137',
                         'textDecoration' => 'underline',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-      'globalStyles' => 
-      array (
-        'text' => 
-        array (
+                       ],
+                     ],
+                   ],
+                 ],
+               ],
+             ],
+           ],
+         ],
+       ],
+      'globalStyles' =>
+       [
+        'text' =>
+         [
           'fontColor' => '#000000',
           'fontFamily' => 'Arvo',
           'fontSize' => '14px',
-        ),
-        'h1' => 
-        array (
+         ],
+        'h1' =>
+         [
           'fontColor' => '#111111',
           'fontFamily' => 'Arvo',
           'fontSize' => '30px',
-        ),
-        'h2' => 
-        array (
+         ],
+        'h2' =>
+         [
           'fontColor' => '#222222',
           'fontFamily' => 'Arvo',
           'fontSize' => '24px',
-        ),
-        'h3' => 
-        array (
+         ],
+        'h3' =>
+         [
           'fontColor' => '#333333',
           'fontFamily' => 'Arvo',
           'fontSize' => '22px',
-        ),
-        'link' => 
-        array (
+         ],
+        'link' =>
+         [
           'fontColor' => '#21759B',
           'textDecoration' => 'underline',
-        ),
-        'wrapper' => 
-        array (
+         ],
+        'wrapper' =>
+         [
           'backgroundColor' => '#ffffff',
-        ),
-        'body' => 
-        array (
+         ],
+        'body' =>
+         [
           'backgroundColor' => '#b8dae3',
-        ),
-      ),
-      'blockDefaults' => 
-      array (
-        'automatedLatestContent' => 
-        array (
+         ],
+       ],
+      'blockDefaults' =>
+       [
+        'automatedLatestContent' =>
+         [
           'amount' => '5',
           'withLayout' => false,
           'contentType' => 'post',
@@ -1115,15 +1115,15 @@ class WordPressTheme {
           'categoriesPrecededBy' => 'Categories:',
           'readMoreType' => 'button',
           'readMoreText' => 'Read more',
-          'readMoreButton' => 
-          array (
+          'readMoreButton' =>
+           [
             'text' => 'Read more',
             'url' => '[postLink]',
             'context' => 'automatedLatestContent.readMoreButton',
-            'styles' => 
-            array (
-              'block' => 
-              array (
+            'styles' =>
+             [
+              'block' =>
+               [
                 'backgroundColor' => '#2ea1cd',
                 'borderColor' => '#0074a2',
                 'borderWidth' => '1px',
@@ -1136,31 +1136,31 @@ class WordPressTheme {
                 'fontSize' => '18px',
                 'fontWeight' => 'normal',
                 'textAlign' => 'center',
-              ),
-            ),
-          ),
+               ],
+             ],
+           ],
           'sortBy' => 'newest',
           'showDivider' => true,
-          'divider' => 
-          array (
+          'divider' =>
+           [
             'context' => 'automatedLatestContent.divider',
-            'styles' => 
-            array (
-              'block' => 
-              array (
+            'styles' =>
+             [
+              'block' =>
+               [
                 'backgroundColor' => 'transparent',
                 'padding' => '13px',
                 'borderStyle' => 'solid',
                 'borderWidth' => '3px',
                 'borderColor' => '#aaaaaa',
-              ),
-            ),
-          ),
+               ],
+             ],
+           ],
           'backgroundColor' => '#ffffff',
           'backgroundColorAlternate' => '#eeeeee',
-        ),
-        'automatedLatestContentLayout' => 
-        array (
+         ],
+        'automatedLatestContentLayout' =>
+         [
           'amount' => '5',
           'withLayout' => true,
           'contentType' => 'post',
@@ -1177,15 +1177,15 @@ class WordPressTheme {
           'categoriesPrecededBy' => 'Categories:',
           'readMoreType' => 'button',
           'readMoreText' => 'Read more',
-          'readMoreButton' => 
-          array (
+          'readMoreButton' =>
+           [
             'text' => 'Read more',
             'url' => '[postLink]',
             'context' => 'automatedLatestContentLayout.readMoreButton',
-            'styles' => 
-            array (
-              'block' => 
-              array (
+            'styles' =>
+             [
+              'block' =>
+               [
                 'backgroundColor' => '#2ea1cd',
                 'borderColor' => '#0074a2',
                 'borderWidth' => '1px',
@@ -1198,37 +1198,37 @@ class WordPressTheme {
                 'fontSize' => '18px',
                 'fontWeight' => 'normal',
                 'textAlign' => 'center',
-              ),
-            ),
-          ),
+               ],
+             ],
+           ],
           'sortBy' => 'newest',
           'showDivider' => true,
-          'divider' => 
-          array (
+          'divider' =>
+           [
             'context' => 'automatedLatestContentLayout.divider',
-            'styles' => 
-            array (
-              'block' => 
-              array (
+            'styles' =>
+             [
+              'block' =>
+               [
                 'backgroundColor' => 'transparent',
                 'padding' => '13px',
                 'borderStyle' => 'solid',
                 'borderWidth' => '3px',
                 'borderColor' => '#aaaaaa',
-              ),
-            ),
-          ),
+               ],
+             ],
+           ],
           'backgroundColor' => '#ffffff',
           'backgroundColorAlternate' => '#eeeeee',
-        ),
-        'button' => 
-        array (
+         ],
+        'button' =>
+         [
           'text' => 'Take a look',
           'url' => '',
-          'styles' => 
-          array (
-            'block' => 
-            array (
+          'styles' =>
+           [
+            'block' =>
+             [
               'backgroundColor' => '#ffffff',
               'borderColor' => '#1e986a',
               'borderWidth' => '0px',
@@ -1241,51 +1241,51 @@ class WordPressTheme {
               'fontSize' => '16px',
               'fontWeight' => 'bold',
               'textAlign' => 'center',
-            ),
-          ),
+             ],
+           ],
           'type' => 'button',
-        ),
-        'divider' => 
-        array (
-          'styles' => 
-          array (
-            'block' => 
-            array (
+         ],
+        'divider' =>
+         [
+          'styles' =>
+           [
+            'block' =>
+             [
               'backgroundColor' => 'transparent',
               'padding' => '13px',
               'borderStyle' => 'dotted',
               'borderWidth' => '4px',
               'borderColor' => '#21377e',
-            ),
-          ),
+             ],
+           ],
           'type' => 'divider',
-        ),
-        'footer' => 
-        array (
+         ],
+        'footer' =>
+         [
           'text' => '<p><a href="[link:subscription_unsubscribe_url]">Unsubscribe</a> | <a href="[link:subscription_manage_url]">Manage subscription</a><br />Add your postal address here!</p>',
-          'styles' => 
-          array (
-            'block' => 
-            array (
+          'styles' =>
+           [
+            'block' =>
+             [
               'backgroundColor' => 'transparent',
-            ),
-            'text' => 
-            array (
+             ],
+            'text' =>
+             [
               'fontColor' => '#222222',
               'fontFamily' => 'Arvo',
               'fontSize' => '12px',
               'textAlign' => 'right',
-            ),
-            'link' => 
-            array (
+             ],
+            'link' =>
+             [
               'fontColor' => '#051137',
               'textDecoration' => 'underline',
-            ),
-          ),
+             ],
+           ],
           'type' => 'footer',
-        ),
-        'posts' => 
-        array (
+         ],
+        'posts' =>
+         [
           'amount' => '10',
           'withLayout' => true,
           'contentType' => 'post',
@@ -1303,15 +1303,15 @@ class WordPressTheme {
           'categoriesPrecededBy' => 'Categories:',
           'readMoreType' => 'link',
           'readMoreText' => 'Read more',
-          'readMoreButton' => 
-          array (
+          'readMoreButton' =>
+           [
             'text' => 'Read more',
             'url' => '[postLink]',
             'context' => 'posts.readMoreButton',
-            'styles' => 
-            array (
-              'block' => 
-              array (
+            'styles' =>
+             [
+              'block' =>
+               [
                 'backgroundColor' => '#2ea1cd',
                 'borderColor' => '#0074a2',
                 'borderWidth' => '1px',
@@ -1324,36 +1324,36 @@ class WordPressTheme {
                 'fontSize' => '18px',
                 'fontWeight' => 'normal',
                 'textAlign' => 'center',
-              ),
-            ),
-          ),
+               ],
+             ],
+           ],
           'sortBy' => 'newest',
           'showDivider' => true,
-          'divider' => 
-          array (
+          'divider' =>
+           [
             'context' => 'posts.divider',
-            'styles' => 
-            array (
-              'block' => 
-              array (
+            'styles' =>
+             [
+              'block' =>
+               [
                 'backgroundColor' => 'transparent',
                 'padding' => '13px',
                 'borderStyle' => 'solid',
                 'borderWidth' => '3px',
                 'borderColor' => '#aaaaaa',
-              ),
-            ),
-          ),
+               ],
+             ],
+           ],
           'backgroundColor' => '#ffffff',
           'backgroundColorAlternate' => '#eeeeee',
-        ),
-        'social' => 
-        array (
+         ],
+        'social' =>
+         [
           'iconSet' => 'full-symbol-grey',
-          'icons' => 
-          array (
-            0 => 
-            array (
+          'icons' =>
+           [
+            0 =>
+             [
               'type' => 'socialIcon',
               'iconType' => 'facebook',
               'link' => 'http://www.facebook.com',
@@ -1361,9 +1361,9 @@ class WordPressTheme {
               'height' => '32px',
               'width' => '32px',
               'text' => 'Facebook',
-            ),
-            1 => 
-            array (
+             ],
+            1 =>
+             [
               'type' => 'socialIcon',
               'iconType' => 'twitter',
               'link' => 'http://www.twitter.com',
@@ -1371,9 +1371,9 @@ class WordPressTheme {
               'height' => '32px',
               'width' => '32px',
               'text' => 'Twitter',
-            ),
-            2 => 
-            array (
+             ],
+            2 =>
+             [
               'type' => 'socialIcon',
               'iconType' => 'website',
               'link' => '',
@@ -1381,9 +1381,9 @@ class WordPressTheme {
               'height' => '32px',
               'width' => '32px',
               'text' => 'Website',
-            ),
-            3 => 
-            array (
+             ],
+            3 =>
+             [
               'type' => 'socialIcon',
               'iconType' => 'email',
               'link' => '',
@@ -1391,48 +1391,48 @@ class WordPressTheme {
               'height' => '32px',
               'width' => '32px',
               'text' => 'Email',
-            ),
-          ),
+             ],
+           ],
           'type' => 'social',
-        ),
-        'spacer' => 
-        array (
-          'styles' => 
-          array (
-            'block' => 
-            array (
+         ],
+        'spacer' =>
+         [
+          'styles' =>
+           [
+            'block' =>
+             [
               'backgroundColor' => 'transparent',
               'height' => '20px',
-            ),
-          ),
+             ],
+           ],
           'type' => 'spacer',
-        ),
-        'header' => 
-        array (
-          'text' => 'Display problems?&nbsp;<a href="[link:newsletter_view_in_browser_url]">Open this email in your web browser.</a>',
-          'styles' => 
-          array (
-            'block' => 
-            array (
+         ],
+        'header' =>
+         [
+          'text' => '<a href="[link:newsletter_view_in_browser_url]">View this in your browser.</a>',
+          'styles' =>
+           [
+            'block' =>
+             [
               'backgroundColor' => 'transparent',
-            ),
-            'text' => 
-            array (
+             ],
+            'text' =>
+             [
               'fontColor' => '#222222',
               'fontFamily' => 'Arvo',
               'fontSize' => '12px',
               'textAlign' => 'center',
-            ),
-            'link' => 
-            array (
+             ],
+            'link' =>
+             [
               'fontColor' => '#222222',
               'textDecoration' => 'none',
-            ),
-          ),
+             ],
+           ],
           'type' => 'header',
-        ),
-      ),
-    );
+         ],
+       ],
+    ];
   }
 
 }

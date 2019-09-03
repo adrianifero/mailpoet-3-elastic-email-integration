@@ -65,7 +65,7 @@ class CheckDefinitionValidityPass implements \MailPoetVendor\Symfony\Component\D
             if ($definition->isPublic() && !$definition->isPrivate()) {
                 $resolvedId = $container->resolveEnvPlaceholders($id, null, $usedEnvs);
                 if (null !== $usedEnvs) {
-                    throw new \MailPoetVendor\Symfony\Component\DependencyInjection\Exception\EnvParameterException(array($resolvedId), null, 'A service name ("%s") cannot contain dynamic values.');
+                    throw new \MailPoetVendor\Symfony\Component\DependencyInjection\Exception\EnvParameterException([$resolvedId], null, 'A service name ("%s") cannot contain dynamic values.');
                 }
             }
         }
@@ -73,7 +73,7 @@ class CheckDefinitionValidityPass implements \MailPoetVendor\Symfony\Component\D
             if ($alias->isPublic() && !$alias->isPrivate()) {
                 $resolvedId = $container->resolveEnvPlaceholders($id, null, $usedEnvs);
                 if (null !== $usedEnvs) {
-                    throw new \MailPoetVendor\Symfony\Component\DependencyInjection\Exception\EnvParameterException(array($resolvedId), null, 'An alias name ("%s") cannot contain dynamic values.');
+                    throw new \MailPoetVendor\Symfony\Component\DependencyInjection\Exception\EnvParameterException([$resolvedId], null, 'An alias name ("%s") cannot contain dynamic values.');
                 }
             }
         }

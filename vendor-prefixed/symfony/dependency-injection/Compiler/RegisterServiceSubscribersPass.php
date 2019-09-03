@@ -28,7 +28,7 @@ class RegisterServiceSubscribersPass extends \MailPoetVendor\Symfony\Component\D
         if (!$value instanceof \MailPoetVendor\Symfony\Component\DependencyInjection\Definition || $value->isAbstract() || $value->isSynthetic() || !$value->hasTag('container.service_subscriber')) {
             return parent::processValue($value, $isRoot);
         }
-        $serviceMap = array();
+        $serviceMap = [];
         $autowire = $value->isAutowired();
         foreach ($value->getTag('container.service_subscriber') as $attributes) {
             if (!$attributes) {
@@ -36,7 +36,7 @@ class RegisterServiceSubscribersPass extends \MailPoetVendor\Symfony\Component\D
                 continue;
             }
             \ksort($attributes);
-            if (array() !== \array_diff(\array_keys($attributes), array('id', 'key'))) {
+            if ([] !== \array_diff(\array_keys($attributes), ['id', 'key'])) {
                 throw new \MailPoetVendor\Symfony\Component\DependencyInjection\Exception\InvalidArgumentException(\sprintf('The "container.service_subscriber" tag accepts only the "key" and "id" attributes, "%s" given for service "%s".', \implode('", "', \array_keys($attributes)), $this->currentId));
             }
             if (!\array_key_exists('id', $attributes)) {
@@ -58,7 +58,7 @@ class RegisterServiceSubscribersPass extends \MailPoetVendor\Symfony\Component\D
             throw new \MailPoetVendor\Symfony\Component\DependencyInjection\Exception\InvalidArgumentException(\sprintf('Service "%s" must implement interface "%s".', $this->currentId, \MailPoetVendor\Symfony\Component\DependencyInjection\ServiceSubscriberInterface::class));
         }
         $class = $r->name;
-        $subscriberMap = array();
+        $subscriberMap = [];
         $declaringClass = (new \ReflectionMethod($class, 'getSubscribedServices'))->class;
         foreach ($class::getSubscribedServices() as $key => $type) {
             if (!\is_string($type) || !\preg_match('/^\\??[a-zA-Z_\\x7f-\\xff][a-zA-Z0-9_\\x7f-\\xff]*+(?:\\\\[a-zA-Z_\\x7f-\\xff][a-zA-Z0-9_\\x7f-\\xff]*+)*+$/', $type)) {
@@ -84,7 +84,7 @@ class RegisterServiceSubscribersPass extends \MailPoetVendor\Symfony\Component\D
             $message = \sprintf(1 < \count($serviceMap) ? 'keys "%s" do' : 'key "%s" does', \str_replace('%', '%%', \implode('", "', $serviceMap)));
             throw new \MailPoetVendor\Symfony\Component\DependencyInjection\Exception\InvalidArgumentException(\sprintf('Service %s not exist in the map returned by "%s::getSubscribedServices()" for service "%s".', $message, $class, $this->currentId));
         }
-        $value->addTag('container.service_subscriber.locator', array('id' => (string) \MailPoetVendor\Symfony\Component\DependencyInjection\Compiler\ServiceLocatorTagPass::register($this->container, $subscriberMap, $this->currentId)));
+        $value->addTag('container.service_subscriber.locator', ['id' => (string) \MailPoetVendor\Symfony\Component\DependencyInjection\Compiler\ServiceLocatorTagPass::register($this->container, $subscriberMap, $this->currentId)]);
         return parent::processValue($value);
     }
 }

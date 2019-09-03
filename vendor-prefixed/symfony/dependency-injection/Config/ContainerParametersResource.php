@@ -34,14 +34,14 @@ class ContainerParametersResource implements \MailPoetVendor\Symfony\Component\C
         return 'container_parameters_' . \md5(\serialize($this->parameters));
     }
     /**
-     * {@inheritdoc}
+     * @internal
      */
     public function serialize()
     {
         return \serialize($this->parameters);
     }
     /**
-     * {@inheritdoc}
+     * @internal
      */
     public function unserialize($serialized)
     {

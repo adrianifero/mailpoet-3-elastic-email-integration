@@ -1,10 +1,9 @@
 <?php
 
 namespace MailPoet\Services\Release;
-
 use MailPoet\WP\Functions as WPFunctions;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 class API {
   private $api_key;
@@ -22,9 +21,10 @@ class API {
     );
 
     $code = $this->wp->wpRemoteRetrieveResponseCode($result);
-    switch($code) {
+    switch ($code) {
       case 200:
-        if($body = $this->wp->wpRemoteRetrieveBody($result)) {
+        $body = $this->wp->wpRemoteRetrieveBody($result);
+        if ($body) {
           $body = json_decode($body);
         }
         break;
@@ -44,13 +44,13 @@ class API {
     return $this->api_key;
   }
 
-  private function request($url, $params = array()) {
+  private function request($url, $params = []) {
     $params['license'] = $this->api_key;
-    $url = add_query_arg($params, $url);
-    $args = array(
+    $url = WPFunctions::get()->addQueryArg($params, $url);
+    $args = [
       'timeout' => 10,
-      'httpversion' => '1.0'
-    );
+      'httpversion' => '1.0',
+    ];
     return $this->wp->wpRemoteGet($url, $args);
   }
 }

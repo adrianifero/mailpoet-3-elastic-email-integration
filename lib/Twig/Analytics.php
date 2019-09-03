@@ -5,34 +5,41 @@ namespace MailPoet\Twig;
 use MailPoet\Analytics\Reporter;
 use MailPoet\Analytics\Analytics as AnalyticsGenerator;
 use MailPoet\Settings\SettingsController;
+use MailPoet\WooCommerce\Helper as WooCommerceHelper;
+use MailPoetVendor\Twig\Extension\AbstractExtension;
+use MailPoetVendor\Twig\TwigFunction;
+use MailPoet\WP\Functions as WPFunctions;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
-class Analytics extends \Twig_Extension {
+class Analytics extends AbstractExtension {
   public function getFunctions() {
     $settings = new SettingsController();
-    $analytics = new AnalyticsGenerator(new Reporter($settings), $settings);
-    return array(
-      new \Twig_SimpleFunction(
-        'get_analytics_data',
-        array($analytics, 'generateAnalytics'),
-        array('is_safe' => array('all'))
-      ),
-      new \Twig_SimpleFunction(
-        'is_analytics_enabled',
-        array($analytics, 'isEnabled'),
-        array('is_safe' => array('all'))
-      ),
-      new \Twig_SimpleFunction(
-        'get_analytics_public_id',
-        array($analytics, 'getPublicId'),
-        array('is_safe' => array('all'))
-      ),
-      new \Twig_SimpleFunction(
-        'is_analytics_public_id_new',
-        array($analytics, 'isPublicIdNew'),
-        array('is_safe' => array('all'))
-      )
+    $analytics = new AnalyticsGenerator(
+      new Reporter($settings, new WooCommerceHelper(new WPFunctions())),
+      $settings
     );
+    return [
+      new TwigFunction(
+        'get_analytics_data',
+        [$analytics, 'generateAnalytics'],
+        ['is_safe' => ['all']]
+      ),
+      new TwigFunction(
+        'is_analytics_enabled',
+        [$analytics, 'isEnabled'],
+        ['is_safe' => ['all']]
+      ),
+      new TwigFunction(
+        'get_analytics_public_id',
+        [$analytics, 'getPublicId'],
+        ['is_safe' => ['all']]
+      ),
+      new TwigFunction(
+        'is_analytics_public_id_new',
+        [$analytics, 'isPublicIdNew'],
+        ['is_safe' => ['all']]
+      ),
+    ];
   }
 }

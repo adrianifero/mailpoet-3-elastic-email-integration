@@ -1,10 +1,13 @@
 <?php
-
 namespace MailPoet\Twig;
 
-if(!defined('ABSPATH')) exit;
+use MailPoet\WP\Functions as WPFunctions;
+use MailPoetVendor\Twig\Extension\AbstractExtension;
+use MailPoetVendor\Twig\TwigFunction;
 
-class Assets extends \Twig_Extension {
+if (!defined('ABSPATH')) exit;
+
+class Assets extends AbstractExtension {
   const CDN_URL = 'https://ps.w.org/mailpoet/';
   private $_globals;
 
@@ -13,35 +16,35 @@ class Assets extends \Twig_Extension {
   }
 
   function getFunctions() {
-    return array(
-      new \Twig_SimpleFunction(
+    return [
+      new TwigFunction(
         'stylesheet',
-        array($this, 'generateStylesheet'),
-        array('is_safe' => array('all'))
+        [$this, 'generateStylesheet'],
+        ['is_safe' => ['all']]
       ),
-      new \Twig_SimpleFunction(
+      new TwigFunction(
         'javascript',
-        array($this, 'generateJavascript'),
-        array('is_safe' => array('all'))
+        [$this, 'generateJavascript'],
+        ['is_safe' => ['all']]
       ),
-      new \Twig_SimpleFunction(
+      new TwigFunction(
         'image_url',
-        array($this, 'generateImageUrl'),
-        array('is_safe' => array('all'))
+        [$this, 'generateImageUrl'],
+        ['is_safe' => ['all']]
       ),
-      new \Twig_SimpleFunction(
+      new TwigFunction(
         'cdn_url',
-        array($this, 'generateCdnUrl'),
-        array('is_safe' => array('all'))
-      )
-    );
+        [$this, 'generateCdnUrl'],
+        ['is_safe' => ['all']]
+      ),
+    ];
   }
 
   function generateStylesheet() {
     $stylesheets = func_get_args();
-    $output = array();
+    $output = [];
 
-    foreach($stylesheets as $stylesheet) {
+    foreach ($stylesheets as $stylesheet) {
       $output[] = sprintf(
         '<link rel="stylesheet" type="text/css" href="%s/dist/css/%s" />',
         $this->_globals['assets_url'],
@@ -54,9 +57,9 @@ class Assets extends \Twig_Extension {
 
   function generateJavascript() {
     $scripts = func_get_args();
-    $output = array();
+    $output = [];
 
-    foreach($scripts as $script) {
+    foreach ($scripts as $script) {
       $output[] = sprintf(
         '<script type="text/javascript" src="%s/%s/%s"></script>',
         $this->_globals['assets_url'],
@@ -75,7 +78,7 @@ class Assets extends \Twig_Extension {
   }
 
   function appendVersionToUrl($url) {
-    return add_query_arg('mailpoet_version', $this->_globals['version'], $url);
+    return WPFunctions::get()->addQueryArg('mailpoet_version', $this->_globals['version'], $url);
   }
 
   function getAssetFileName($manifest, $asset) {

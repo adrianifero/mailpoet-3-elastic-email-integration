@@ -6,17 +6,16 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
-    'Twig\\' => array($vendorDir . '/twig/twig/src'),
-    'Symfony\\Polyfill\\Php72\\' => array($vendorDir . '/symfony/polyfill-php72'),
     'Symfony\\Polyfill\\Mbstring\\' => array($vendorDir . '/symfony/polyfill-mbstring'),
-    'Symfony\\Polyfill\\Ctype\\' => array($vendorDir . '/symfony/polyfill-ctype'),
     'Symfony\\Component\\Translation\\' => array($vendorDir . '/symfony/translation'),
     'Sudzy\\' => array($baseDir . '/lib/Util/Sudzy'),
+    'MailPoet\\Test\\DataGenerator\\' => array($baseDir . '/tests/DataGenerator'),
+    'MailPoet\\Test\\DataFactories\\' => array($baseDir . '/tests/DataFactories'),
     'MailPoet\\' => array($baseDir . '/lib'),
     'MailPoetVendor\\' => array($baseDir . '/vendor-prefixed'),
+    'MailPoetTasks\\Release\\' => array($baseDir . '/tasks/release'),
     'MailPoetGenerated\\' => array($baseDir . '/generated'),
     'Html2Text\\' => array($vendorDir . '/soundasleep/html2text/src'),
     'Cron\\' => array($vendorDir . '/mtdowling/cron-expression/src/Cron'),
-    'Codeception\\Extension\\' => array($vendorDir . '/redcomponent/teststatistics/src'),
     '' => array($vendorDir . '/nesbot/carbon/src'),
 );

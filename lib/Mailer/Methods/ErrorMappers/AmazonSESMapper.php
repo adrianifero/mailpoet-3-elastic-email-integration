@@ -4,9 +4,13 @@ namespace MailPoet\Mailer\Methods\ErrorMappers;
 use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\SubscriberError;
+use MailPoet\WP\Functions as WPFunctions;
 
 class AmazonSESMapper {
+  use BlacklistErrorMapperTrait;
   use ConnectionErrorMapperTrait;
+
+  const METHOD = Mailer::METHOD_AMAZONSES;
 
   function getErrorFromException(\Exception $e, $subscriber) {
     $level = MailerError::LEVEL_HARD;
@@ -24,7 +28,7 @@ class AmazonSESMapper {
   function getErrorFromResponse($response, $subscriber) {
     $message = ($response) ?
       $response->Error->Message->__toString() :
-      sprintf(__('%s has returned an unknown error.', 'mailpoet'), Mailer::METHOD_AMAZONSES);
+      sprintf(WPFunctions::get()->__('%s has returned an unknown error.', 'mailpoet'), Mailer::METHOD_AMAZONSES);
 
     $level = MailerError::LEVEL_HARD;
     if ($response && $response->Error->Code->__toString() === 'MessageRejected') {

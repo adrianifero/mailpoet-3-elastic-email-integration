@@ -26,18 +26,18 @@ class PassConfig
     const TYPE_OPTIMIZE = 'optimization';
     const TYPE_REMOVE = 'removing';
     private $mergePass;
-    private $afterRemovingPasses = array();
-    private $beforeOptimizationPasses = array();
-    private $beforeRemovingPasses = array();
+    private $afterRemovingPasses = [];
+    private $beforeOptimizationPasses = [];
+    private $beforeRemovingPasses = [];
     private $optimizationPasses;
     private $removingPasses;
     public function __construct()
     {
         $this->mergePass = new \MailPoetVendor\Symfony\Component\DependencyInjection\Compiler\MergeExtensionConfigurationPass();
-        $this->beforeOptimizationPasses = array(100 => array($resolveClassPass = new \MailPoetVendor\Symfony\Component\DependencyInjection\Compiler\ResolveClassPass(), new \MailPoetVendor\Symfony\Component\DependencyInjection\Compiler\ResolveInstanceofConditionalsPass(), new \MailPoetVendor\Symfony\Component\DependencyInjection\Compiler\RegisterEnvVarProcessorsPass()), -1000 => array(new \MailPoetVendor\Symfony\Component\DependencyInjection\Compiler\ExtensionCompilerPass()));
-        $this->optimizationPasses = array(array(new \MailPoetVendor\Symfony\Component\DependencyInjection\Compiler\ResolveChildDefinitionsPass(), new \MailPoetVendor\Symfony\Component\DependencyInjection\Compiler\ServiceLocatorTagPass(), new \MailPoetVendor\Symfony\Component\DependencyInjection\Compiler\DecoratorServicePass(), new \MailPoetVendor\Symfony\Component\DependencyInjection\Compiler\ResolveParameterPlaceHoldersPass(\false), new \MailPoetVendor\Symfony\Component\DependencyInjection\Compiler\ResolveFactoryClassPass(), new \MailPoetVendor\Symfony\Component\DependencyInjection\Compiler\FactoryReturnTypePass($resolveClassPass), new \MailPoetVendor\Symfony\Component\DependencyInjection\Compiler\CheckDefinitionValidityPass(), new \MailPoetVendor\Symfony\Component\DependencyInjection\Compiler\RegisterServiceSubscribersPass(), new \MailPoetVendor\Symfony\Component\DependencyInjection\Compiler\ResolveNamedArgumentsPass(), new \MailPoetVendor\Symfony\Component\DependencyInjection\Compiler\AutowireRequiredMethodsPass(), new \MailPoetVendor\Symfony\Component\DependencyInjection\Compiler\ResolveBindingsPass(), new \MailPoetVendor\Symfony\Component\DependencyInjection\Compiler\AutowirePass(\false), new \MailPoetVendor\Symfony\Component\DependencyInjection\Compiler\ResolveTaggedIteratorArgumentPass(), new \MailPoetVendor\Symfony\Component\DependencyInjection\Compiler\ResolveServiceSubscribersPass(), new \MailPoetVendor\Symfony\Component\DependencyInjection\Compiler\ResolveReferencesToAliasesPass(), new \MailPoetVendor\Symfony\Component\DependencyInjection\Compiler\ResolveInvalidReferencesPass(), new \MailPoetVendor\Symfony\Component\DependencyInjection\Compiler\AnalyzeServiceReferencesPass(\true), new \MailPoetVendor\Symfony\Component\DependencyInjection\Compiler\CheckCircularReferencesPass(), new \MailPoetVendor\Symfony\Component\DependencyInjection\Compiler\CheckReferenceValidityPass(), new \MailPoetVendor\Symfony\Component\DependencyInjection\Compiler\CheckArgumentsValidityPass(\false)));
-        $this->beforeRemovingPasses = array(-100 => array(new \MailPoetVendor\Symfony\Component\DependencyInjection\Compiler\ResolvePrivatesPass()));
-        $this->removingPasses = array(array(new \MailPoetVendor\Symfony\Component\DependencyInjection\Compiler\RemovePrivateAliasesPass(), new \MailPoetVendor\Symfony\Component\DependencyInjection\Compiler\ReplaceAliasByActualDefinitionPass(), new \MailPoetVendor\Symfony\Component\DependencyInjection\Compiler\RemoveAbstractDefinitionsPass(), new \MailPoetVendor\Symfony\Component\DependencyInjection\Compiler\RepeatedPass(array(new \MailPoetVendor\Symfony\Component\DependencyInjection\Compiler\AnalyzeServiceReferencesPass(), new \MailPoetVendor\Symfony\Component\DependencyInjection\Compiler\InlineServiceDefinitionsPass(), new \MailPoetVendor\Symfony\Component\DependencyInjection\Compiler\AnalyzeServiceReferencesPass(), new \MailPoetVendor\Symfony\Component\DependencyInjection\Compiler\RemoveUnusedDefinitionsPass())), new \MailPoetVendor\Symfony\Component\DependencyInjection\Compiler\DefinitionErrorExceptionPass(), new \MailPoetVendor\Symfony\Component\DependencyInjection\Compiler\CheckExceptionOnInvalidReferenceBehaviorPass(), new \MailPoetVendor\Symfony\Component\DependencyInjection\Compiler\ResolveHotPathPass()));
+        $this->beforeOptimizationPasses = [100 => [$resolveClassPass = new \MailPoetVendor\Symfony\Component\DependencyInjection\Compiler\ResolveClassPass(), new \MailPoetVendor\Symfony\Component\DependencyInjection\Compiler\ResolveInstanceofConditionalsPass(), new \MailPoetVendor\Symfony\Component\DependencyInjection\Compiler\RegisterEnvVarProcessorsPass()], -1000 => [new \MailPoetVendor\Symfony\Component\DependencyInjection\Compiler\ExtensionCompilerPass()]];
+        $this->optimizationPasses = [[new \MailPoetVendor\Symfony\Component\DependencyInjection\Compiler\ResolveChildDefinitionsPass(), new \MailPoetVendor\Symfony\Component\DependencyInjection\Compiler\ServiceLocatorTagPass(), new \MailPoetVendor\Symfony\Component\DependencyInjection\Compiler\RegisterServiceSubscribersPass(), new \MailPoetVendor\Symfony\Component\DependencyInjection\Compiler\DecoratorServicePass(), new \MailPoetVendor\Symfony\Component\DependencyInjection\Compiler\ResolveParameterPlaceHoldersPass(\false), new \MailPoetVendor\Symfony\Component\DependencyInjection\Compiler\ResolveFactoryClassPass(), new \MailPoetVendor\Symfony\Component\DependencyInjection\Compiler\FactoryReturnTypePass($resolveClassPass), new \MailPoetVendor\Symfony\Component\DependencyInjection\Compiler\CheckDefinitionValidityPass(), new \MailPoetVendor\Symfony\Component\DependencyInjection\Compiler\ResolveNamedArgumentsPass(), new \MailPoetVendor\Symfony\Component\DependencyInjection\Compiler\AutowireRequiredMethodsPass(), new \MailPoetVendor\Symfony\Component\DependencyInjection\Compiler\ResolveBindingsPass(), new \MailPoetVendor\Symfony\Component\DependencyInjection\Compiler\AutowirePass(\false), new \MailPoetVendor\Symfony\Component\DependencyInjection\Compiler\ResolveTaggedIteratorArgumentPass(), new \MailPoetVendor\Symfony\Component\DependencyInjection\Compiler\ResolveServiceSubscribersPass(), new \MailPoetVendor\Symfony\Component\DependencyInjection\Compiler\ResolveReferencesToAliasesPass(), new \MailPoetVendor\Symfony\Component\DependencyInjection\Compiler\ResolveInvalidReferencesPass(), new \MailPoetVendor\Symfony\Component\DependencyInjection\Compiler\AnalyzeServiceReferencesPass(\true), new \MailPoetVendor\Symfony\Component\DependencyInjection\Compiler\CheckCircularReferencesPass(), new \MailPoetVendor\Symfony\Component\DependencyInjection\Compiler\CheckReferenceValidityPass(), new \MailPoetVendor\Symfony\Component\DependencyInjection\Compiler\CheckArgumentsValidityPass(\false)]];
+        $this->beforeRemovingPasses = [-100 => [new \MailPoetVendor\Symfony\Component\DependencyInjection\Compiler\ResolvePrivatesPass()]];
+        $this->removingPasses = [[new \MailPoetVendor\Symfony\Component\DependencyInjection\Compiler\RemovePrivateAliasesPass(), new \MailPoetVendor\Symfony\Component\DependencyInjection\Compiler\ReplaceAliasByActualDefinitionPass(), new \MailPoetVendor\Symfony\Component\DependencyInjection\Compiler\RemoveAbstractDefinitionsPass(), new \MailPoetVendor\Symfony\Component\DependencyInjection\Compiler\RepeatedPass([new \MailPoetVendor\Symfony\Component\DependencyInjection\Compiler\AnalyzeServiceReferencesPass(), new \MailPoetVendor\Symfony\Component\DependencyInjection\Compiler\InlineServiceDefinitionsPass(), new \MailPoetVendor\Symfony\Component\DependencyInjection\Compiler\AnalyzeServiceReferencesPass(), new \MailPoetVendor\Symfony\Component\DependencyInjection\Compiler\RemoveUnusedDefinitionsPass()]), new \MailPoetVendor\Symfony\Component\DependencyInjection\Compiler\DefinitionErrorExceptionPass(), new \MailPoetVendor\Symfony\Component\DependencyInjection\Compiler\CheckExceptionOnInvalidReferenceBehaviorPass(), new \MailPoetVendor\Symfony\Component\DependencyInjection\Compiler\ResolveHotPathPass()]];
     }
     /**
      * Returns all passes in order to be processed.
@@ -46,7 +46,7 @@ class PassConfig
      */
     public function getPasses()
     {
-        return \array_merge(array($this->mergePass), $this->getBeforeOptimizationPasses(), $this->getOptimizationPasses(), $this->getBeforeRemovingPasses(), $this->getRemovingPasses(), $this->getAfterRemovingPasses());
+        return \array_merge([$this->mergePass], $this->getBeforeOptimizationPasses(), $this->getOptimizationPasses(), $this->getBeforeRemovingPasses(), $this->getRemovingPasses(), $this->getAfterRemovingPasses());
     }
     /**
      * Adds a pass.
@@ -76,7 +76,7 @@ class PassConfig
         }
         $passes =& $this->{$property};
         if (!isset($passes[$priority])) {
-            $passes[$priority] = array();
+            $passes[$priority] = [];
         }
         $passes[$priority][] = $pass;
     }
@@ -145,7 +145,7 @@ class PassConfig
      */
     public function setAfterRemovingPasses(array $passes)
     {
-        $this->afterRemovingPasses = array($passes);
+        $this->afterRemovingPasses = [$passes];
     }
     /**
      * Sets the BeforeOptimization passes.
@@ -154,7 +154,7 @@ class PassConfig
      */
     public function setBeforeOptimizationPasses(array $passes)
     {
-        $this->beforeOptimizationPasses = array($passes);
+        $this->beforeOptimizationPasses = [$passes];
     }
     /**
      * Sets the BeforeRemoving passes.
@@ -163,7 +163,7 @@ class PassConfig
      */
     public function setBeforeRemovingPasses(array $passes)
     {
-        $this->beforeRemovingPasses = array($passes);
+        $this->beforeRemovingPasses = [$passes];
     }
     /**
      * Sets the Optimization passes.
@@ -172,7 +172,7 @@ class PassConfig
      */
     public function setOptimizationPasses(array $passes)
     {
-        $this->optimizationPasses = array($passes);
+        $this->optimizationPasses = [$passes];
     }
     /**
      * Sets the Removing passes.
@@ -181,7 +181,7 @@ class PassConfig
      */
     public function setRemovingPasses(array $passes)
     {
-        $this->removingPasses = array($passes);
+        $this->removingPasses = [$passes];
     }
     /**
      * Sort passes by priority.
@@ -193,7 +193,7 @@ class PassConfig
     private function sortPasses(array $passes)
     {
         if (0 === \count($passes)) {
-            return array();
+            return [];
         }
         \krsort($passes);
         // Flatten the array

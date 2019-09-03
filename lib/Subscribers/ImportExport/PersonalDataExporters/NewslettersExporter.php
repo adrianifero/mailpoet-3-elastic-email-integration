@@ -1,11 +1,11 @@
 <?php
-
 namespace MailPoet\Subscribers\ImportExport\PersonalDataExporters;
 
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\StatisticsNewsletters;
 use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\Url;
+use MailPoet\WP\Functions as WPFunctions;
 
 class NewslettersExporter {
 
@@ -13,16 +13,16 @@ class NewslettersExporter {
 
   function export($email, $page = 1) {
     $data = $this->exportSubscriber(Subscriber::findOne(trim($email)), $page);
-    return array(
+    return [
       'data' => $data,
       'done' => count($data) < self::LIMIT,
-    );
+    ];
   }
 
   private function exportSubscriber($subscriber, $page) {
-    if(!$subscriber) return array();
+    if (!$subscriber) return [];
 
-    $result = array();
+    $result = [];
 
     $statistics = StatisticsNewsletters::getAllForSubscriber($subscriber)
       ->limit(self::LIMIT)
@@ -31,7 +31,7 @@ class NewslettersExporter {
 
     $newsletters = $this->loadNewsletters($statistics);
 
-    foreach($statistics as $row) {
+    foreach ($statistics as $row) {
       $result[] = $this->exportNewsletter($row, $newsletters, $subscriber);
     }
 
@@ -39,33 +39,33 @@ class NewslettersExporter {
   }
 
   private function exportNewsletter($statistics_row, $newsletters, $subscriber) {
-    $newsletter_data = array();
-    $newsletter_data[] = array(
-      'name' => __('Email subject', 'mailpoet'),
+    $newsletter_data = [];
+    $newsletter_data[] = [
+      'name' => WPFunctions::get()->__('Email subject', 'mailpoet'),
       'value' => $statistics_row['newsletter_rendered_subject'],
-    );
-    $newsletter_data[] = array(
-      'name' => __('Sent at', 'mailpoet'),
+    ];
+    $newsletter_data[] = [
+      'name' => WPFunctions::get()->__('Sent at', 'mailpoet'),
       'value' => $statistics_row['sent_at'],
-    );
-    if(isset($statistics_row['opened_at'])) {
-      $newsletter_data[] = array(
-        'name' => __('Opened', 'mailpoet'),
+    ];
+    if (isset($statistics_row['opened_at'])) {
+      $newsletter_data[] = [
+        'name' => WPFunctions::get()->__('Opened', 'mailpoet'),
         'value' => 'Yes',
-      );
-      $newsletter_data[] = array(
-        'name' => __('Opened at', 'mailpoet'),
+      ];
+      $newsletter_data[] = [
+        'name' => WPFunctions::get()->__('Opened at', 'mailpoet'),
         'value' => $statistics_row['opened_at'],
-      );
+      ];
     } else {
-      $newsletter_data[] = array(
-        'name' => __('Opened', 'mailpoet'),
-        'value' => __('No', 'mailpoet'),
-      );
+      $newsletter_data[] = [
+        'name' => WPFunctions::get()->__('Opened', 'mailpoet'),
+        'value' => WPFunctions::get()->__('No', 'mailpoet'),
+      ];
     }
-    if(isset($newsletters[$statistics_row['newsletter_id']])) {
-      $newsletter_data[] = array(
-        'name' => __('Email preview', 'mailpoet'),
+    if (isset($newsletters[$statistics_row['newsletter_id']])) {
+      $newsletter_data[] = [
+        'name' => WPFunctions::get()->__('Email preview', 'mailpoet'),
         'value' => Url::getViewInBrowserUrl(
           '',
           $newsletters[$statistics_row['newsletter_id']],
@@ -73,14 +73,14 @@ class NewslettersExporter {
           false,
           true
         ),
-      );
+      ];
     }
-    return array(
+    return [
       'group_id' => 'mailpoet-newsletters',
-      'group_label' => __('MailPoet Emails Sent', 'mailpoet'),
+      'group_label' => WPFunctions::get()->__('MailPoet Emails Sent', 'mailpoet'),
       'item_id' => 'newsletter-' . $statistics_row['newsletter_id'],
       'data' => $newsletter_data,
-    );
+    ];
   }
 
   private function loadNewsletters($statistics) {
@@ -88,12 +88,12 @@ class NewslettersExporter {
       return $statistics_row['newsletter_id'];
     }, $statistics);
 
-    if(empty($newsletter_ids)) return array();
+    if (empty($newsletter_ids)) return [];
 
     $newsletters = Newsletter::whereIn('id', $newsletter_ids)->findMany();
 
-    $result = array();
-    foreach($newsletters as $newsletter) {
+    $result = [];
+    foreach ($newsletters as $newsletter) {
       $result[$newsletter->id()] = $newsletter;
     }
     return $result;

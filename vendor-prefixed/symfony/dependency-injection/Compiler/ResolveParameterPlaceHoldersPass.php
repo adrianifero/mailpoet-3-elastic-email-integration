@@ -36,7 +36,7 @@ class ResolveParameterPlaceHoldersPass extends \MailPoetVendor\Symfony\Component
         $this->bag = $container->getParameterBag();
         try {
             parent::process($container);
-            $aliases = array();
+            $aliases = [];
             foreach ($container->getAliases() as $name => $target) {
                 $this->currentId = $name;
                 $aliases[$this->bag->resolveValue($name)] = $target;

@@ -11,13 +11,13 @@ class DOM {
    */
   static function splitOn(DomNode $bound, DomNode $cut_element) {
     $ignore_text_and_comment_nodes = false;
-    for($parent = $cut_element->parent; $bound != $parent; $parent = $grandparent) {
+    for ($parent = $cut_element->parent; $bound != $parent; $parent = $grandparent) {
       // Clone parent node without children, but with attributes
       $parent->after($parent->toString());
       $right = $parent->getNextSibling($ignore_text_and_comment_nodes);
       $right->clear();
 
-      while($sibling = $cut_element->getNextSibling($ignore_text_and_comment_nodes)) {
+      while ($sibling = $cut_element->getNextSibling($ignore_text_and_comment_nodes)) {
         $sibling->move($right);
       }
 
@@ -31,7 +31,7 @@ class DOM {
   }
 
   static function findTopAncestor(DomNode $item) {
-    while($item->parent->parent !== null) {
+    while ($item->parent->parent !== null) {
       $item = $item->parent;
     }
     return $item;

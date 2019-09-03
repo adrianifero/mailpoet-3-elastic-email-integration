@@ -5,8 +5,9 @@ namespace MailPoet\Router;
 use MailPoet\Config\AccessControl;
 use MailPoetVendor\Psr\Container\ContainerInterface;
 use MailPoet\Util\Helpers;
+use MailPoet\WP\Functions as WPFunctions;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 class Router {
   public $api_request;
@@ -32,41 +33,41 @@ class Router {
       false;
     $this->data = isset($api_data['data']) ?
       self::decodeRequestData($api_data['data']) :
-      array();
+      [];
     $this->access_control = $access_control;
     $this->container = $container;
   }
 
   function init() {
-    if(!$this->api_request) return;
+    if (!$this->api_request) return;
     $endpoint_class = __NAMESPACE__ . "\\Endpoints\\" . ucfirst($this->endpoint);
 
-    if(!$this->endpoint || !class_exists($endpoint_class)) {
-      return $this->terminateRequest(self::RESPONSE_ERROR, __('Invalid router endpoint', 'mailpoet'));
+    if (!$this->endpoint || !class_exists($endpoint_class)) {
+      return $this->terminateRequest(self::RESPONSE_ERROR, WPFunctions::get()->__('Invalid router endpoint', 'mailpoet'));
     }
 
     $endpoint = $this->container->get($endpoint_class);
 
-    if(!method_exists($endpoint, $this->endpoint_action) || !in_array($this->endpoint_action, $endpoint->allowed_actions)) {
-      return $this->terminateRequest(self::RESPONSE_ERROR, __('Invalid router endpoint action', 'mailpoet'));
+    if (!method_exists($endpoint, $this->endpoint_action) || !in_array($this->endpoint_action, $endpoint->allowed_actions)) {
+      return $this->terminateRequest(self::RESPONSE_ERROR, WPFunctions::get()->__('Invalid router endpoint action', 'mailpoet'));
     }
-    if(!$this->validatePermissions($this->endpoint_action, $endpoint->permissions)) {
-      return $this->terminateRequest(self::RESPONE_FORBIDDEN, __('You do not have the required permissions.', 'mailpoet'));
+    if (!$this->validatePermissions($this->endpoint_action, $endpoint->permissions)) {
+      return $this->terminateRequest(self::RESPONE_FORBIDDEN, WPFunctions::get()->__('You do not have the required permissions.', 'mailpoet'));
     }
-    do_action('mailpoet_conflict_resolver_router_url_query_parameters');
-    return call_user_func(
-      [
-        $endpoint,
-        $this->endpoint_action,
-      ],
-      $this->data
-    );
+    WPFunctions::get()->doAction('mailpoet_conflict_resolver_router_url_query_parameters');
+    $callback = [
+      $endpoint,
+      $this->endpoint_action,
+    ];
+    if (is_callable($callback)) {
+      return call_user_func($callback, $this->data);
+    }
   }
 
   static function decodeRequestData($data) {
     $data = json_decode(base64_decode($data), true);
-    if(!is_array($data)) {
-      $data = array();
+    if (!is_array($data)) {
+      $data = [];
     }
     return $data;
   }
@@ -76,19 +77,19 @@ class Router {
   }
 
   static function buildRequest($endpoint, $action, $data = false) {
-    $params = array(
+    $params = [
       self::NAME => '',
       'endpoint' => $endpoint,
       'action' => $action,
-    );
-    if($data) {
+    ];
+    if ($data) {
       $params['data'] = self::encodeRequestData($data);
     }
-    return add_query_arg($params, home_url());
+    return WPFunctions::get()->addQueryArg($params, WPFunctions::get()->homeUrl());
   }
 
   function terminateRequest($code, $message) {
-    status_header($code, $message);
+    WPFunctions::get()->statusHeader($code, $message);
     exit;
   }
 

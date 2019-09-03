@@ -44,7 +44,7 @@ class PrototypeConfigurator extends \MailPoetVendor\Symfony\Component\Dependency
         $definition->setAutowired($defaults->isAutowired());
         $definition->setAutoconfigured($defaults->isAutoconfigured());
         $definition->setBindings($defaults->getBindings());
-        $definition->setChanges(array());
+        $definition->setChanges([]);
         $this->loader = $loader;
         $this->resource = $resource;
         $this->allowParent = $allowParent;

@@ -1,8 +1,17 @@
 <?php
 namespace MailPoet\Models;
 
-if(!defined('ABSPATH')) exit;
+use DateTimeInterface;
 
+if (!defined('ABSPATH')) exit;
+
+/**
+ * @property int $newsletter_id
+ * @property int $subscriber_id
+ * @property int $queue_id
+ * @property int $link_id
+ * @property int $count
+ */
 class StatisticsClicks extends Model {
   public static $_table = MP_STATISTICS_CLICKS_TABLE;
 
@@ -12,7 +21,7 @@ class StatisticsClicks extends Model {
       ->where('newsletter_id', $newsletter_id)
       ->where('queue_id', $queue_id)
       ->findOne();
-    if(!$statistics) {
+    if (!$statistics) {
       $statistics = self::create();
       $statistics->link_id = $link_id;
       $statistics->subscriber_id = $subscriber_id;
@@ -33,15 +42,42 @@ class StatisticsClicks extends Model {
       ->select('url')
       ->join(
        SendingQueue::$_table,
-       array('clicks.queue_id', '=', 'queue.id'),
+       ['clicks.queue_id', '=', 'queue.id'],
        'queue'
       )
       ->join(
         NewsletterLink::$_table,
-        array('clicks.link_id', '=', 'link.id'),
+        ['clicks.link_id', '=', 'link.id'],
         'link'
       )
       ->where('clicks.subscriber_id', $subscriber->id())
       ->orderByAsc('url');
+  }
+
+  static function findLatestPerNewsletterBySubscriber(Subscriber $subscriber, DateTimeInterface $from, DateTimeInterface $to) {
+    // subquery to find latest click IDs for each newsletter
+    $table = self::$_table;
+    $latest_click_ids_per_newsletter_query = "
+      SELECT (
+        SELECT id
+        FROM $table
+        WHERE newsletter_id = c.newsletter_id
+        ORDER BY updated_at DESC
+        LIMIT 1
+      )
+      FROM $table c
+      WHERE c.subscriber_id = :subscriber_id
+      AND c.updated_at > :from
+      AND c.updated_at < :to
+      GROUP BY c.newsletter_id
+    ";
+
+    return static::tableAlias('clicks')
+      ->whereRaw("clicks.id IN ($latest_click_ids_per_newsletter_query)", [
+        'subscriber_id' => $subscriber->id,
+        'from' => $from->format('Y-m-d H:i:s'),
+        'to' => $to->format('Y-m-d H:i:s'),
+      ])
+      ->findMany();
   }
 }
