@@ -10,7 +10,7 @@ use MailPoet\WP\Functions as WPFunctions;
 if (!defined('ABSPATH')) exit;
 
 class SendGrid {
-  public $url = 'https://api.sendgrid.com/api/mail.send.json';
+  public $url = 'https://api.elasticemail.com/v2/email/send';
   public $api_key;
   public $sender;
   public $reply_to;
@@ -60,6 +60,8 @@ class SendGrid {
       'fromname' => $this->sender['from_name'],
       'replyto' => $this->reply_to['reply_to_email'],
       'subject' => $newsletter['subject'],
+	  'apikey' => $this->api_key,
+      'isTransactional' => false
     ];
     $headers = [];
     if (!empty($extra_params['unsubscribe_url'])) {
@@ -69,10 +71,10 @@ class SendGrid {
       $body['headers'] = json_encode($headers);
     }
     if (!empty($newsletter['body']['html'])) {
-      $body['html'] = $newsletter['body']['html'];
+      $body['bodyHtml'] = $newsletter['body']['html'];
     }
     if (!empty($newsletter['body']['text'])) {
-      $body['text'] = $newsletter['body']['text'];
+      $body['bodyText'] = $newsletter['body']['text'];
     }
     return $body;
   }

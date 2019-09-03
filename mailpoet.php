@@ -4,7 +4,7 @@ if (!defined('ABSPATH')) exit;
 
 /*
  * Plugin Name: MailPoet 3 (New)
- * Version: 3.35.2
+ * Version: 3.35.2b
  * Plugin URI: http://www.mailpoet.com
  * Description: Create and send newsletters, post notifications and welcome emails from your WordPress.
  * Author: MailPoet
@@ -16,7 +16,7 @@ if (!defined('ABSPATH')) exit;
  * @author MailPoet
  * @since 3.0.0-beta.1
  */
-
+b
 $mailpoet_plugin = array(
   'version' => '3.35.2',
   'filename' => __FILE__,
